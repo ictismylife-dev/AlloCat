@@ -73,7 +73,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
   }
 
   return (
-    <div className="w-full overflow-x-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
+    <div className="w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
       <table className="w-full text-left border-collapse min-w-[1360px]">
         <thead>
           <tr className="bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">

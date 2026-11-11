@@ -65,7 +65,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const currentViewLabel = VIEW_LABELS[viewMode];
 
   return (
-    <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3">
+    <div className="shrink-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3">
       {/* Top row: KPI cards + View Export/Import + Global Expand */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* KPI Strip */}

@@ -761,7 +761,7 @@ export function App() {
   }, [activeCellEditor, people, projects, allocations, selectedYear]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="h-screen overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -839,7 +839,7 @@ export function App() {
         }}
       />
 
-      <main className="flex-1 max-w-[1720px] w-full mx-auto">
+      <main className="flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden">
         {viewMode === 'people' && (
           <PeopleMatrixView
             people={filteredPeople}

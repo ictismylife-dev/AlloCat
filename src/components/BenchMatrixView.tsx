@@ -64,9 +64,9 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
     });
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
+    <div className="w-full flex-1 min-h-0 flex flex-col bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
       {/* Sub-header filter bar */}
-      <div className="px-4 sm:px-6 py-2.5 bg-sky-50/60 dark:bg-sky-950/20 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
+      <div className="shrink-0 px-4 sm:px-6 py-2.5 bg-sky-50/60 dark:bg-sky-950/20 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
           <UserCheck className="w-4 h-4 text-sky-600 dark:text-sky-400" />
           <span>
@@ -101,7 +101,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto">
+      <div className="w-full flex-1 min-h-0 overflow-auto">
         <table className="w-full text-left border-collapse min-w-[1360px]">
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">

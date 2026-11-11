@@ -13404,7 +13404,7 @@ var import_jsx_runtime = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 })))();
 var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYearChange, onOpenManageYearsModal, overtimeCount, onOpenOvertimeDrawer, onOpenAssignModal, onOpenAddPersonModal, onOpenAddProjectModal, onOpenAddLeaveModal, onOpenExportModal, isDarkMode, onToggleDarkMode }) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
-		className: "sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors",
+		className: "shrink-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "max-w-[1720px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6",
 			children: [
@@ -13645,7 +13645,7 @@ var VIEW_LABELS = {
 var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], onOpenManageDepartmentsModal, kpis, isAllExpanded, onToggleExpandAll, onQuickExportCurrentViewCSV, onOpenImportExportForCurrentView }) => {
 	const currentViewLabel = VIEW_LABELS[viewMode];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3",
+		className: "shrink-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-wrap items-center justify-between gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -14039,7 +14039,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 		})]
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "w-full overflow-x-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 			className: "w-full text-left border-collapse min-w-[1360px]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
@@ -14348,7 +14348,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 		};
 	}).filter((group) => group.projects.length > 0);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "w-full overflow-x-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 			className: "w-full text-left border-collapse min-w-[1360px]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
@@ -14637,7 +14637,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 		})
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "w-full overflow-x-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 			className: "w-full text-left border-collapse min-w-[1360px]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
@@ -14915,9 +14915,9 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 		return s.monthlyBenchPct.some((pct) => pct >= minBenchPct);
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 flex flex-col bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "px-4 sm:px-6 py-2.5 bg-sky-50/60 dark:bg-sky-950/20 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs",
+			className: "shrink-0 px-4 sm:px-6 py-2.5 bg-sky-50/60 dark:bg-sky-950/20 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-2 text-slate-600 dark:text-slate-300",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserCheck, { className: "w-4 h-4 text-sky-600 dark:text-sky-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Bench Availability" }), " shows unallocated working capacity (Base Capacity − Leaves − Project Allocations). Click any cell to assign a project."] })]
@@ -14960,7 +14960,7 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 				})]
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "w-full overflow-x-auto",
+			className: "w-full flex-1 min-h-0 overflow-auto",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 				className: "w-full text-left border-collapse min-w-[1360px]",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
@@ -19779,7 +19779,7 @@ function App() {
 		selectedYear
 	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100",
+		className: "h-screen overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
 				viewMode,
@@ -19838,7 +19838,7 @@ function App() {
 				}
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
-				className: "flex-1 max-w-[1720px] w-full mx-auto",
+				className: "flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden",
 				children: [
 					viewMode === "people" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PeopleMatrixView, {
 						people: filteredPeople,

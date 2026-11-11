@@ -38,7 +38,7 @@ import { ExportImportModal } from './components/ExportImportModal';
 export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
   const [viewMode, setViewMode] = useState<ViewMode>('people');
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
   const [filters, setFilters] = useState<FilterState>({
     search: '',

@@ -81,7 +81,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
       const dateStr = new Date().toISOString().slice(0, 10);
 
       const standaloneHtml = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -91,7 +91,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>${cssText || ''}</style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-600 selection:text-white">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-indigo-600 selection:text-white">
   <div id="root"></div>
   <script>window.__ALLOCAT_EMBEDDED_STATE__ = ${embeddedJson};</script>
   <script type="module">${jsText}</script>

@@ -35,7 +35,13 @@ import { ManageYearsModal } from './components/ManageYearsModal';
 import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
-import { LoginOverlay } from './components/LoginOverlay';
+import {
+  LoginOverlay,
+  ChangeCredentialsModal,
+  AuthCredentials,
+  loadAuthCredentials,
+  saveAuthCredentials
+} from './components/LoginOverlay';
 import {
   ExportScope,
   generatePeopleViewCSV,
@@ -49,6 +55,9 @@ export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
   const [viewMode, setViewMode] = useState<ViewMode>('people');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  const [authCredentials, setAuthCredentials] = useState<AuthCredentials>(() =>
+    loadAuthCredentials()
+  );
   const [currentUser, setCurrentUser] = useState<string | null>(() => {
     try {
       return sessionStorage.getItem('allocat_auth_user');
@@ -56,6 +65,7 @@ export function App() {
       return null;
     }
   });
+  const [isChangeCredentialsOpen, setIsChangeCredentialsOpen] = useState(false);
 
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -772,6 +782,7 @@ export function App() {
     <div className="h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative">
       {!currentUser && (
         <LoginOverlay
+          credentials={authCredentials}
           onLoginSuccess={(username) => {
             try {
               sessionStorage.setItem('allocat_auth_user', username);
@@ -815,6 +826,7 @@ export function App() {
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode((d) => !d)}
           currentUser={currentUser}
+          onOpenChangeCredentialsModal={() => setIsChangeCredentialsOpen(true)}
           onLogout={() => {
             try {
               sessionStorage.removeItem('allocat_auth_user');
@@ -1134,6 +1146,22 @@ export function App() {
         initialScope={exportModalScope}
         onImportState={(newState) => setAppState(newState)}
         onResetToDefault={() => setAppState(resetAppState())}
+      />
+
+      <ChangeCredentialsModal
+        isOpen={isChangeCredentialsOpen}
+        onClose={() => setIsChangeCredentialsOpen(false)}
+        currentCredentials={authCredentials}
+        onSaveCredentials={(newCreds) => {
+          saveAuthCredentials(newCreds);
+          setAuthCredentials(newCreds);
+          setCurrentUser(newCreds.username);
+          try {
+            sessionStorage.setItem('allocat_auth_user', newCreds.username);
+          } catch {
+            // ignore storage errors
+          }
+        }}
       />
     </div>
   );

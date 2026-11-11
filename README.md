@@ -6,13 +6,15 @@
 
 ---
 
-## Authentication & Access
+## Authentication & Account Management
 
 Before signing in, the entire workspace view is blurred and locked behind a sign-in modal.
 
 - **Default Login:** `admin`
 - **Default Password:** `admin`
-- **Session Lock / Logout:** Once signed in, click the user logout button (`admin`) in the top-right header bar to lock and blur the workspace again at any time.
+- **Logo Picture Account Menu**: Once signed in, click the **AlloCat logo picture** (top-left header, displaying the active username badge) to open the account menu:
+  - **Change Login & Password**: Verify your current password and set a custom login and password (persisted in `localStorage`), or reset back to the default `admin:admin`.
+  - **Log Out / Lock Workspace**: Immediately lock and blur the workspace view until signed in again.
 
 ---
 

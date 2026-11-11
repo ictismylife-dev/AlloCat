@@ -761,7 +761,7 @@ export function App() {
   }, [activeCellEditor, people, projects, allocations, selectedYear]);
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header
         viewMode={viewMode}
         onViewModeChange={setViewMode}

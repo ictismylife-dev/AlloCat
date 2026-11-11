@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleDarkMode
 }) => {
   return (
-    <header className="shrink-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors">
       <div className="max-w-[1720px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6">
         {/* Zone 1: Wordmark */}
         <div className="flex items-center gap-2.5 shrink-0">
@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Zone 2: View Switcher & Year Navigation */}
         <div className="flex items-center gap-3 shrink-0">
           {/* Year selector */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 gap-0.5">
+          <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60 gap-0.5">
             {availableYears.map((y) => (
               <button
                 key={y}
@@ -65,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all whitespace-nowrap ${
                   selectedYear === y
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 {y}
@@ -74,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenManageYearsModal}
-              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded transition-colors"
+              className="p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors"
               title="Add or remove planning years"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -82,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Perspective switcher: People vs Clients vs Availability vs Bench */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+          <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
             <button
               type="button"
               onClick={() => onViewModeChange('people')}

@@ -64,9 +64,9 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
     });
 
   return (
-    <div className="w-full flex-1 min-h-0 flex flex-col bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
+    <div className="w-full flex-1 min-h-0 flex flex-col bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs">
       {/* Sub-header filter bar */}
-      <div className="shrink-0 px-4 sm:px-6 py-2.5 bg-sky-50/60 dark:bg-sky-950/20 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
+      <div className="shrink-0 px-4 sm:px-6 py-2.5 bg-sky-100/60 dark:bg-sky-950/20 border-b border-slate-300 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
           <UserCheck className="w-4 h-4 text-sky-600 dark:text-sky-400" />
           <span>
@@ -104,8 +104,8 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
       <div className="w-full flex-1 min-h-0 overflow-auto">
         <table className="w-full text-left border-collapse min-w-[1360px]">
           <thead>
-            <tr className="bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
-              <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+            <tr className="bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20">
+              <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <span>Team Member</span>
@@ -116,7 +116,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                         className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${
                           peopleSort !== 'default'
                             ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold'
-                            : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
+                            : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60'
                         }`}
                         title="Sort team members alphabetically (A–Z / Z–A)"
                       >
@@ -129,11 +129,11 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                       </button>
                     )}
                   </div>
-                  <span className="text-[11px] font-mono font-normal text-slate-400">Avg Bench</span>
+                  <span className="text-[11px] font-mono font-normal text-slate-500 dark:text-slate-400">Avg Bench</span>
                 </div>
               </th>
 
-              <th className="py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+              <th className="py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-200/90 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800">
                 <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
                   <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
                   <span>Comments & Skills Notes</span>
@@ -162,7 +162,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
               return (
                 <tr
                   key={person.id}
-                  className="group bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
+                  className="group bg-slate-50/95 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
                 >
                   <td className="py-3 px-4 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800">
                     <div className="flex items-center justify-between gap-2">

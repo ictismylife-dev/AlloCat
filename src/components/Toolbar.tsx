@@ -65,7 +65,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const currentViewLabel = VIEW_LABELS[viewMode];
 
   return (
-    <div className="shrink-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3">
+    <div className="shrink-0 z-30 bg-slate-100/95 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3">
       {/* Top row: KPI cards + View Export/Import + Global Expand */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* KPI Strip */}
@@ -174,7 +174,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               placeholder="Search person, project, client..."
               value={filters.search}
               onChange={(e) => onFilterChange({ search: e.target.value })}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
             />
             {filters.search && (
               <button
@@ -189,7 +189,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           {/* Alphabetical Sort Selector for People or Clients */}
           {viewMode === 'clients' ? (
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+            <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
               <button
                 type="button"
                 onClick={() =>
@@ -231,7 +231,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               </select>
             </div>
           ) : (
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+            <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
               <button
                 type="button"
                 onClick={() =>

@@ -13404,7 +13404,7 @@ var import_jsx_runtime = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 })))();
 var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYearChange, onOpenManageYearsModal, overtimeCount, onOpenOvertimeDrawer, onOpenAssignModal, onOpenAddPersonModal, onOpenAddProjectModal, onOpenAddLeaveModal, onOpenExportModal, isDarkMode, onToggleDarkMode }) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
-		className: "shrink-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors",
+		className: "shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "max-w-[1720px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6",
 			children: [
@@ -13428,21 +13428,21 @@ var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYear
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-3 shrink-0",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 gap-0.5",
+						className: "flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60 gap-0.5",
 						children: [availableYears.map((y) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
 							onClick: () => onYearChange(y),
-							className: `px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all whitespace-nowrap ${selectedYear === y ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"}`,
+							className: `px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all whitespace-nowrap ${selectedYear === y ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
 							children: y
 						}, y)), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
 							onClick: onOpenManageYearsModal,
-							className: "p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded transition-colors",
+							className: "p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors",
 							title: "Add or remove planning years",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "w-3.5 h-3.5" })
 						})]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+						className: "flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 								type: "button",
@@ -13645,7 +13645,7 @@ var VIEW_LABELS = {
 var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], onOpenManageDepartmentsModal, kpis, isAllExpanded, onToggleExpandAll, onQuickExportCurrentViewCSV, onOpenImportExportForCurrentView }) => {
 	const currentViewLabel = VIEW_LABELS[viewMode];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "shrink-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3",
+		className: "shrink-0 z-30 bg-slate-100/95 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-wrap items-center justify-between gap-4",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -13758,7 +13758,7 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 							placeholder: "Search person, project, client...",
 							value: filters.search,
 							onChange: (e) => onFilterChange({ search: e.target.value }),
-							className: "w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+							className: "w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
 						}),
 						filters.search && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
@@ -13768,7 +13768,7 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 						})
 					]
 				}), viewMode === "clients" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+					className: "flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 						type: "button",
 						onClick: () => onFilterChange({ clientSort: filters.clientSort === "client-asc" ? "client-desc" : "client-asc" }),
@@ -13804,7 +13804,7 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 						]
 					})]
 				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+					className: "flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 						type: "button",
 						onClick: () => onFilterChange({ peopleSort: filters.peopleSort === "lastName-asc" ? "lastName-desc" : "lastName-asc" }),
@@ -14039,14 +14039,14 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 		})]
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 overflow-auto bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 			className: "w-full text-left border-collapse min-w-[1360px]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-				className: "bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20",
+				className: "bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -14054,18 +14054,18 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member & Assigned Projects" }), onTogglePeopleSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 									type: "button",
 									onClick: onTogglePeopleSort,
-									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60"}`,
 									title: "Sort team members alphabetically (A–Z / Z–A)",
 									children: [peopleSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: peopleSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-[11px] font-mono font-normal text-slate-400",
+								className: "text-[11px] font-mono font-normal text-slate-500 dark:text-slate-400",
 								children: "Avg %"
 							})]
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-						className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+						className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-200/90 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center gap-1.5 text-slate-600 dark:text-slate-300",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "w-3.5 h-3.5 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Comments & Staffing Notes" })]
@@ -14091,7 +14091,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 					const capacitySummary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 					const personAllocations = allocations.filter((a) => a.personId === person.id && a.year === selectedYear);
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-						className: "group bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors",
+						className: "group bg-slate-50/95 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 								className: "py-3 px-4 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -14238,7 +14238,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 						const client = proj ? getClient(proj.clientId) : void 0;
 						if (!proj) return null;
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-							className: "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors group/sub",
+							className: "bg-slate-100/90 dark:bg-slate-800/30 hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors group/sub",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 									className: "py-2 px-4 pl-12 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -14348,14 +14348,14 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 		};
 	}).filter((group) => group.projects.length > 0);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 overflow-auto bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 			className: "w-full text-left border-collapse min-w-[1360px]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-				className: "bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20",
+				className: "bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -14363,18 +14363,18 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Client & Deliverable Projects" }), onToggleClientSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 									type: "button",
 									onClick: onToggleClientSort,
-									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${clientSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${clientSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60"}`,
 									title: "Sort clients alphabetically (A–Z / Z–A)",
 									children: [clientSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: clientSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-[11px] font-mono font-normal text-slate-400",
+								className: "text-[11px] font-mono font-normal text-slate-500 dark:text-slate-400",
 								children: "Team / FTE"
 							})]
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-						className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+						className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-200/90 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center gap-1.5 text-slate-600 dark:text-slate-300",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "w-3.5 h-3.5 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Comments & Scope Notes" })]
@@ -14394,7 +14394,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tbody", {
 				className: "divide-y divide-slate-200 dark:divide-slate-800 text-xs",
 				children: clientGroups.map(({ client, projects: clientProjects }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("tr", {
-					className: "group/client bg-slate-100/70 dark:bg-slate-800/60 border-t-2 border-slate-200 dark:border-slate-700",
+					className: "group/client bg-slate-200/80 dark:bg-slate-800/60 border-t-2 border-slate-300 dark:border-slate-700",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 						colSpan: 14,
 						className: "py-2 px-4 sticky left-0 z-10 bg-inherit",
@@ -14433,7 +14433,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 					const staffingSummary = getProjectStaffingSummary(project.id, selectedYear, allocations);
 					const projectAllocations = allocations.filter((a) => a.projectId === project.id && a.year === selectedYear);
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-						className: "group bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors",
+						className: "group bg-slate-50/95 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 								className: "py-2.5 px-4 pl-6 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -14517,7 +14517,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 						if (!person) return null;
 						const personCapacity = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-							className: "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors group/sub",
+							className: "bg-slate-100/90 dark:bg-slate-800/30 hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors group/sub",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 									className: "py-2 px-4 pl-14 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -14637,14 +14637,14 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 		})
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "w-full flex-1 min-h-0 overflow-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 overflow-auto bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 			className: "w-full text-left border-collapse min-w-[1360px]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-				className: "bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20",
+				className: "bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center justify-between gap-2",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -14652,18 +14652,18 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member & Scheduled Time Off" }), onTogglePeopleSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 									type: "button",
 									onClick: onTogglePeopleSort,
-									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60"}`,
 									title: "Sort team members alphabetically (A–Z / Z–A)",
 									children: [peopleSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: peopleSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-[11px] font-mono font-normal text-slate-400",
+								className: "text-[11px] font-mono font-normal text-slate-500 dark:text-slate-400",
 								children: "Leaves"
 							})]
 						})
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-						className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+						className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-200/90 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex items-center gap-1.5 text-slate-600 dark:text-slate-300",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "w-3.5 h-3.5 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Comments & Leave Notes" })]
@@ -14689,7 +14689,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 					const capacitySummary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 					const personLeaves = leaves.filter((l) => l.personId === person.id && l.year === selectedYear);
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-						className: "group bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors",
+						className: "group bg-slate-50/95 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 								className: "py-3 px-4 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -14825,7 +14825,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 						const fromM = Math.min(leave.startMonth, leave.endMonth);
 						const toM = Math.max(leave.startMonth, leave.endMonth);
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-							className: "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors group/sub",
+							className: "bg-slate-100/90 dark:bg-slate-800/30 hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition-colors group/sub",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 									className: "py-2 px-4 pl-12 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -14915,9 +14915,9 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 		return s.monthlyBenchPct.some((pct) => pct >= minBenchPct);
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "w-full flex-1 min-h-0 flex flex-col bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs",
+		className: "w-full flex-1 min-h-0 flex flex-col bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "shrink-0 px-4 sm:px-6 py-2.5 bg-sky-50/60 dark:bg-sky-950/20 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs",
+			className: "shrink-0 px-4 sm:px-6 py-2.5 bg-sky-100/60 dark:bg-sky-950/20 border-b border-slate-300 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex items-center gap-2 text-slate-600 dark:text-slate-300",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserCheck, { className: "w-4 h-4 text-sky-600 dark:text-sky-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "Bench Availability" }), " shows unallocated working capacity (Base Capacity − Leaves − Project Allocations). Click any cell to assign a project."] })]
@@ -14964,10 +14964,10 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
 				className: "w-full text-left border-collapse min-w-[1360px]",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-					className: "bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20",
+					className: "bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-							className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+							className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-center justify-between gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -14975,18 +14975,18 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member" }), onTogglePeopleSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 										type: "button",
 										onClick: onTogglePeopleSort,
-										className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+										className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60"}`,
 										title: "Sort team members alphabetically (A–Z / Z–A)",
 										children: [peopleSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: peopleSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
 									})]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "text-[11px] font-mono font-normal text-slate-400",
+									className: "text-[11px] font-mono font-normal text-slate-500 dark:text-slate-400",
 									children: "Avg Bench"
 								})]
 							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
-							className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
+							className: "py-2.5 px-3 w-[220px] min-w-[200px] max-w-[260px] bg-slate-200/90 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-center gap-1.5 text-slate-600 dark:text-slate-300",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "w-3.5 h-3.5 text-slate-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Comments & Skills Notes" })]
@@ -15010,7 +15010,7 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 						const empType = person.employmentType || "Internal";
 						const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-							className: "group bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors",
+							className: "group bg-slate-50/95 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 									className: "py-3 px-4 sticky left-0 z-10 bg-inherit border-r border-slate-200 dark:border-slate-800",
@@ -19779,7 +19779,7 @@ function App() {
 		selectedYear
 	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "h-screen overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100",
+		className: "h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
 				viewMode,

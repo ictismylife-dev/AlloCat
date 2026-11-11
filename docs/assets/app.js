@@ -262,7 +262,7 @@ Error generating stack: `+a.message+`
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>${j||""}</style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-600 selection:text-white">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-indigo-600 selection:text-white">
   <div id="root"></div>
   <script>window.__ALLOCAT_EMBEDDED_STATE__ = ${H};<\/script>
   <script type="module">${R}<\/script>

@@ -55,7 +55,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
     <div className="w-full overflow-x-auto bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
       <table className="w-full text-left border-collapse min-w-[1360px]">
         <thead>
-          <tr className="bg-slate-50/90 dark:bg-slate-800/90 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-14 z-20 backdrop-blur-xs">
+          <tr className="bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
             <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
               <div className="flex items-center justify-between">
                 <span>Team Member & Assigned Projects</span>

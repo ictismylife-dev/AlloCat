@@ -36,6 +36,13 @@ import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
 import {
+  LoginOverlay,
+  ChangeCredentialsModal,
+  AuthCredentials,
+  loadAuthCredentials,
+  saveAuthCredentials
+} from './components/LoginOverlay';
+import {
   ExportScope,
   generatePeopleViewCSV,
   generateClientsViewCSV,
@@ -48,6 +55,17 @@ export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
   const [viewMode, setViewMode] = useState<ViewMode>('people');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  const [authCredentials, setAuthCredentials] = useState<AuthCredentials>(() =>
+    loadAuthCredentials()
+  );
+  const [currentUser, setCurrentUser] = useState<string | null>(() => {
+    try {
+      return sessionStorage.getItem('allocat_auth_user');
+    } catch {
+      return null;
+    }
+  });
+  const [isChangeCredentialsOpen, setIsChangeCredentialsOpen] = useState(false);
 
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -761,34 +779,63 @@ export function App() {
   }, [activeCellEditor, people, projects, allocations, selectedYear]);
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      <Header
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        availableYears={availableYears}
-        selectedYear={selectedYear}
-        onYearChange={(year) => setAppState((prev) => ({ ...prev, selectedYear: year }))}
-        onOpenManageYearsModal={() => setIsManageYearsOpen(true)}
-        overtimeCount={kpis.totalPersonMonthsOverbooked}
-        onOpenOvertimeDrawer={() => setIsOvertimeDrawerOpen(true)}
-        onOpenAssignModal={() => setAssignModalState({ isOpen: true })}
-        onOpenAddPersonModal={() => {
-          setPersonToEdit(null);
-          setIsAddPersonOpen(true);
-        }}
-        onOpenAddProjectModal={() => {
-          setProjectToEdit(null);
-          setClientToEdit(null);
-          setIsAddProjectOpen(true);
-        }}
-        onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
-        onOpenExportModal={() => {
-          setExportModalScope('all');
-          setIsExportModalOpen(true);
-        }}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={() => setIsDarkMode((d) => !d)}
-      />
+    <div className="h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative">
+      {!currentUser && (
+        <LoginOverlay
+          credentials={authCredentials}
+          onLoginSuccess={(username) => {
+            try {
+              sessionStorage.setItem('allocat_auth_user', username);
+            } catch {
+              // ignore storage errors
+            }
+            setCurrentUser(username);
+          }}
+        />
+      )}
+
+      <div
+        className={`h-full flex flex-col overflow-hidden transition-all duration-300 ${
+          !currentUser ? 'blur-md pointer-events-none select-none' : ''
+        }`}
+      >
+        <Header
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          availableYears={availableYears}
+          selectedYear={selectedYear}
+          onYearChange={(year) => setAppState((prev) => ({ ...prev, selectedYear: year }))}
+          onOpenManageYearsModal={() => setIsManageYearsOpen(true)}
+          overtimeCount={kpis.totalPersonMonthsOverbooked}
+          onOpenOvertimeDrawer={() => setIsOvertimeDrawerOpen(true)}
+          onOpenAssignModal={() => setAssignModalState({ isOpen: true })}
+          onOpenAddPersonModal={() => {
+            setPersonToEdit(null);
+            setIsAddPersonOpen(true);
+          }}
+          onOpenAddProjectModal={() => {
+            setProjectToEdit(null);
+            setClientToEdit(null);
+            setIsAddProjectOpen(true);
+          }}
+          onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
+          onOpenExportModal={() => {
+            setExportModalScope('all');
+            setIsExportModalOpen(true);
+          }}
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={() => setIsDarkMode((d) => !d)}
+          currentUser={currentUser}
+          onOpenChangeCredentialsModal={() => setIsChangeCredentialsOpen(true)}
+          onLogout={() => {
+            try {
+              sessionStorage.removeItem('allocat_auth_user');
+            } catch {
+              // ignore storage errors
+            }
+            setCurrentUser(null);
+          }}
+        />
 
       <Toolbar
         viewMode={viewMode}
@@ -971,6 +1018,7 @@ export function App() {
           />
         )}
       </main>
+      </div>
 
       {/* Cell Allocation & Total Workload Breakdown Popover */}
       {activeEditorData && (
@@ -1098,6 +1146,22 @@ export function App() {
         initialScope={exportModalScope}
         onImportState={(newState) => setAppState(newState)}
         onResetToDefault={() => setAppState(resetAppState())}
+      />
+
+      <ChangeCredentialsModal
+        isOpen={isChangeCredentialsOpen}
+        onClose={() => setIsChangeCredentialsOpen(false)}
+        currentCredentials={authCredentials}
+        onSaveCredentials={(newCreds) => {
+          saveAuthCredentials(newCreds);
+          setAuthCredentials(newCreds);
+          setCurrentUser(newCreds.username);
+          try {
+            sessionStorage.setItem('allocat_auth_user', newCreds.username);
+          } catch {
+            // ignore storage errors
+          }
+        }}
       />
     </div>
   );

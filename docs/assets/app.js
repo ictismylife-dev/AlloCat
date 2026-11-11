@@ -12900,6 +12900,45 @@ var Download = createLucideIcon("download", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var EyeOff = createLucideIcon("eye-off", [
+	["path", {
+		d: "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
+		key: "ct8e1f"
+	}],
+	["path", {
+		d: "M14.084 14.158a3 3 0 0 1-4.242-4.242",
+		key: "151rxh"
+	}],
+	["path", {
+		d: "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
+		key: "13bj9a"
+	}],
+	["path", {
+		d: "m2 2 20 20",
+		key: "1ooewy"
+	}]
+]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Eye = createLucideIcon("eye", [["path", {
+	d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+	key: "1nclc0"
+}], ["circle", {
+	cx: "12",
+	cy: "12",
+	r: "3",
+	key: "1v7zrd"
+}]]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var FileJson = createLucideIcon("file-json", [
 	["path", {
 		d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z",
@@ -12988,6 +13027,22 @@ var Globe = createLucideIcon("globe", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var KeyRound = createLucideIcon("key-round", [["path", {
+	d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
+	key: "1s6t7t"
+}], ["circle", {
+	cx: "16.5",
+	cy: "7.5",
+	r: ".5",
+	fill: "currentColor",
+	key: "w0ekpg"
+}]]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Layers = createLucideIcon("layers", [
 	["path", {
 		d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z",
@@ -13000,6 +13055,64 @@ var Layers = createLucideIcon("layers", [
 	["path", {
 		d: "M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17",
 		key: "kqbvx6"
+	}]
+]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Lock = createLucideIcon("lock", [["rect", {
+	width: "18",
+	height: "11",
+	x: "3",
+	y: "11",
+	rx: "2",
+	ry: "2",
+	key: "1w4ew1"
+}], ["path", {
+	d: "M7 11V7a5 5 0 0 1 10 0v4",
+	key: "fwvmzm"
+}]]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var LogIn = createLucideIcon("log-in", [
+	["path", {
+		d: "m10 17 5-5-5-5",
+		key: "1bsop3"
+	}],
+	["path", {
+		d: "M15 12H3",
+		key: "6jk70r"
+	}],
+	["path", {
+		d: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4",
+		key: "u53s6r"
+	}]
+]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var LogOut = createLucideIcon("log-out", [
+	["path", {
+		d: "m16 17 5-5-5-5",
+		key: "1bji2h"
+	}],
+	["path", {
+		d: "M21 12H9",
+		key: "dn1m92"
+	}],
+	["path", {
+		d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4",
+		key: "1uf3rs"
 	}]
 ]);
 /**
@@ -13321,6 +13434,21 @@ var UserPlus = createLucideIcon("user-plus", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var User = createLucideIcon("user", [["path", {
+	d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2",
+	key: "975kel"
+}], ["circle", {
+	cx: "12",
+	cy: "7",
+	r: "4",
+	key: "17ys0d"
+}]]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Users = createLucideIcon("users", [
 	["path", {
 		d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2",
@@ -13402,26 +13530,82 @@ var require_react_jsx_runtime_production = /* @__PURE__ */ __commonJSMin(((expor
 var import_jsx_runtime = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	module.exports = require_react_jsx_runtime_production();
 })))();
-var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYearChange, onOpenManageYearsModal, overtimeCount, onOpenOvertimeDrawer, onOpenAssignModal, onOpenAddPersonModal, onOpenAddProjectModal, onOpenAddLeaveModal, onOpenExportModal, isDarkMode, onToggleDarkMode }) => {
+var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYearChange, onOpenManageYearsModal, overtimeCount, onOpenOvertimeDrawer, onOpenAssignModal, onOpenAddPersonModal, onOpenAddProjectModal, onOpenAddLeaveModal, onOpenExportModal, isDarkMode, onToggleDarkMode, currentUser, onLogout, onOpenChangeCredentialsModal }) => {
+	const [isUserMenuOpen, setIsUserMenuOpen] = (0, import_react.useState)(false);
+	const menuRef = (0, import_react.useRef)(null);
+	(0, import_react.useEffect)(() => {
+		const handleClickOutside = (e) => {
+			if (menuRef.current && !menuRef.current.contains(e.target)) setIsUserMenuOpen(false);
+		};
+		if (isUserMenuOpen) document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, [isUserMenuOpen]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
 		className: "shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "max-w-[1720px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2.5 shrink-0",
+					className: "flex items-center gap-2.5 shrink-0 relative",
+					ref: menuRef,
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cat, { className: "w-5 h-5" })
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							type: "button",
+							onClick: () => setIsUserMenuOpen((prev) => !prev),
+							className: "group flex items-center gap-2 p-1 pr-2 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors cursor-pointer focus:outline-hidden",
+							title: currentUser ? `Signed in as ${currentUser} — Click for account & password settings` : "Account menu",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "relative w-8 h-8 rounded-lg bg-indigo-600 group-hover:bg-indigo-700 text-white flex items-center justify-center shadow-xs transition-colors",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cat, { className: "w-5 h-5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-slate-100 dark:ring-slate-900" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex flex-col items-start text-left",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-1",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none",
+										children: "AlloCat"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors" })]
+								}), currentUser && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-[10px] font-mono font-semibold text-indigo-600 dark:text-indigo-400 leading-tight",
+									children: currentUser
+								})]
+							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 whitespace-nowrap",
-							children: "AlloCat"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "hidden xl:inline-block text-xs font-mono text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-800 pl-3",
+							className: "hidden xl:inline-block text-xs font-mono text-slate-400 dark:text-slate-500 border-l border-slate-300 dark:border-slate-800 pl-3",
 							children: "Resource & Capacity Planner"
+						}),
+						isUserMenuOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "absolute left-0 top-13 w-60 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 z-50 text-xs",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "px-3.5 py-2 border-b border-slate-100 dark:border-slate-800",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "text-[10px] uppercase tracking-wider font-semibold text-slate-400",
+									children: "Signed in as"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "font-mono font-bold text-slate-900 dark:text-slate-100 truncate mt-0.5",
+									children: currentUser || "admin"
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "py-1",
+								children: [onOpenChangeCredentialsModal && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: () => {
+										setIsUserMenuOpen(false);
+										onOpenChangeCredentialsModal();
+									},
+									className: "w-full px-3.5 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { className: "w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Change Login & Password" })]
+								}), onLogout && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: () => {
+										setIsUserMenuOpen(false);
+										onLogout();
+									},
+									className: "w-full px-3.5 py-2 text-left flex items-center gap-2.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LogOut, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Log Out / Lock Workspace" })]
+								})]
+							})]
 						})
 					]
 				}),
@@ -13533,7 +13717,7 @@ var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYear
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
 							onClick: onToggleDarkMode,
-							className: "p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors",
+							className: "p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer",
 							title: isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode",
 							children: isDarkMode ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sun, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Moon, { className: "w-4 h-4" })
 						})
@@ -19308,11 +19492,337 @@ var ExportImportModal = ({ isOpen, onClose, appState, activeViewMode = "people",
 		})
 	});
 };
+// src/components/LoginOverlay.tsx
+var AUTH_CREDENTIALS_KEY = "allocat_auth_credentials_v1";
+function loadAuthCredentials() {
+	try {
+		const raw = localStorage.getItem(AUTH_CREDENTIALS_KEY);
+		if (raw) {
+			const parsed = JSON.parse(raw);
+			if (typeof parsed?.username === "string" && parsed.username.trim().length > 0 && typeof parsed?.password === "string" && parsed.password.length > 0) return {
+				username: parsed.username.trim(),
+				password: parsed.password
+			};
+		}
+	} catch {}
+	return {
+		username: "admin",
+		password: "admin"
+	};
+}
+function saveAuthCredentials(creds) {
+	try {
+		localStorage.setItem(AUTH_CREDENTIALS_KEY, JSON.stringify(creds));
+	} catch {}
+}
+var LoginOverlay = ({ credentials, onLoginSuccess }) => {
+	const [username, setUsername] = (0, import_react.useState)("");
+	const [password, setPassword] = (0, import_react.useState)("");
+	const [showPassword, setShowPassword] = (0, import_react.useState)(false);
+	const [error, setError] = (0, import_react.useState)("");
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const trimmedUser = username.trim();
+		if (trimmedUser === credentials.username && password === credentials.password) {
+			setError("");
+			onLoginSuccess(trimmedUser);
+		} else {
+			const isDefault = credentials.username === "admin" && credentials.password === "admin";
+			setError(isDefault ? "Invalid login or password. Default credentials are admin / admin." : "Invalid login or password. Please enter your configured credentials.");
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/35 dark:bg-slate-950/55 backdrop-blur-xs",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "px-6 pt-7 pb-5 bg-slate-100/80 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-center",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center mx-auto shadow-md mb-3",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cat, { className: "w-7 h-7" })
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+						className: "text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100",
+						children: "Sign in to AlloCat"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs text-slate-500 dark:text-slate-400 mt-1",
+						children: "Resource & Capacity Planner — Enter your credentials to unlock the workspace"
+					})
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
+				onSubmit: handleSubmit,
+				className: "p-6 space-y-4",
+				children: [
+					error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-start gap-2 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: error })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						htmlFor: "allocat-login-user",
+						className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5",
+						children: "Login"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "relative",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "w-4 h-4 text-slate-400 absolute left-3 top-2.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							id: "allocat-login-user",
+							type: "text",
+							value: username,
+							onChange: (e) => {
+								setUsername(e.target.value);
+								if (error) setError("");
+							},
+							placeholder: "Enter login",
+							autoFocus: true,
+							autoComplete: "username",
+							required: true,
+							className: "w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all"
+						})]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						htmlFor: "allocat-login-pass",
+						className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5",
+						children: "Password"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "relative",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "w-4 h-4 text-slate-400 absolute left-3 top-2.5" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								id: "allocat-login-pass",
+								type: showPassword ? "text" : "password",
+								value: password,
+								onChange: (e) => {
+									setPassword(e.target.value);
+									if (error) setError("");
+								},
+								placeholder: "Enter password",
+								autoComplete: "current-password",
+								required: true,
+								className: "w-full pl-9 pr-9 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: () => setShowPassword((prev) => !prev),
+								className: "absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 cursor-pointer",
+								title: showPassword ? "Hide password" : "Show password",
+								children: showPassword ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EyeOff, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "w-4 h-4" })
+							})
+						]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						type: "submit",
+						className: "w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition-colors cursor-pointer",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LogIn, { className: "w-4 h-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Sign In" })]
+					})
+				]
+			})]
+		})
+	});
+};
+var ChangeCredentialsModal = ({ isOpen, onClose, currentCredentials, onSaveCredentials }) => {
+	const [currentPassword, setCurrentPassword] = (0, import_react.useState)("");
+	const [newUsername, setNewUsername] = (0, import_react.useState)(currentCredentials.username);
+	const [newPassword, setNewPassword] = (0, import_react.useState)("");
+	const [confirmPassword, setConfirmPassword] = (0, import_react.useState)("");
+	const [showPasswords, setShowPasswords] = (0, import_react.useState)(false);
+	const [error, setError] = (0, import_react.useState)("");
+	const [successMsg, setSuccessMsg] = (0, import_react.useState)("");
+	(0, import_react.useEffect)(() => {
+		if (isOpen) {
+			setCurrentPassword("");
+			setNewUsername(currentCredentials.username);
+			setNewPassword("");
+			setConfirmPassword("");
+			setError("");
+			setSuccessMsg("");
+		}
+	}, [isOpen, currentCredentials.username]);
+	if (!isOpen) return null;
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		setError("");
+		setSuccessMsg("");
+		if (currentPassword !== currentCredentials.password) {
+			setError("Current password is incorrect.");
+			return;
+		}
+		const trimmedLogin = newUsername.trim();
+		if (!trimmedLogin) {
+			setError("New login cannot be empty.");
+			return;
+		}
+		if (!newPassword) {
+			setError("New password cannot be empty.");
+			return;
+		}
+		if (newPassword !== confirmPassword) {
+			setError("New password and confirmation do not match.");
+			return;
+		}
+		onSaveCredentials({
+			username: trimmedLogin,
+			password: newPassword
+		});
+		setSuccessMsg("Login and password updated successfully!");
+		setTimeout(() => {
+			onClose();
+		}, 800);
+	};
+	const handleResetDefault = () => {
+		onSaveCredentials({
+			username: "admin",
+			password: "admin"
+		});
+		setNewUsername("admin");
+		setCurrentPassword("");
+		setNewPassword("");
+		setConfirmPassword("");
+		setError("");
+		setSuccessMsg("Credentials reset to default (admin / admin).");
+		setTimeout(() => {
+			onClose();
+		}, 800);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "px-5 py-4 bg-slate-100 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-7 h-7 rounded-lg bg-indigo-600/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { className: "w-4 h-4" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						className: "text-sm font-bold text-slate-900 dark:text-slate-100",
+						children: "Change Login & Password"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-[11px] text-slate-500 dark:text-slate-400",
+						children: "Update workspace sign-in credentials"
+					})] })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					type: "button",
+					onClick: onClose,
+					className: "p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition-colors cursor-pointer",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "w-4 h-4" })
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
+				onSubmit: handleSubmit,
+				className: "p-5 space-y-3.5 text-xs",
+				children: [
+					error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-start gap-2 p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "w-4 h-4 shrink-0 mt-0.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: error })]
+					}),
+					successMsg && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-medium",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "w-4 h-4 shrink-0" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: successMsg })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Current Password"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "relative",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								type: showPasswords ? "text" : "password",
+								value: currentPassword,
+								onChange: (e) => setCurrentPassword(e.target.value),
+								placeholder: "Enter current password",
+								required: true,
+								className: "w-full pl-8 pr-8 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: () => setShowPasswords((s) => !s),
+								className: "absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer",
+								title: showPasswords ? "Hide passwords" : "Show passwords",
+								children: showPasswords ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EyeOff, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "w-4 h-4" })
+							})
+						]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "New Login"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "relative",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: "text",
+							value: newUsername,
+							onChange: (e) => setNewUsername(e.target.value),
+							placeholder: "Enter new login",
+							required: true,
+							className: "w-full pl-8 pr-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+						})]
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 sm:grid-cols-2 gap-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "New Password"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: showPasswords ? "text" : "password",
+							value: newPassword,
+							onChange: (e) => setNewPassword(e.target.value),
+							placeholder: "New password",
+							required: true,
+							className: "w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Confirm New Password"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: showPasswords ? "text" : "password",
+							value: confirmPassword,
+							onChange: (e) => setConfirmPassword(e.target.value),
+							placeholder: "Confirm password",
+							required: true,
+							className: "w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "pt-2 flex items-center justify-between gap-2 border-t border-slate-200 dark:border-slate-800",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							type: "button",
+							onClick: handleResetDefault,
+							className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+							title: "Reset login and password to admin / admin",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RotateCcw, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Reset to admin:admin" })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: onClose,
+								className: "px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+								children: "Cancel"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "submit",
+								className: "px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-xs transition-colors cursor-pointer",
+								children: "Save Credentials"
+							})]
+						})]
+					})
+				]
+			})]
+		})
+	});
+};
 // src/App.tsx
 function App() {
 	const [appState, setAppState] = (0, import_react.useState)(() => loadAppState());
 	const [viewMode, setViewMode] = (0, import_react.useState)("people");
 	const [isDarkMode, setIsDarkMode] = (0, import_react.useState)(true);
+	const [authCredentials, setAuthCredentials] = (0, import_react.useState)(() => loadAuthCredentials());
+	const [currentUser, setCurrentUser] = (0, import_react.useState)(() => {
+		try {
+			return sessionStorage.getItem("allocat_auth_user");
+		} catch {
+			return null;
+		}
+	});
+	const [isChangeCredentialsOpen, setIsChangeCredentialsOpen] = (0, import_react.useState)(false);
 	const [filters, setFilters] = (0, import_react.useState)({
 		search: "",
 		department: "all",
@@ -19779,195 +20289,217 @@ function App() {
 		selectedYear
 	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100",
+		className: "h-screen overflow-hidden flex flex-col bg-slate-200/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative",
 		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
-				viewMode,
-				onViewModeChange: setViewMode,
-				availableYears,
-				selectedYear,
-				onYearChange: (year) => setAppState((prev) => ({
-					...prev,
-					selectedYear: year
-				})),
-				onOpenManageYearsModal: () => setIsManageYearsOpen(true),
-				overtimeCount: kpis.totalPersonMonthsOverbooked,
-				onOpenOvertimeDrawer: () => setIsOvertimeDrawerOpen(true),
-				onOpenAssignModal: () => setAssignModalState({ isOpen: true }),
-				onOpenAddPersonModal: () => {
-					setPersonToEdit(null);
-					setIsAddPersonOpen(true);
-				},
-				onOpenAddProjectModal: () => {
-					setProjectToEdit(null);
-					setClientToEdit(null);
-					setIsAddProjectOpen(true);
-				},
-				onOpenAddLeaveModal: () => setLeaveModalState({ isOpen: true }),
-				onOpenExportModal: () => {
-					setExportModalScope("all");
-					setIsExportModalOpen(true);
-				},
-				isDarkMode,
-				onToggleDarkMode: () => setIsDarkMode((d) => !d)
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toolbar, {
-				viewMode,
-				filters,
-				onFilterChange: (partial) => setFilters((prev) => ({
-					...prev,
-					...partial
-				})),
-				departments,
-				clients: sortedClients,
-				onOpenManageDepartmentsModal: () => setIsManageDepartmentsOpen(true),
-				kpis,
-				isAllExpanded,
-				onToggleExpandAll: handleToggleExpandAll,
-				selectedYear,
-				onQuickExportCurrentViewCSV: () => {
-					const dateStr = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-					if (viewMode === "people") triggerFileDownload(generatePeopleViewCSV(appState, filteredPeople), `allocat-by-people-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-					else if (viewMode === "clients") triggerFileDownload(generateClientsViewCSV(appState, filteredProjects), `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-					else if (viewMode === "availability") triggerFileDownload(generateAvailabilityViewCSV(appState, filteredPeople), `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-					else if (viewMode === "bench") triggerFileDownload(generateBenchViewCSV(appState, filteredPeople), `allocat-bench-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-				},
-				onOpenImportExportForCurrentView: () => {
-					setExportModalScope(viewMode);
-					setIsExportModalOpen(true);
+			!currentUser && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoginOverlay, {
+				credentials: authCredentials,
+				onLoginSuccess: (username) => {
+					try {
+						sessionStorage.setItem("allocat_auth_user", username);
+					} catch {}
+					setCurrentUser(username);
 				}
 			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
-				className: "flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden",
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: `h-full flex flex-col overflow-hidden transition-all duration-300 ${!currentUser ? "blur-md pointer-events-none select-none" : ""}`,
 				children: [
-					viewMode === "people" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PeopleMatrixView, {
-						people: filteredPeople,
-						clients: sortedClients,
-						projects,
-						allocations,
-						leaves,
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
+						viewMode,
+						onViewModeChange: setViewMode,
+						availableYears,
 						selectedYear,
-						expandedPersonIds,
-						onTogglePersonExpand: handleTogglePersonExpand,
-						onOpenCellEditor: (personId, projectId, monthIndex) => setActiveCellEditor({
-							personId,
-							projectId,
-							monthIndex
-						}),
-						onOpenPersonMonth: handleOpenPersonMonth,
-						onOpenAssignModalForPerson: (personId) => setAssignModalState({
-							isOpen: true,
-							personId
-						}),
-						onDeleteAllocation: handleDeleteAllocation,
-						onEditPerson: (person) => {
-							setPersonToEdit(person);
+						onYearChange: (year) => setAppState((prev) => ({
+							...prev,
+							selectedYear: year
+						})),
+						onOpenManageYearsModal: () => setIsManageYearsOpen(true),
+						overtimeCount: kpis.totalPersonMonthsOverbooked,
+						onOpenOvertimeDrawer: () => setIsOvertimeDrawerOpen(true),
+						onOpenAssignModal: () => setAssignModalState({ isOpen: true }),
+						onOpenAddPersonModal: () => {
+							setPersonToEdit(null);
 							setIsAddPersonOpen(true);
 						},
-						onEditProject: (project) => {
-							setProjectToEdit(project);
-							setClientToEdit(null);
-							setIsAddProjectOpen(true);
-						},
-						onDeletePerson: (personId) => {
-							const found = people.find((p) => p.id === personId);
-							if (found) setPersonToDelete(found);
-						},
-						onUpdatePersonNotes: handleUpdatePersonNotes,
-						onUpdatePersonEmployment: handleUpdatePersonEmployment,
-						onUpdateAllocationNotes: handleUpdateAllocationNotes,
-						peopleSort: filters.peopleSort || "default",
-						onTogglePeopleSort: handleTogglePeopleSort
-					}),
-					viewMode === "clients" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClientProjectMatrixView, {
-						clients: sortedClients,
-						projects: filteredProjects,
-						people,
-						allocations,
-						leaves,
-						selectedYear,
-						expandedProjectIds,
-						onToggleProjectExpand: handleToggleProjectExpand,
-						onOpenCellEditor: (personId, projectId, monthIndex) => setActiveCellEditor({
-							personId,
-							projectId,
-							monthIndex
-						}),
-						onOpenAssignModalForProject: (projectId) => setAssignModalState({
-							isOpen: true,
-							projectId
-						}),
-						onDeleteAllocation: handleDeleteAllocation,
-						onEditClient: (client) => {
-							setClientToEdit(client);
+						onOpenAddProjectModal: () => {
 							setProjectToEdit(null);
-							setIsAddProjectOpen(true);
-						},
-						onEditProject: (project) => {
-							setProjectToEdit(project);
 							setClientToEdit(null);
 							setIsAddProjectOpen(true);
 						},
-						onEditPerson: (person) => {
-							setPersonToEdit(person);
-							setIsAddPersonOpen(true);
+						onOpenAddLeaveModal: () => setLeaveModalState({ isOpen: true }),
+						onOpenExportModal: () => {
+							setExportModalScope("all");
+							setIsExportModalOpen(true);
 						},
-						onUpdateProjectNotes: handleUpdateProjectNotes,
-						onUpdateAllocationNotes: handleUpdateAllocationNotes,
-						clientSort: filters.clientSort || "default",
-						onToggleClientSort: handleToggleClientSort
+						isDarkMode,
+						onToggleDarkMode: () => setIsDarkMode((d) => !d),
+						currentUser,
+						onOpenChangeCredentialsModal: () => setIsChangeCredentialsOpen(true),
+						onLogout: () => {
+							try {
+								sessionStorage.removeItem("allocat_auth_user");
+							} catch {}
+							setCurrentUser(null);
+						}
 					}),
-					viewMode === "availability" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvailabilityMatrixView, {
-						people: filteredPeople,
-						allocations,
-						leaves,
-						selectedYear,
-						expandedPersonIds,
-						onTogglePersonExpand: handleTogglePersonExpand,
-						onOpenAddLeaveForPerson: (personId, monthIndex) => setLeaveModalState({
-							isOpen: true,
-							personId,
-							monthIndex
-						}),
-						onDeleteLeave: handleDeleteLeave,
-						onEditPerson: (person) => {
-							setPersonToEdit(person);
-							setIsAddPersonOpen(true);
-						},
-						onDeletePerson: (personId) => {
-							const found = people.find((p) => p.id === personId);
-							if (found) setPersonToDelete(found);
-						},
-						onUpdatePersonNotes: handleUpdatePersonNotes,
-						onUpdatePersonEmployment: handleUpdatePersonEmployment,
-						onUpdateLeaveNotes: handleUpdateLeaveNotes,
-						peopleSort: filters.peopleSort || "default",
-						onTogglePeopleSort: handleTogglePeopleSort
-					}),
-					viewMode === "bench" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BenchMatrixView, {
-						people: filteredPeople,
-						projects,
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toolbar, {
+						viewMode,
+						filters,
+						onFilterChange: (partial) => setFilters((prev) => ({
+							...prev,
+							...partial
+						})),
+						departments,
 						clients: sortedClients,
-						allocations,
-						leaves,
+						onOpenManageDepartmentsModal: () => setIsManageDepartmentsOpen(true),
+						kpis,
+						isAllExpanded,
+						onToggleExpandAll: handleToggleExpandAll,
 						selectedYear,
-						onOpenAssignModalForPerson: (personId, monthIndex) => setAssignModalState({
-							isOpen: true,
-							personId,
-							monthIndex
-						}),
-						onEditPerson: (person) => {
-							setPersonToEdit(person);
-							setIsAddPersonOpen(true);
+						onQuickExportCurrentViewCSV: () => {
+							const dateStr = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+							if (viewMode === "people") triggerFileDownload(generatePeopleViewCSV(appState, filteredPeople), `allocat-by-people-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
+							else if (viewMode === "clients") triggerFileDownload(generateClientsViewCSV(appState, filteredProjects), `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
+							else if (viewMode === "availability") triggerFileDownload(generateAvailabilityViewCSV(appState, filteredPeople), `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
+							else if (viewMode === "bench") triggerFileDownload(generateBenchViewCSV(appState, filteredPeople), `allocat-bench-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
 						},
-						onDeletePerson: (personId) => {
-							const found = people.find((p) => p.id === personId);
-							if (found) setPersonToDelete(found);
-						},
-						onUpdatePersonNotes: handleUpdatePersonNotes,
-						onUpdatePersonEmployment: handleUpdatePersonEmployment,
-						peopleSort: filters.peopleSort || "default",
-						onTogglePeopleSort: handleTogglePeopleSort
+						onOpenImportExportForCurrentView: () => {
+							setExportModalScope(viewMode);
+							setIsExportModalOpen(true);
+						}
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
+						className: "flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden",
+						children: [
+							viewMode === "people" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PeopleMatrixView, {
+								people: filteredPeople,
+								clients: sortedClients,
+								projects,
+								allocations,
+								leaves,
+								selectedYear,
+								expandedPersonIds,
+								onTogglePersonExpand: handleTogglePersonExpand,
+								onOpenCellEditor: (personId, projectId, monthIndex) => setActiveCellEditor({
+									personId,
+									projectId,
+									monthIndex
+								}),
+								onOpenPersonMonth: handleOpenPersonMonth,
+								onOpenAssignModalForPerson: (personId) => setAssignModalState({
+									isOpen: true,
+									personId
+								}),
+								onDeleteAllocation: handleDeleteAllocation,
+								onEditPerson: (person) => {
+									setPersonToEdit(person);
+									setIsAddPersonOpen(true);
+								},
+								onEditProject: (project) => {
+									setProjectToEdit(project);
+									setClientToEdit(null);
+									setIsAddProjectOpen(true);
+								},
+								onDeletePerson: (personId) => {
+									const found = people.find((p) => p.id === personId);
+									if (found) setPersonToDelete(found);
+								},
+								onUpdatePersonNotes: handleUpdatePersonNotes,
+								onUpdatePersonEmployment: handleUpdatePersonEmployment,
+								onUpdateAllocationNotes: handleUpdateAllocationNotes,
+								peopleSort: filters.peopleSort || "default",
+								onTogglePeopleSort: handleTogglePeopleSort
+							}),
+							viewMode === "clients" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClientProjectMatrixView, {
+								clients: sortedClients,
+								projects: filteredProjects,
+								people,
+								allocations,
+								leaves,
+								selectedYear,
+								expandedProjectIds,
+								onToggleProjectExpand: handleToggleProjectExpand,
+								onOpenCellEditor: (personId, projectId, monthIndex) => setActiveCellEditor({
+									personId,
+									projectId,
+									monthIndex
+								}),
+								onOpenAssignModalForProject: (projectId) => setAssignModalState({
+									isOpen: true,
+									projectId
+								}),
+								onDeleteAllocation: handleDeleteAllocation,
+								onEditClient: (client) => {
+									setClientToEdit(client);
+									setProjectToEdit(null);
+									setIsAddProjectOpen(true);
+								},
+								onEditProject: (project) => {
+									setProjectToEdit(project);
+									setClientToEdit(null);
+									setIsAddProjectOpen(true);
+								},
+								onEditPerson: (person) => {
+									setPersonToEdit(person);
+									setIsAddPersonOpen(true);
+								},
+								onUpdateProjectNotes: handleUpdateProjectNotes,
+								onUpdateAllocationNotes: handleUpdateAllocationNotes,
+								clientSort: filters.clientSort || "default",
+								onToggleClientSort: handleToggleClientSort
+							}),
+							viewMode === "availability" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvailabilityMatrixView, {
+								people: filteredPeople,
+								allocations,
+								leaves,
+								selectedYear,
+								expandedPersonIds,
+								onTogglePersonExpand: handleTogglePersonExpand,
+								onOpenAddLeaveForPerson: (personId, monthIndex) => setLeaveModalState({
+									isOpen: true,
+									personId,
+									monthIndex
+								}),
+								onDeleteLeave: handleDeleteLeave,
+								onEditPerson: (person) => {
+									setPersonToEdit(person);
+									setIsAddPersonOpen(true);
+								},
+								onDeletePerson: (personId) => {
+									const found = people.find((p) => p.id === personId);
+									if (found) setPersonToDelete(found);
+								},
+								onUpdatePersonNotes: handleUpdatePersonNotes,
+								onUpdatePersonEmployment: handleUpdatePersonEmployment,
+								onUpdateLeaveNotes: handleUpdateLeaveNotes,
+								peopleSort: filters.peopleSort || "default",
+								onTogglePeopleSort: handleTogglePeopleSort
+							}),
+							viewMode === "bench" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BenchMatrixView, {
+								people: filteredPeople,
+								projects,
+								clients: sortedClients,
+								allocations,
+								leaves,
+								selectedYear,
+								onOpenAssignModalForPerson: (personId, monthIndex) => setAssignModalState({
+									isOpen: true,
+									personId,
+									monthIndex
+								}),
+								onEditPerson: (person) => {
+									setPersonToEdit(person);
+									setIsAddPersonOpen(true);
+								},
+								onDeletePerson: (personId) => {
+									const found = people.find((p) => p.id === personId);
+									if (found) setPersonToDelete(found);
+								},
+								onUpdatePersonNotes: handleUpdatePersonNotes,
+								onUpdatePersonEmployment: handleUpdatePersonEmployment,
+								peopleSort: filters.peopleSort || "default",
+								onTogglePeopleSort: handleTogglePeopleSort
+							})
+						]
 					})
 				]
 			}),
@@ -20083,6 +20615,19 @@ function App() {
 				initialScope: exportModalScope,
 				onImportState: (newState) => setAppState(newState),
 				onResetToDefault: () => setAppState(resetAppState())
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChangeCredentialsModal, {
+				isOpen: isChangeCredentialsOpen,
+				onClose: () => setIsChangeCredentialsOpen(false),
+				currentCredentials: authCredentials,
+				onSaveCredentials: (newCreds) => {
+					saveAuthCredentials(newCreds);
+					setAuthCredentials(newCreds);
+					setCurrentUser(newCreds.username);
+					try {
+						sessionStorage.setItem("allocat_auth_user", newCreds.username);
+					} catch {}
+				}
 			})
 		]
 	});

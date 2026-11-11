@@ -3,6 +3,7 @@ import {
   UserCheck,
   Plus,
   Trash2,
+  Pencil,
   Filter,
   MessageSquare
 } from 'lucide-react';
@@ -28,6 +29,7 @@ interface BenchMatrixViewProps {
   leaves: LeaveEntry[];
   selectedYear: number;
   onOpenAssignModalForPerson: (personId: string, monthIndex?: number) => void;
+  onEditPerson?: (person: Person) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
   onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
@@ -39,6 +41,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
   leaves,
   selectedYear,
   onOpenAssignModalForPerson,
+  onEditPerson,
   onDeletePerson,
   onUpdatePersonNotes,
   onUpdatePersonEmployment
@@ -184,16 +187,27 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         <span className="font-mono text-xs font-bold px-1.5 py-0.5 rounded bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                           {summary.annualAverageBenchPct}% free
                         </span>
+
+                        {onEditPerson && (
+                          <button
+                            type="button"
+                            onClick={() => onEditPerson(person)}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer"
+                            title={`Edit ${person.name}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
 
                         {onDeletePerson && (
                           <button
                             type="button"
                             onClick={() => onDeletePerson(person.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-all cursor-pointer"
                             title={`Remove ${person.name}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />

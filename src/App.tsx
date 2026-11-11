@@ -79,7 +79,10 @@ export function App() {
     monthIndex?: number;
   }>({ isOpen: false });
   const [isAddPersonOpen, setIsAddPersonOpen] = useState(false);
+  const [personToEdit, setPersonToEdit] = useState<Person | null>(null);
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+  const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
   const [leaveModalState, setLeaveModalState] = useState<{
     isOpen: boolean;
     personId?: string;
@@ -411,6 +414,13 @@ export function App() {
     setExpandedPersonIds((prev) => new Set(prev).add(newPerson.id));
   };
 
+  const handleUpdatePerson = (updatedPerson: Person) => {
+    setAppState((prev) => ({
+      ...prev,
+      people: prev.people.map((p) => (p.id === updatedPerson.id ? updatedPerson : p))
+    }));
+  };
+
   const handleDeletePerson = (personId: string) => {
     setAppState((prev) => ({
       ...prev,
@@ -449,6 +459,60 @@ export function App() {
         projects: [...prev.projects, createdProject]
       };
     });
+  };
+
+  const handleUpdateProject = (
+    updatedProject: Project,
+    updatedClient?: Client,
+    newClientData?: Omit<Client, 'id'>
+  ) => {
+    setAppState((prev) => {
+      let targetClientId = updatedProject.clientId;
+      let nextClients = [...prev.clients];
+
+      if (newClientData) {
+        const createdClient: Client = {
+          ...newClientData,
+          id: `c-${Date.now()}`
+        };
+        nextClients.push(createdClient);
+        targetClientId = createdClient.id;
+      } else if (updatedClient) {
+        nextClients = nextClients.map((c) =>
+          c.id === updatedClient.id ? updatedClient : c
+        );
+      }
+
+      const finalProject: Project = {
+        ...updatedProject,
+        clientId: targetClientId
+      };
+
+      return {
+        ...prev,
+        clients: nextClients,
+        projects: prev.projects.map((p) =>
+          p.id === finalProject.id ? finalProject : p
+        )
+      };
+    });
+  };
+
+  const handleUpdateClient = (updatedClient: Client) => {
+    setAppState((prev) => ({
+      ...prev,
+      clients: prev.clients.map((c) =>
+        c.id === updatedClient.id ? updatedClient : c
+      )
+    }));
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    setAppState((prev) => ({
+      ...prev,
+      projects: prev.projects.filter((p) => p.id !== projectId),
+      allocations: prev.allocations.filter((a) => a.projectId !== projectId)
+    }));
   };
 
   const handleSaveLeave = (leaveData: Omit<LeaveEntry, 'id'>) => {
@@ -625,8 +689,15 @@ export function App() {
         overtimeCount={kpis.totalPersonMonthsOverbooked}
         onOpenOvertimeDrawer={() => setIsOvertimeDrawerOpen(true)}
         onOpenAssignModal={() => setAssignModalState({ isOpen: true })}
-        onOpenAddPersonModal={() => setIsAddPersonOpen(true)}
-        onOpenAddProjectModal={() => setIsAddProjectOpen(true)}
+        onOpenAddPersonModal={() => {
+          setPersonToEdit(null);
+          setIsAddPersonOpen(true);
+        }}
+        onOpenAddProjectModal={() => {
+          setProjectToEdit(null);
+          setClientToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
         onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
         onOpenExportModal={() => {
           setExportModalScope('all');
@@ -704,6 +775,15 @@ export function App() {
               setAssignModalState({ isOpen: true, personId })
             }
             onDeleteAllocation={handleDeleteAllocation}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
+            onEditProject={(project) => {
+              setProjectToEdit(project);
+              setClientToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
             onDeletePerson={(personId) => {
               const found = people.find((p) => p.id === personId);
               if (found) setPersonToDelete(found);
@@ -731,6 +811,20 @@ export function App() {
               setAssignModalState({ isOpen: true, projectId })
             }
             onDeleteAllocation={handleDeleteAllocation}
+            onEditClient={(client) => {
+              setClientToEdit(client);
+              setProjectToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditProject={(project) => {
+              setProjectToEdit(project);
+              setClientToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
             onUpdateProjectNotes={handleUpdateProjectNotes}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
           />
@@ -748,6 +842,10 @@ export function App() {
               setLeaveModalState({ isOpen: true, personId, monthIndex })
             }
             onDeleteLeave={handleDeleteLeave}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
             onDeletePerson={(personId) => {
               const found = people.find((p) => p.id === personId);
               if (found) setPersonToDelete(found);
@@ -769,6 +867,10 @@ export function App() {
             onOpenAssignModalForPerson={(personId, monthIndex) =>
               setAssignModalState({ isOpen: true, personId, monthIndex })
             }
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
             onDeletePerson={(personId) => {
               const found = people.find((p) => p.id === personId);
               if (found) setPersonToDelete(found);
@@ -823,16 +925,30 @@ export function App() {
 
       <AddPersonModal
         isOpen={isAddPersonOpen}
-        onClose={() => setIsAddPersonOpen(false)}
+        onClose={() => {
+          setIsAddPersonOpen(false);
+          setPersonToEdit(null);
+        }}
         departments={departments}
+        personToEdit={personToEdit}
         onSavePerson={handleAddPerson}
+        onUpdatePerson={handleUpdatePerson}
       />
 
       <AddClientProjectModal
         isOpen={isAddProjectOpen}
-        onClose={() => setIsAddProjectOpen(false)}
+        onClose={() => {
+          setIsAddProjectOpen(false);
+          setProjectToEdit(null);
+          setClientToEdit(null);
+        }}
         clients={clients}
+        projectToEdit={projectToEdit}
+        clientToEdit={clientToEdit}
         onSaveProject={handleAddProject}
+        onUpdateProject={handleUpdateProject}
+        onUpdateClient={handleUpdateClient}
+        onDeleteProject={handleDeleteProject}
       />
 
       <AddLeaveModal

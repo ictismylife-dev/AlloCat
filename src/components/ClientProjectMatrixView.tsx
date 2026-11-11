@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Building, MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, Building, MessageSquare } from 'lucide-react';
 import {
   MONTH_NAMES,
   Person,
@@ -25,6 +25,9 @@ interface ClientProjectMatrixViewProps {
   onOpenCellEditor: (personId: string, projectId: string, monthIndex: number) => void;
   onOpenAssignModalForProject: (projectId: string) => void;
   onDeleteAllocation: (allocationId: string) => void;
+  onEditClient?: (client: Client) => void;
+  onEditProject?: (project: Project) => void;
+  onEditPerson?: (person: Person) => void;
   onUpdateProjectNotes?: (projectId: string, notes: string) => void;
   onUpdateAllocationNotes?: (allocationId: string, notes: string) => void;
 }
@@ -41,6 +44,9 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
   onOpenCellEditor,
   onOpenAssignModalForProject,
   onDeleteAllocation,
+  onEditClient,
+  onEditProject,
+  onEditPerson,
   onUpdateProjectNotes,
   onUpdateAllocationNotes
 }) => {
@@ -101,7 +107,7 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
         <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
           {clientGroups.map(({ client, projects: clientProjects }) => (
             <React.Fragment key={client.id}>
-              <tr className="bg-slate-100/70 dark:bg-slate-800/60 border-t-2 border-slate-200 dark:border-slate-700">
+              <tr className="group/client bg-slate-100/70 dark:bg-slate-800/60 border-t-2 border-slate-200 dark:border-slate-700">
                 <td
                   colSpan={14}
                   className="py-2 px-4 sticky left-0 z-10 bg-inherit"
@@ -112,6 +118,17 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
                       {client.name}
                     </span>
                     <span className="text-slate-400 text-[11px]">· {client.industry}</span>
+                    {onEditClient && (
+                      <button
+                        type="button"
+                        onClick={() => onEditClient(client)}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all cursor-pointer"
+                        title={`Edit company ${client.name}`}
+                      >
+                        <Pencil className="w-3 h-3" />
+                        <span>Edit Company</span>
+                      </button>
+                    )}
                     <span className="text-[10px] text-slate-500 font-mono ml-auto">
                       {clientProjects.length} {clientProjects.length === 1 ? 'project' : 'projects'}
                     </span>
@@ -165,10 +182,24 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
                             </div>
                           </div>
 
-                          <div className="shrink-0 text-right">
+                          <div className="shrink-0 flex items-center gap-1 text-right">
                             <span className="font-mono text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded tabular-nums">
                               {staffingSummary.avgMonthlyFTE} FTE
                             </span>
+
+                            {onEditProject && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onEditProject(project);
+                                }}
+                                className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer"
+                                title={`Edit project ${project.name}`}
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -261,14 +292,26 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
                                     </div>
                                   </div>
 
-                                  <button
-                                    type="button"
-                                    onClick={() => onDeleteAllocation(alloc.id)}
-                                    className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all"
-                                    title="Unassign person from project"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    {onEditPerson && (
+                                      <button
+                                        type="button"
+                                        onClick={() => onEditPerson(person)}
+                                        className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-all cursor-pointer"
+                                        title={`Edit ${person.name}`}
+                                      >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </button>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => onDeleteAllocation(alloc.id)}
+                                      className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all cursor-pointer"
+                                      title="Unassign person from project"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
                                 </div>
                               </td>
 

@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Plus,
   Trash2,
+  Pencil,
   Calendar,
   AlertTriangle,
   MessageSquare
@@ -30,6 +31,7 @@ interface AvailabilityMatrixViewProps {
   onTogglePersonExpand: (personId: string) => void;
   onOpenAddLeaveForPerson: (personId: string, monthIndex?: number) => void;
   onDeleteLeave: (leaveId: string) => void;
+  onEditPerson?: (person: Person) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
   onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
@@ -45,6 +47,7 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
   onTogglePersonExpand,
   onOpenAddLeaveForPerson,
   onDeleteLeave,
+  onEditPerson,
   onDeletePerson,
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
@@ -174,10 +177,24 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         <span className="font-mono text-[11px] font-semibold px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                           {personLeaves.length} {personLeaves.length === 1 ? 'leave' : 'leaves'}
                         </span>
+
+                        {onEditPerson && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditPerson(person);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer"
+                            title={`Edit ${person.name}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
 
                         {onDeletePerson && (
                           <button
@@ -186,7 +203,7 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
                               e.stopPropagation();
                               onDeletePerson(person.id);
                             }}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all cursor-pointer"
                             title={`Remove ${person.name}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />

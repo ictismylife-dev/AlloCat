@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, MessageSquare } from 'lucide-react';
 import {
   MONTH_NAMES,
   Person,
@@ -27,6 +27,8 @@ interface PeopleMatrixViewProps {
   onOpenPersonMonth?: (personId: string, monthIndex: number) => void;
   onOpenAssignModalForPerson: (personId: string) => void;
   onDeleteAllocation: (allocationId: string) => void;
+  onEditPerson?: (person: Person) => void;
+  onEditProject?: (project: Project) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
   onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
@@ -46,6 +48,8 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
   onOpenPersonMonth,
   onOpenAssignModalForPerson,
   onDeleteAllocation,
+  onEditPerson,
+  onEditProject,
   onDeletePerson,
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
@@ -194,7 +198,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="shrink-0 flex items-center gap-1.5">
+                      <div className="shrink-0 flex items-center gap-1">
                         <span
                           className={`font-mono font-bold text-xs tabular-nums px-1.5 py-0.5 rounded ${
                             getUtilizationColorClass(capacitySummary.annualAverage).badge
@@ -203,6 +207,20 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                           {capacitySummary.annualAverage}%
                         </span>
 
+                        {onEditPerson && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditPerson(person);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer"
+                            title={`Edit ${person.name}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+
                         {onDeletePerson && (
                           <button
                             type="button"
@@ -210,7 +228,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                               e.stopPropagation();
                               onDeletePerson(person.id);
                             }}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all cursor-pointer"
                             title={`Remove ${person.name} from team`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -305,14 +323,26 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                                 </div>
                               </div>
 
-                              <button
-                                type="button"
-                                onClick={() => onDeleteAllocation(alloc.id)}
-                                className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all"
-                                title="Remove assignment"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              <div className="flex items-center gap-1 shrink-0">
+                                {onEditProject && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onEditProject(proj)}
+                                    className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-all cursor-pointer"
+                                    title={`Edit project ${proj.name}`}
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => onDeleteAllocation(alloc.id)}
+                                  className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all cursor-pointer"
+                                  title="Remove assignment"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </div>
                           </td>
 

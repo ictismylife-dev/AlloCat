@@ -13878,7 +13878,7 @@ var CommentCell = ({ value = "", onSave, placeholder = "Add comment...", readOnl
 	});
 };
 // src/components/PeopleMatrixView.tsx
-var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenCellEditor, onOpenPersonMonth, onOpenAssignModalForPerson, onDeleteAllocation, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateAllocationNotes }) => {
+var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenCellEditor, onOpenPersonMonth, onOpenAssignModalForPerson, onDeleteAllocation, onEditPerson, onEditProject, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateAllocationNotes }) => {
 	const getProject = (id) => projects.find((p) => p.id === id);
 	const getClient = (id) => clients.find((c) => c.id === id);
 	if (people.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -14003,20 +14003,33 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 											})
 										]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "shrink-0 flex items-center gap-1.5",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: `font-mono font-bold text-xs tabular-nums px-1.5 py-0.5 rounded ${getUtilizationColorClass(capacitySummary.annualAverage).badge}`,
-											children: [capacitySummary.annualAverage, "%"]
-										}), onDeletePerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-											type: "button",
-											onClick: (e) => {
-												e.stopPropagation();
-												onDeletePerson(person.id);
-											},
-											className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all",
-											title: `Remove ${person.name} from team`,
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
-										})]
+										className: "shrink-0 flex items-center gap-1",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: `font-mono font-bold text-xs tabular-nums px-1.5 py-0.5 rounded ${getUtilizationColorClass(capacitySummary.annualAverage).badge}`,
+												children: [capacitySummary.annualAverage, "%"]
+											}),
+											onEditPerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: (e) => {
+													e.stopPropagation();
+													onEditPerson(person);
+												},
+												className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer",
+												title: `Edit ${person.name}`,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3.5 h-3.5" })
+											}),
+											onDeletePerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: (e) => {
+													e.stopPropagation();
+													onDeletePerson(person.id);
+												},
+												className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all cursor-pointer",
+												title: `Remove ${person.name} from team`,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+											})
+										]
 									})]
 								})
 							}),
@@ -14094,12 +14107,21 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 													]
 												})]
 											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-											type: "button",
-											onClick: () => onDeleteAllocation(alloc.id),
-											className: "opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all",
-											title: "Remove assignment",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-1 shrink-0",
+											children: [onEditProject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: () => onEditProject(proj),
+												className: "opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-all cursor-pointer",
+												title: `Edit project ${proj.name}`,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3.5 h-3.5" })
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: () => onDeleteAllocation(alloc.id),
+												className: "opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all cursor-pointer",
+												title: "Remove assignment",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+											})]
 										})]
 									})
 								}),
@@ -14151,7 +14173,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 	});
 };
 // src/components/ClientProjectMatrixView.tsx
-var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves = [], selectedYear, expandedProjectIds, onToggleProjectExpand, onOpenCellEditor, onOpenAssignModalForProject, onDeleteAllocation, onUpdateProjectNotes, onUpdateAllocationNotes }) => {
+var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves = [], selectedYear, expandedProjectIds, onToggleProjectExpand, onOpenCellEditor, onOpenAssignModalForProject, onDeleteAllocation, onEditClient, onEditProject, onEditPerson, onUpdateProjectNotes, onUpdateAllocationNotes }) => {
 	const getPerson = (id) => people.find((p) => p.id === id);
 	if (projects.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 m-6",
@@ -14207,7 +14229,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 			}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tbody", {
 				className: "divide-y divide-slate-200 dark:divide-slate-800 text-xs",
 				children: clientGroups.map(({ client, projects: clientProjects }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("tr", {
-					className: "bg-slate-100/70 dark:bg-slate-800/60 border-t-2 border-slate-200 dark:border-slate-700",
+					className: "group/client bg-slate-100/70 dark:bg-slate-800/60 border-t-2 border-slate-200 dark:border-slate-700",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
 						colSpan: 14,
 						className: "py-2 px-4 sticky left-0 z-10 bg-inherit",
@@ -14222,6 +14244,13 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 									className: "text-slate-400 text-[11px]",
 									children: ["· ", client.industry]
+								}),
+								onEditClient && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: () => onEditClient(client),
+									className: "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all cursor-pointer",
+									title: `Edit company ${client.name}`,
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Edit Company" })]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 									className: "text-[10px] text-slate-500 font-mono ml-auto",
@@ -14275,12 +14304,21 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 												})]
 											})
 										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "shrink-0 text-right",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "shrink-0 flex items-center gap-1 text-right",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 											className: "font-mono text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded tabular-nums",
 											children: [staffingSummary.avgMonthlyFTE, " FTE"]
-										})
+										}), onEditProject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+											type: "button",
+											onClick: (e) => {
+												e.stopPropagation();
+												onEditProject(project);
+											},
+											className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer",
+											title: `Edit project ${project.name}`,
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3.5 h-3.5" })
+										})]
 									})]
 								})
 							}),
@@ -14350,12 +14388,21 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 													]
 												})]
 											})]
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-											type: "button",
-											onClick: () => onDeleteAllocation(alloc.id),
-											className: "opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all",
-											title: "Unassign person from project",
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-1 shrink-0",
+											children: [onEditPerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: () => onEditPerson(person),
+												className: "opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-all cursor-pointer",
+												title: `Edit ${person.name}`,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3.5 h-3.5" })
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: () => onDeleteAllocation(alloc.id),
+												className: "opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all cursor-pointer",
+												title: "Unassign person from project",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+											})]
 										})]
 									})
 								}),
@@ -14416,7 +14463,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 	});
 };
 // src/components/AvailabilityMatrixView.tsx
-var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenAddLeaveForPerson, onDeleteLeave, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateLeaveNotes }) => {
+var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenAddLeaveForPerson, onDeleteLeave, onEditPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateLeaveNotes }) => {
 	if (people.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 m-6",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
@@ -14521,24 +14568,37 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 											})
 										]
 									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center gap-1.5 shrink-0",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-											className: "font-mono text-[11px] font-semibold px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
-											children: [
-												personLeaves.length,
-												" ",
-												personLeaves.length === 1 ? "leave" : "leaves"
-											]
-										}), onDeletePerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-											type: "button",
-											onClick: (e) => {
-												e.stopPropagation();
-												onDeletePerson(person.id);
-											},
-											className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all",
-											title: `Remove ${person.name}`,
-											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
-										})]
+										className: "flex items-center gap-1 shrink-0",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "font-mono text-[11px] font-semibold px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
+												children: [
+													personLeaves.length,
+													" ",
+													personLeaves.length === 1 ? "leave" : "leaves"
+												]
+											}),
+											onEditPerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: (e) => {
+													e.stopPropagation();
+													onEditPerson(person);
+												},
+												className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer",
+												title: `Edit ${person.name}`,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3.5 h-3.5" })
+											}),
+											onDeletePerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+												type: "button",
+												onClick: (e) => {
+													e.stopPropagation();
+													onDeletePerson(person.id);
+												},
+												className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all cursor-pointer",
+												title: `Remove ${person.name}`,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+											})
+										]
 									})]
 								})
 							}),
@@ -14673,7 +14733,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 	});
 };
 // src/components/BenchMatrixView.tsx
-var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssignModalForPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment }) => {
+var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssignModalForPerson, onEditPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment }) => {
 	const [onlyWithBench, setOnlyWithBench] = (0, import_react.useState)(false);
 	const [minBenchPct, setMinBenchPct] = (0, import_react.useState)(20);
 	const summaries = people.map((p) => getPersonBenchSummary(p, selectedYear, allocations, leaves)).filter((s) => {
@@ -14811,17 +14871,27 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 												})]
 											})]
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "flex items-center gap-1.5 shrink-0",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "font-mono text-xs font-bold px-1.5 py-0.5 rounded bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800",
-												children: [summary.annualAverageBenchPct, "% free"]
-											}), onDeletePerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-												type: "button",
-												onClick: () => onDeletePerson(person.id),
-												className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-all",
-												title: `Remove ${person.name}`,
-												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
-											})]
+											className: "flex items-center gap-1 shrink-0",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+													className: "font-mono text-xs font-bold px-1.5 py-0.5 rounded bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800",
+													children: [summary.annualAverageBenchPct, "% free"]
+												}),
+												onEditPerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+													type: "button",
+													onClick: () => onEditPerson(person),
+													className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer",
+													title: `Edit ${person.name}`,
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-3.5 h-3.5" })
+												}),
+												onDeletePerson && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+													type: "button",
+													onClick: () => onDeletePerson(person.id),
+													className: "opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-all cursor-pointer",
+													title: `Remove ${person.name}`,
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+												})
+											]
 										})]
 									})
 								}),
@@ -15559,9 +15629,12 @@ var AVATAR_COLORS$1 = [
 	"#0284C7",
 	"#DB2777",
 	"#4F46E5",
-	"#0891B2"
+	"#0891B2",
+	"#16A34A",
+	"#EA580C"
 ];
-var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
+var AddPersonModal = ({ isOpen, onClose, departments, personToEdit, onSavePerson, onUpdatePerson }) => {
+	const isEditing = Boolean(personToEdit);
 	const [firstName, setFirstName] = (0, import_react.useState)("");
 	const [lastName, setLastName] = (0, import_react.useState)("");
 	const [role, setRole] = (0, import_react.useState)("");
@@ -15569,7 +15642,38 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 	const [employmentType, setEmploymentType] = (0, import_react.useState)("Internal");
 	const [email, setEmail] = (0, import_react.useState)("");
 	const [maxCapacityPercent, setMaxCapacityPercent] = (0, import_react.useState)(100);
+	const [avatarColor, setAvatarColor] = (0, import_react.useState)(AVATAR_COLORS$1[0]);
 	const [notes, setNotes] = (0, import_react.useState)("");
+	(0, import_react.useEffect)(() => {
+		if (!isOpen) return;
+		if (personToEdit) {
+			const rawFull = (personToEdit.name || "").trim();
+			const parts = rawFull ? rawFull.split(/\s+/) : [];
+			setFirstName(personToEdit.firstName || parts[0] || "");
+			setLastName(personToEdit.lastName !== void 0 && personToEdit.lastName !== "" ? personToEdit.lastName : parts.length > 1 ? parts.slice(1).join(" ") : "");
+			setRole(personToEdit.role || "");
+			setDepartment(personToEdit.department || departments[0] || "Engineering");
+			setEmploymentType(personToEdit.employmentType || "Internal");
+			setEmail(personToEdit.email || "");
+			setMaxCapacityPercent(personToEdit.maxCapacityPercent ?? 100);
+			setAvatarColor(personToEdit.avatarColor || AVATAR_COLORS$1[0]);
+			setNotes(personToEdit.notes || "");
+		} else {
+			setFirstName("");
+			setLastName("");
+			setRole("");
+			setDepartment(departments[0] || "Engineering");
+			setEmploymentType("Internal");
+			setEmail("");
+			setMaxCapacityPercent(100);
+			setAvatarColor(AVATAR_COLORS$1[Math.floor(Math.random() * AVATAR_COLORS$1.length)]);
+			setNotes("");
+		}
+	}, [
+		isOpen,
+		personToEdit,
+		departments
+	]);
 	if (!isOpen) return null;
 	const getInitials = (first, last) => {
 		const f = first.trim();
@@ -15584,26 +15688,34 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 		const cleanLast = lastName.trim();
 		if (!cleanFirst || !cleanLast || !role.trim()) return;
 		const fullName = `${cleanFirst} ${cleanLast}`.trim();
-		const color = AVATAR_COLORS$1[Math.floor(Math.random() * AVATAR_COLORS$1.length)];
-		onSavePerson({
+		const computedEmail = email.trim() || `${cleanFirst.toLowerCase()}.${cleanLast.toLowerCase().replace(/\s+/g, "")}@company.internal`;
+		if (isEditing && personToEdit && onUpdatePerson) onUpdatePerson({
+			...personToEdit,
 			firstName: cleanFirst,
 			lastName: cleanLast,
 			name: fullName,
 			role: role.trim(),
 			department,
 			employmentType,
-			email: email.trim() || `${cleanFirst.toLowerCase()}.${cleanLast.toLowerCase().replace(/\s+/g, "")}@company.internal`,
+			email: computedEmail,
 			maxCapacityPercent,
-			avatarColor: color,
+			avatarColor,
 			initials: getInitials(cleanFirst, cleanLast),
 			notes: notes.trim() || void 0
 		});
-		setFirstName("");
-		setLastName("");
-		setRole("");
-		setEmploymentType("Internal");
-		setEmail("");
-		setNotes("");
+		else onSavePerson({
+			firstName: cleanFirst,
+			lastName: cleanLast,
+			name: fullName,
+			role: role.trim(),
+			department,
+			employmentType,
+			email: computedEmail,
+			maxCapacityPercent,
+			avatarColor,
+			initials: getInitials(cleanFirst, cleanLast),
+			notes: notes.trim() || void 0
+		});
 		onClose();
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -15616,17 +15728,17 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 					className: "flex items-center gap-2.5",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserPlus, { className: "w-4 h-4" })
+						children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserPlus, { className: "w-4 h-4" })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 						className: "text-sm font-bold text-slate-900 dark:text-slate-100",
-						children: "Add Team Member"
+						children: isEditing ? "Edit Team Member" : "Add Team Member"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-xs text-slate-500 dark:text-slate-400",
-						children: "Add a new person to AlloCat"
+						children: isEditing ? `Update details for ${personToEdit?.name}` : "Add a new person to AlloCat"
 					})] })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 					onClick: onClose,
-					className: "p-1 text-slate-400 hover:text-slate-600 rounded-md",
+					className: "p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md cursor-pointer",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "w-4 h-4" })
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
@@ -15697,6 +15809,16 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 					})] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Email (Optional)"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+						type: "email",
+						placeholder: "e.g., alex.rivera@company.internal",
+						value: email,
+						onChange: (e) => setEmail(e.target.value),
+						className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
 						children: "Comments / Staffing Notes (Optional)"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 						type: "text",
@@ -15705,35 +15827,52 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 						onChange: (e) => setNotes(e.target.value),
 						className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
 					})] }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center justify-between mb-1",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-							className: "font-semibold text-slate-700 dark:text-slate-300",
-							children: "Max Monthly Capacity"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-							className: "font-mono font-bold text-blue-600 dark:text-blue-400",
-							children: [maxCapacityPercent, "%"]
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center justify-between gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1.5",
+							children: "Avatar Color"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex items-center gap-1.5",
+							children: AVATAR_COLORS$1.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: () => setAvatarColor(c),
+								className: `w-5 h-5 rounded-full transition-transform cursor-pointer ${avatarColor === c ? "ring-2 ring-offset-1 ring-blue-500 scale-110" : "opacity-80 hover:opacity-100"}`,
+								style: { backgroundColor: c }
+							}, c))
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex-1 max-w-[170px]",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center justify-between mb-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+									className: "font-semibold text-slate-700 dark:text-slate-300",
+									children: "Max Capacity"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "font-mono font-bold text-blue-600 dark:text-blue-400",
+									children: [maxCapacityPercent, "%"]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								type: "range",
+								min: 20,
+								max: 100,
+								step: 10,
+								value: maxCapacityPercent,
+								onChange: (e) => setMaxCapacityPercent(Number(e.target.value)),
+								className: "w-full accent-blue-600 cursor-pointer"
+							})]
 						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-						type: "range",
-						min: 20,
-						max: 100,
-						step: 10,
-						value: maxCapacityPercent,
-						onChange: (e) => setMaxCapacityPercent(Number(e.target.value)),
-						className: "w-full accent-blue-600 cursor-pointer"
-					})] }),
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
 							onClick: onClose,
-							className: "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800",
+							className: "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer",
 							children: "Cancel"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "submit",
-							className: "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserPlus, { className: "w-3.5 h-3.5" }), "Add Member"]
+							className: "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer",
+							children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Save Changes" })] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserPlus, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Add Member" })] })
 						})]
 					})
 				]
@@ -15749,36 +15888,157 @@ var PROJECT_COLORS = [
 	"#7C3AED",
 	"#DB2777",
 	"#0284C7",
-	"#4F46E5"
+	"#4F46E5",
+	"#10B981",
+	"#EA580C"
 ];
-var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
+var AddClientProjectModal = ({ isOpen, onClose, clients, projectToEdit, clientToEdit, onSaveProject, onUpdateProject, onUpdateClient, onDeleteProject }) => {
+	const isEditingClientOnly = Boolean(clientToEdit && !projectToEdit);
+	const isEditingProject = Boolean(projectToEdit);
 	const [clientMode, setClientMode] = (0, import_react.useState)("existing");
 	const [clientId, setClientId] = (0, import_react.useState)(clients[0]?.id || "");
-	const [newClientName, setNewClientName] = (0, import_react.useState)("");
-	const [newClientIndustry, setNewClientIndustry] = (0, import_react.useState)("");
+	const [clientName, setClientName] = (0, import_react.useState)("");
+	const [clientIndustry, setClientIndustry] = (0, import_react.useState)("");
+	const [clientStatus, setClientStatus] = (0, import_react.useState)("active");
+	const [clientColor, setClientColor] = (0, import_react.useState)(PROJECT_COLORS[0]);
 	const [name, setName] = (0, import_react.useState)("");
 	const [code, setCode] = (0, import_react.useState)("");
+	const [projectStatus, setProjectStatus] = (0, import_react.useState)("active");
 	const [color, setColor] = (0, import_react.useState)(PROJECT_COLORS[0]);
 	const [billable, setBillable] = (0, import_react.useState)(true);
 	const [notes, setNotes] = (0, import_react.useState)("");
+	(0, import_react.useEffect)(() => {
+		if (!isOpen) return;
+		if (clientToEdit && !projectToEdit) {
+			setClientId(clientToEdit.id);
+			setClientName(clientToEdit.name);
+			setClientIndustry(clientToEdit.industry);
+			setClientStatus(clientToEdit.status || "active");
+			setClientColor(clientToEdit.color || PROJECT_COLORS[0]);
+			return;
+		}
+		if (projectToEdit) {
+			const parentClient = clients.find((c) => c.id === projectToEdit.clientId) || clients[0];
+			setClientMode("existing");
+			setClientId(projectToEdit.clientId || parentClient?.id || "");
+			setClientName(parentClient?.name || "");
+			setClientIndustry(parentClient?.industry || "");
+			setClientStatus(parentClient?.status || "active");
+			setClientColor(parentClient?.color || PROJECT_COLORS[0]);
+			setName(projectToEdit.name);
+			setCode(projectToEdit.code);
+			setProjectStatus(projectToEdit.status || "active");
+			setColor(projectToEdit.color || PROJECT_COLORS[0]);
+			setBillable(projectToEdit.billable ?? true);
+			setNotes(projectToEdit.notes || "");
+			return;
+		}
+		const firstClient = clients[0];
+		setClientMode(firstClient ? "existing" : "new");
+		setClientId(firstClient?.id || "");
+		setClientName("");
+		setClientIndustry("");
+		setClientStatus("active");
+		setClientColor(PROJECT_COLORS[0]);
+		setName("");
+		setCode("");
+		setProjectStatus("active");
+		setColor(PROJECT_COLORS[0]);
+		setBillable(true);
+		setNotes("");
+	}, [
+		isOpen,
+		projectToEdit,
+		clientToEdit,
+		clients
+	]);
 	if (!isOpen) return null;
+	const handleSelectExistingClientChange = (newId) => {
+		setClientId(newId);
+		const found = clients.find((c) => c.id === newId);
+		if (found) {
+			setClientName(found.name);
+			setClientIndustry(found.industry);
+			setClientStatus(found.status);
+			setClientColor(found.color);
+		}
+	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		if (isEditingClientOnly && clientToEdit && onUpdateClient) {
+			if (!clientName.trim()) return;
+			onUpdateClient({
+				...clientToEdit,
+				name: clientName.trim(),
+				industry: clientIndustry.trim() || "Technology",
+				status: clientStatus,
+				color: clientColor
+			});
+			onClose();
+			return;
+		}
 		if (!name.trim()) return;
 		const generatedCode = code.trim() || name.trim().split(/\s+/).map((w) => w[0]).join("").toUpperCase().slice(0, 6);
+		if (isEditingProject && projectToEdit && onUpdateProject) {
+			if (clientMode === "new") {
+				if (!clientName.trim()) return;
+				onUpdateProject({
+					...projectToEdit,
+					name: name.trim(),
+					code: generatedCode,
+					status: projectStatus,
+					color,
+					billable,
+					notes: notes.trim() || void 0
+				}, void 0, {
+					name: clientName.trim(),
+					industry: clientIndustry.trim() || "Technology",
+					color,
+					status: "active"
+				});
+			} else if (clientMode === "editCurrent") {
+				const existingClient = clients.find((c) => c.id === clientId);
+				const updatedClientObj = existingClient && clientName.trim() ? {
+					...existingClient,
+					name: clientName.trim(),
+					industry: clientIndustry.trim() || existingClient.industry
+				} : void 0;
+				onUpdateProject({
+					...projectToEdit,
+					clientId,
+					name: name.trim(),
+					code: generatedCode,
+					status: projectStatus,
+					color,
+					billable,
+					notes: notes.trim() || void 0
+				}, updatedClientObj);
+			} else onUpdateProject({
+				...projectToEdit,
+				clientId,
+				name: name.trim(),
+				code: generatedCode,
+				status: projectStatus,
+				color,
+				billable,
+				notes: notes.trim() || void 0
+			});
+			onClose();
+			return;
+		}
 		if (clientMode === "new") {
-			if (!newClientName.trim()) return;
+			if (!clientName.trim()) return;
 			onSaveProject({
 				clientId: "NEW",
 				name: name.trim(),
 				code: generatedCode,
-				status: "active",
+				status: projectStatus,
 				color,
 				billable,
 				notes: notes.trim() || void 0
 			}, {
-				name: newClientName.trim(),
-				industry: newClientIndustry.trim() || "Technology",
+				name: clientName.trim(),
+				industry: clientIndustry.trim() || "Technology",
 				color,
 				status: "active"
 			});
@@ -15786,14 +16046,11 @@ var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
 			clientId,
 			name: name.trim(),
 			code: generatedCode,
-			status: "active",
+			status: projectStatus,
 			color,
 			billable,
 			notes: notes.trim() || void 0
 		});
-		setName("");
-		setCode("");
-		setNotes("");
 		onClose();
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -15806,45 +16063,124 @@ var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
 					className: "flex items-center gap-2.5",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: "w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-4 h-4" })
+						children: isEditingClientOnly ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "w-4 h-4" }) : isEditingProject ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-4 h-4" })
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 						className: "text-sm font-bold text-slate-900 dark:text-slate-100",
-						children: "Add Client / Project"
+						children: isEditingClientOnly ? "Edit Company / Client" : isEditingProject ? "Edit Company & Project" : "Add Company / Project"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "text-xs text-slate-500 dark:text-slate-400",
-						children: "Create a deliverable project"
+						children: isEditingClientOnly ? `Update company details for ${clientToEdit?.name}` : isEditingProject ? `Update project details for ${projectToEdit?.name}` : "Create a deliverable project & client"
 					})] })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 					onClick: onClose,
-					className: "p-1 text-slate-400 hover:text-slate-600 rounded-md",
+					className: "p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md cursor-pointer",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "w-4 h-4" })
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
 				onSubmit: handleSubmit,
 				className: "p-5 space-y-4 text-xs",
-				children: [
+				children: [isEditingClientOnly ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Company / Client Name"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+						type: "text",
+						placeholder: "e.g., Apex Financial Technologies",
+						value: clientName,
+						onChange: (e) => setClientName(e.target.value),
+						className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+						required: true,
+						autoFocus: true
+					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Industry"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: "text",
+							placeholder: "e.g., Fintech & Capital Markets",
+							value: clientIndustry,
+							onChange: (e) => setClientIndustry(e.target.value),
+							className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Company Status"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+							value: clientStatus,
+							onChange: (e) => setClientStatus(e.target.value),
+							className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+									value: "active",
+									children: "Active"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+									value: "lead",
+									children: "Lead / Prospect"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+									value: "completed",
+									children: "Completed"
+								})
+							]
+						})] })]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1.5",
+						children: "Brand Color"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex items-center gap-1.5",
+						children: PROJECT_COLORS.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							type: "button",
+							onClick: () => setClientColor(c),
+							className: `w-5 h-5 rounded-full cursor-pointer ${clientColor === c ? "ring-2 ring-offset-1 ring-blue-500 scale-110" : ""}`,
+							style: { backgroundColor: c }
+						}, c))
+					})] })
+				] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center justify-between mb-1",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 							className: "font-semibold text-slate-700 dark:text-slate-300",
-							children: "Client"
+							children: "Company / Client"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex gap-1",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-								type: "button",
-								onClick: () => setClientMode("existing"),
-								className: `px-2 py-0.5 rounded text-[11px] ${clientMode === "existing" ? "bg-blue-600 text-white font-semibold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`,
-								children: "Existing"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-								type: "button",
-								onClick: () => setClientMode("new"),
-								className: `px-2 py-0.5 rounded text-[11px] ${clientMode === "new" ? "bg-blue-600 text-white font-semibold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`,
-								children: "+ New Client"
-							})]
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+									type: "button",
+									onClick: () => setClientMode("existing"),
+									className: `px-2 py-0.5 rounded text-[11px] cursor-pointer ${clientMode === "existing" ? "bg-blue-600 text-white font-semibold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`,
+									children: "Select Existing"
+								}),
+								isEditingProject && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+									type: "button",
+									onClick: () => {
+										const found = clients.find((c) => c.id === clientId);
+										if (found) {
+											setClientName(found.name);
+											setClientIndustry(found.industry);
+										}
+										setClientMode("editCurrent");
+									},
+									className: `px-2 py-0.5 rounded text-[11px] cursor-pointer ${clientMode === "editCurrent" ? "bg-blue-600 text-white font-semibold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`,
+									children: "Edit Company"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+									type: "button",
+									onClick: () => {
+										setClientName("");
+										setClientIndustry("");
+										setClientMode("new");
+									},
+									className: `px-2 py-0.5 rounded text-[11px] cursor-pointer ${clientMode === "new" ? "bg-blue-600 text-white font-semibold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`,
+									children: "+ New Company"
+								})
+							]
 						})]
 					}), clientMode === "existing" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
 						value: clientId,
-						onChange: (e) => setClientId(e.target.value),
+						onChange: (e) => handleSelectExistingClientChange(e.target.value),
 						className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
 						children: clients.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", {
 							value: c.id,
@@ -15859,16 +16195,16 @@ var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
 						className: "grid grid-cols-2 gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 							type: "text",
-							placeholder: "Client Name",
-							value: newClientName,
-							onChange: (e) => setNewClientName(e.target.value),
+							placeholder: "Company Name",
+							value: clientName,
+							onChange: (e) => setClientName(e.target.value),
 							className: "px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
 							required: true
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 							type: "text",
 							placeholder: "Industry",
-							value: newClientIndustry,
-							onChange: (e) => setNewClientIndustry(e.target.value),
+							value: clientIndustry,
+							onChange: (e) => setClientIndustry(e.target.value),
 							className: "px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
 						})]
 					})] }),
@@ -15898,16 +16234,43 @@ var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
 							className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono"
 						})] })]
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
-						children: "Scope / Deliverable Comment (Optional)"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-						type: "text",
-						placeholder: "e.g., Q3 target launch...",
-						value: notes,
-						onChange: (e) => setNotes(e.target.value),
-						className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
-					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "col-span-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+								className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Scope / Deliverable Comment (Optional)"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								type: "text",
+								placeholder: "e.g., Q3 target launch...",
+								value: notes,
+								onChange: (e) => setNotes(e.target.value),
+								className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Status"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+							value: projectStatus,
+							onChange: (e) => setProjectStatus(e.target.value),
+							className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+									value: "active",
+									children: "Active"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+									value: "planned",
+									children: "Planned"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+									value: "completed",
+									children: "Completed"
+								})
+							]
+						})] })]
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex items-center justify-between",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -15915,7 +16278,7 @@ var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
 							children: PROJECT_COLORS.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 								type: "button",
 								onClick: () => setColor(c),
-								className: `w-5 h-5 rounded-full ${color === c ? "ring-2 ring-offset-1 ring-blue-500 scale-110" : ""}`,
+								className: `w-5 h-5 rounded-full cursor-pointer ${color === c ? "ring-2 ring-offset-1 ring-blue-500 scale-110" : ""}`,
 								style: { backgroundColor: c }
 							}, c))
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
@@ -15930,21 +16293,31 @@ var AddClientProjectModal = ({ isOpen, onClose, clients, onSaveProject }) => {
 								children: "Billable Project"
 							})]
 						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800",
+					})
+				] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: isEditingProject && projectToEdit && onDeleteProject && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						type: "button",
+						onClick: () => {
+							onDeleteProject(projectToEdit.id);
+							onClose();
+						},
+						className: "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-medium cursor-pointer",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Delete Project" })]
+					}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-2",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
 							onClick: onClose,
-							className: "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800",
+							className: "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer",
 							children: "Cancel"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "submit",
-							className: "px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium",
-							children: "Create Project"
+							className: "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer",
+							children: isEditingClientOnly || isEditingProject ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Save Changes" })] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Create Project" })
 						})]
-					})
-				]
+					})]
+				})]
 			})]
 		})
 	});
@@ -18769,7 +19142,10 @@ function App() {
 	const [activeCellEditor, setActiveCellEditor] = (0, import_react.useState)(null);
 	const [assignModalState, setAssignModalState] = (0, import_react.useState)({ isOpen: false });
 	const [isAddPersonOpen, setIsAddPersonOpen] = (0, import_react.useState)(false);
+	const [personToEdit, setPersonToEdit] = (0, import_react.useState)(null);
 	const [isAddProjectOpen, setIsAddProjectOpen] = (0, import_react.useState)(false);
+	const [projectToEdit, setProjectToEdit] = (0, import_react.useState)(null);
+	const [clientToEdit, setClientToEdit] = (0, import_react.useState)(null);
 	const [leaveModalState, setLeaveModalState] = (0, import_react.useState)({ isOpen: false });
 	const [isOvertimeDrawerOpen, setIsOvertimeDrawerOpen] = (0, import_react.useState)(false);
 	const [isManageYearsOpen, setIsManageYearsOpen] = (0, import_react.useState)(false);
@@ -18970,6 +19346,12 @@ function App() {
 		}));
 		setExpandedPersonIds((prev) => new Set(prev).add(newPerson.id));
 	};
+	const handleUpdatePerson = (updatedPerson) => {
+		setAppState((prev) => ({
+			...prev,
+			people: prev.people.map((p) => p.id === updatedPerson.id ? updatedPerson : p)
+		}));
+	};
 	const handleDeletePerson = (personId) => {
 		setAppState((prev) => ({
 			...prev,
@@ -19001,6 +19383,42 @@ function App() {
 				projects: [...prev.projects, createdProject]
 			};
 		});
+	};
+	const handleUpdateProject = (updatedProject, updatedClient, newClientData) => {
+		setAppState((prev) => {
+			let targetClientId = updatedProject.clientId;
+			let nextClients = [...prev.clients];
+			if (newClientData) {
+				const createdClient = {
+					...newClientData,
+					id: `c-${Date.now()}`
+				};
+				nextClients.push(createdClient);
+				targetClientId = createdClient.id;
+			} else if (updatedClient) nextClients = nextClients.map((c) => c.id === updatedClient.id ? updatedClient : c);
+			const finalProject = {
+				...updatedProject,
+				clientId: targetClientId
+			};
+			return {
+				...prev,
+				clients: nextClients,
+				projects: prev.projects.map((p) => p.id === finalProject.id ? finalProject : p)
+			};
+		});
+	};
+	const handleUpdateClient = (updatedClient) => {
+		setAppState((prev) => ({
+			...prev,
+			clients: prev.clients.map((c) => c.id === updatedClient.id ? updatedClient : c)
+		}));
+	};
+	const handleDeleteProject = (projectId) => {
+		setAppState((prev) => ({
+			...prev,
+			projects: prev.projects.filter((p) => p.id !== projectId),
+			allocations: prev.allocations.filter((a) => a.projectId !== projectId)
+		}));
 	};
 	const handleSaveLeave = (leaveData) => {
 		const newLeave = {
@@ -19156,8 +19574,15 @@ function App() {
 				overtimeCount: kpis.totalPersonMonthsOverbooked,
 				onOpenOvertimeDrawer: () => setIsOvertimeDrawerOpen(true),
 				onOpenAssignModal: () => setAssignModalState({ isOpen: true }),
-				onOpenAddPersonModal: () => setIsAddPersonOpen(true),
-				onOpenAddProjectModal: () => setIsAddProjectOpen(true),
+				onOpenAddPersonModal: () => {
+					setPersonToEdit(null);
+					setIsAddPersonOpen(true);
+				},
+				onOpenAddProjectModal: () => {
+					setProjectToEdit(null);
+					setClientToEdit(null);
+					setIsAddProjectOpen(true);
+				},
 				onOpenAddLeaveModal: () => setLeaveModalState({ isOpen: true }),
 				onOpenExportModal: () => {
 					setExportModalScope("all");
@@ -19215,6 +19640,15 @@ function App() {
 							personId
 						}),
 						onDeleteAllocation: handleDeleteAllocation,
+						onEditPerson: (person) => {
+							setPersonToEdit(person);
+							setIsAddPersonOpen(true);
+						},
+						onEditProject: (project) => {
+							setProjectToEdit(project);
+							setClientToEdit(null);
+							setIsAddProjectOpen(true);
+						},
 						onDeletePerson: (personId) => {
 							const found = people.find((p) => p.id === personId);
 							if (found) setPersonToDelete(found);
@@ -19242,6 +19676,20 @@ function App() {
 							projectId
 						}),
 						onDeleteAllocation: handleDeleteAllocation,
+						onEditClient: (client) => {
+							setClientToEdit(client);
+							setProjectToEdit(null);
+							setIsAddProjectOpen(true);
+						},
+						onEditProject: (project) => {
+							setProjectToEdit(project);
+							setClientToEdit(null);
+							setIsAddProjectOpen(true);
+						},
+						onEditPerson: (person) => {
+							setPersonToEdit(person);
+							setIsAddPersonOpen(true);
+						},
 						onUpdateProjectNotes: handleUpdateProjectNotes,
 						onUpdateAllocationNotes: handleUpdateAllocationNotes
 					}),
@@ -19258,6 +19706,10 @@ function App() {
 							monthIndex
 						}),
 						onDeleteLeave: handleDeleteLeave,
+						onEditPerson: (person) => {
+							setPersonToEdit(person);
+							setIsAddPersonOpen(true);
+						},
 						onDeletePerson: (personId) => {
 							const found = people.find((p) => p.id === personId);
 							if (found) setPersonToDelete(found);
@@ -19278,6 +19730,10 @@ function App() {
 							personId,
 							monthIndex
 						}),
+						onEditPerson: (person) => {
+							setPersonToEdit(person);
+							setIsAddPersonOpen(true);
+						},
 						onDeletePerson: (personId) => {
 							const found = people.find((p) => p.id === personId);
 							if (found) setPersonToDelete(found);
@@ -19321,15 +19777,29 @@ function App() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddPersonModal, {
 				isOpen: isAddPersonOpen,
-				onClose: () => setIsAddPersonOpen(false),
+				onClose: () => {
+					setIsAddPersonOpen(false);
+					setPersonToEdit(null);
+				},
 				departments,
-				onSavePerson: handleAddPerson
+				personToEdit,
+				onSavePerson: handleAddPerson,
+				onUpdatePerson: handleUpdatePerson
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddClientProjectModal, {
 				isOpen: isAddProjectOpen,
-				onClose: () => setIsAddProjectOpen(false),
+				onClose: () => {
+					setIsAddProjectOpen(false);
+					setProjectToEdit(null);
+					setClientToEdit(null);
+				},
 				clients,
-				onSaveProject: handleAddProject
+				projectToEdit,
+				clientToEdit,
+				onSaveProject: handleAddProject,
+				onUpdateProject: handleUpdateProject,
+				onUpdateClient: handleUpdateClient,
+				onDeleteProject: handleDeleteProject
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddLeaveModal, {
 				isOpen: leaveModalState.isOpen,

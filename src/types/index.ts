@@ -97,12 +97,28 @@ export type ViewMode = 'people' | 'clients' | 'availability' | 'bench';
 
 export type UtilizationFilter = 'all' | 'overbooked' | 'balanced' | 'underbooked';
 
+export type PeopleSortOrder =
+  | 'default'
+  | 'firstName-asc'
+  | 'firstName-desc'
+  | 'lastName-asc'
+  | 'lastName-desc';
+
+export type ClientSortOrder =
+  | 'default'
+  | 'client-asc'
+  | 'client-desc'
+  | 'project-asc'
+  | 'project-desc';
+
 export interface FilterState {
   search: string;
   department: Department | 'all';
   employmentFilter?: EmploymentType | 'all';
   utilization: UtilizationFilter;
   clientFilter: string | 'all';
+  peopleSort?: PeopleSortOrder;
+  clientSort?: ClientSortOrder;
 }
 
 export const MONTH_NAMES = [

@@ -4,7 +4,9 @@ import {
   ChevronsUpDown,
   Settings,
   FileSpreadsheet,
-  Upload
+  Upload,
+  ArrowDownAZ,
+  ArrowUpZA
 } from 'lucide-react';
 import {
   FilterState,
@@ -12,7 +14,9 @@ import {
   ViewMode,
   Client,
   EmploymentType,
-  EMPLOYMENT_TYPES
+  EMPLOYMENT_TYPES,
+  PeopleSortOrder,
+  ClientSortOrder
 } from '../types';
 
 interface ToolbarProps {
@@ -159,26 +163,117 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
       </div>
 
-      {/* Bottom row: Search bar + Department / Client tabs + Utilization filter */}
+      {/* Bottom row: Search bar + Alphabetical Sort + Department / Client tabs + Utilization filter */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-        {/* Search input */}
-        <div className="relative w-full sm:w-64 md:w-72">
-          <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search person, project, client..."
-            value={filters.search}
-            onChange={(e) => onFilterChange({ search: e.target.value })}
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
-          />
-          {filters.search && (
-            <button
-              type="button"
-              onClick={() => onFilterChange({ search: '' })}
-              className="absolute right-2 top-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-            >
-              ×
-            </button>
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Search input */}
+          <div className="relative w-full sm:w-64 md:w-72">
+            <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search person, project, client..."
+              value={filters.search}
+              onChange={(e) => onFilterChange({ search: e.target.value })}
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+            />
+            {filters.search && (
+              <button
+                type="button"
+                onClick={() => onFilterChange({ search: '' })}
+                className="absolute right-2 top-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          {/* Alphabetical Sort Selector for People or Clients */}
+          {viewMode === 'clients' ? (
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+              <button
+                type="button"
+                onClick={() =>
+                  onFilterChange({
+                    clientSort:
+                      filters.clientSort === 'client-asc' ? 'client-desc' : 'client-asc'
+                  })
+                }
+                className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
+                  filters.clientSort && filters.clientSort !== 'default'
+                    ? 'bg-blue-600 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'
+                }`}
+                title="Toggle alphabetical sort for Clients (A-Z / Z-A)"
+              >
+                {filters.clientSort?.endsWith('-desc') ? (
+                  <ArrowUpZA className="w-3.5 h-3.5" />
+                ) : (
+                  <ArrowDownAZ className="w-3.5 h-3.5" />
+                )}
+                <span>
+                  {filters.clientSort === 'client-desc' ? 'Clients Z–A' : 'Clients A–Z'}
+                </span>
+              </button>
+
+              <select
+                value={filters.clientSort || 'default'}
+                onChange={(e) =>
+                  onFilterChange({ clientSort: e.target.value as ClientSortOrder })
+                }
+                className="px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer"
+                title="Sort Clients & Projects alphabetically"
+              >
+                <option value="default">Sort: Default Order</option>
+                <option value="client-asc">Clients: A → Z</option>
+                <option value="client-desc">Clients: Z → A</option>
+                <option value="project-asc">Projects: A → Z</option>
+                <option value="project-desc">Projects: Z → A</option>
+              </select>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+              <button
+                type="button"
+                onClick={() =>
+                  onFilterChange({
+                    peopleSort:
+                      filters.peopleSort === 'firstName-asc'
+                        ? 'firstName-desc'
+                        : 'firstName-asc'
+                  })
+                }
+                className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
+                  filters.peopleSort && filters.peopleSort !== 'default'
+                    ? 'bg-blue-600 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'
+                }`}
+                title="Toggle alphabetical sort for People (A-Z / Z-A)"
+              >
+                {filters.peopleSort?.endsWith('-desc') ? (
+                  <ArrowUpZA className="w-3.5 h-3.5" />
+                ) : (
+                  <ArrowDownAZ className="w-3.5 h-3.5" />
+                )}
+                <span>
+                  {filters.peopleSort?.endsWith('-desc') ? 'Z–A' : 'A–Z'}
+                </span>
+              </button>
+
+              <select
+                value={filters.peopleSort || 'default'}
+                onChange={(e) =>
+                  onFilterChange({ peopleSort: e.target.value as PeopleSortOrder })
+                }
+                className="px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer"
+                title="Sort People alphabetically by First Name or Last Name"
+              >
+                <option value="default">Sort: Default Order</option>
+                <option value="firstName-asc">First Name: A → Z</option>
+                <option value="firstName-desc">First Name: Z → A</option>
+                <option value="lastName-asc">Last Name: A → Z</option>
+                <option value="lastName-desc">Last Name: Z → A</option>
+              </select>
+            </div>
           )}
         </div>
 

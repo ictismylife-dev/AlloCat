@@ -1,5 +1,4 @@
-// AlloCat GitHub Pages Bundle
-// \0rolldown/runtime.js
+// \0rolldown/runtime.js - AlloCat bundle
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -12521,6 +12520,62 @@ var Armchair = createLucideIcon("armchair", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var ArrowDownAZ = createLucideIcon("arrow-down-a-z", [
+	["path", {
+		d: "m3 16 4 4 4-4",
+		key: "1co6wj"
+	}],
+	["path", {
+		d: "M7 20V4",
+		key: "1yoxec"
+	}],
+	["path", {
+		d: "M20 8h-5",
+		key: "1vsyxs"
+	}],
+	["path", {
+		d: "M15 10V6.5a2.5 2.5 0 0 1 5 0V10",
+		key: "ag13bf"
+	}],
+	["path", {
+		d: "M15 14h5l-5 6h5",
+		key: "ur5jdg"
+	}]
+]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var ArrowUpZA = createLucideIcon("arrow-up-z-a", [
+	["path", {
+		d: "m3 8 4-4 4 4",
+		key: "11wl7u"
+	}],
+	["path", {
+		d: "M7 4v16",
+		key: "1glfcx"
+	}],
+	["path", {
+		d: "M15 4h5l-5 6h5",
+		key: "8asdl1"
+	}],
+	["path", {
+		d: "M15 20v-3.5a2.5 2.5 0 0 1 5 0V20",
+		key: "r6l5cz"
+	}],
+	["path", {
+		d: "M20 18h-5",
+		key: "18j1r2"
+	}]
+]);
+/**
+* @license lucide-react v0.546.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Briefcase = createLucideIcon("briefcase", [["path", {
 	d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
 	key: "jecpp"
@@ -13676,23 +13731,98 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-wrap items-center justify-between gap-3 pt-1",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "relative w-full sm:w-64 md:w-72",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "w-4 h-4 absolute left-2.5 top-2.5 text-slate-400" }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-						type: "text",
-						placeholder: "Search person, project, client...",
-						value: filters.search,
-						onChange: (e) => onFilterChange({ search: e.target.value }),
-						className: "w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
-					}),
-					filters.search && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+				className: "flex flex-wrap items-center gap-2 w-full sm:w-auto",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "relative w-full sm:w-64 md:w-72",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "w-4 h-4 absolute left-2.5 top-2.5 text-slate-400" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: "text",
+							placeholder: "Search person, project, client...",
+							value: filters.search,
+							onChange: (e) => onFilterChange({ search: e.target.value }),
+							className: "w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+						}),
+						filters.search && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							type: "button",
+							onClick: () => onFilterChange({ search: "" }),
+							className: "absolute right-2 top-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200",
+							children: "×"
+						})
+					]
+				}), viewMode === "clients" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 						type: "button",
-						onClick: () => onFilterChange({ search: "" }),
-						className: "absolute right-2 top-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200",
-						children: "×"
-					})
-				]
+						onClick: () => onFilterChange({ clientSort: filters.clientSort === "client-asc" ? "client-desc" : "client-asc" }),
+						className: `flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${filters.clientSort && filters.clientSort !== "default" ? "bg-blue-600 text-white font-semibold shadow-2xs" : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700"}`,
+						title: "Toggle alphabetical sort for Clients (A-Z / Z-A)",
+						children: [filters.clientSort?.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: filters.clientSort === "client-desc" ? "Clients Z–A" : "Clients A–Z" })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+						value: filters.clientSort || "default",
+						onChange: (e) => onFilterChange({ clientSort: e.target.value }),
+						className: "px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer",
+						title: "Sort Clients & Projects alphabetically",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "default",
+								children: "Sort: Default Order"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "client-asc",
+								children: "Clients: A → Z"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "client-desc",
+								children: "Clients: Z → A"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "project-asc",
+								children: "Projects: A → Z"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "project-desc",
+								children: "Projects: Z → A"
+							})
+						]
+					})]
+				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						type: "button",
+						onClick: () => onFilterChange({ peopleSort: filters.peopleSort === "firstName-asc" ? "firstName-desc" : "firstName-asc" }),
+						className: `flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${filters.peopleSort && filters.peopleSort !== "default" ? "bg-blue-600 text-white font-semibold shadow-2xs" : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700"}`,
+						title: "Toggle alphabetical sort for People (A-Z / Z-A)",
+						children: [filters.peopleSort?.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: filters.peopleSort?.endsWith("-desc") ? "Z–A" : "A–Z" })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+						value: filters.peopleSort || "default",
+						onChange: (e) => onFilterChange({ peopleSort: e.target.value }),
+						className: "px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer",
+						title: "Sort People alphabetically by First Name or Last Name",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "default",
+								children: "Sort: Default Order"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "firstName-asc",
+								children: "First Name: A → Z"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "firstName-desc",
+								children: "First Name: Z → A"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "lastName-asc",
+								children: "Last Name: A → Z"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "lastName-desc",
+								children: "Last Name: Z → A"
+							})
+						]
+					})]
+				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-wrap items-center gap-2",
 				children: [
@@ -13878,7 +14008,7 @@ var CommentCell = ({ value = "", onSave, placeholder = "Add comment...", readOnl
 	});
 };
 // src/components/PeopleMatrixView.tsx
-var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenCellEditor, onOpenPersonMonth, onOpenAssignModalForPerson, onDeleteAllocation, onEditPerson, onEditProject, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateAllocationNotes }) => {
+var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenCellEditor, onOpenPersonMonth, onOpenAssignModalForPerson, onDeleteAllocation, onEditPerson, onEditProject, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateAllocationNotes, peopleSort = "default", onTogglePeopleSort }) => {
 	const getProject = (id) => projects.find((p) => p.id === id);
 	const getClient = (id) => clients.find((c) => c.id === id);
 	if (people.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -13901,8 +14031,17 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
 						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member & Assigned Projects" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "flex items-center justify-between gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-1.5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member & Assigned Projects" }), onTogglePeopleSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: onTogglePeopleSort,
+									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+									title: "Sort team members alphabetically (A–Z / Z–A)",
+									children: [peopleSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: peopleSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-[11px] font-mono font-normal text-slate-400",
 								children: "Avg %"
 							})]
@@ -14173,7 +14312,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 	});
 };
 // src/components/ClientProjectMatrixView.tsx
-var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves = [], selectedYear, expandedProjectIds, onToggleProjectExpand, onOpenCellEditor, onOpenAssignModalForProject, onDeleteAllocation, onEditClient, onEditProject, onEditPerson, onUpdateProjectNotes, onUpdateAllocationNotes }) => {
+var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves = [], selectedYear, expandedProjectIds, onToggleProjectExpand, onOpenCellEditor, onOpenAssignModalForProject, onDeleteAllocation, onEditClient, onEditProject, onEditPerson, onUpdateProjectNotes, onUpdateAllocationNotes, clientSort = "default", onToggleClientSort }) => {
 	const getPerson = (id) => people.find((p) => p.id === id);
 	if (projects.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 m-6",
@@ -14201,8 +14340,17 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
 						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Client & Deliverable Projects" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "flex items-center justify-between gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-1.5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Client & Deliverable Projects" }), onToggleClientSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: onToggleClientSort,
+									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${clientSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+									title: "Sort clients alphabetically (A–Z / Z–A)",
+									children: [clientSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: clientSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-[11px] font-mono font-normal text-slate-400",
 								children: "Team / FTE"
 							})]
@@ -14463,7 +14611,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 	});
 };
 // src/components/AvailabilityMatrixView.tsx
-var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenAddLeaveForPerson, onDeleteLeave, onEditPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateLeaveNotes }) => {
+var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenAddLeaveForPerson, onDeleteLeave, onEditPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateLeaveNotes, peopleSort = "default", onTogglePeopleSort }) => {
 	if (people.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 m-6",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
@@ -14481,8 +14629,17 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
 						className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member & Scheduled Time Off" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "flex items-center justify-between gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-1.5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member & Scheduled Time Off" }), onTogglePeopleSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: onTogglePeopleSort,
+									className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+									title: "Sort team members alphabetically (A–Z / Z–A)",
+									children: [peopleSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: peopleSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 								className: "text-[11px] font-mono font-normal text-slate-400",
 								children: "Leaves"
 							})]
@@ -14733,7 +14890,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 	});
 };
 // src/components/BenchMatrixView.tsx
-var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssignModalForPerson, onEditPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment }) => {
+var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssignModalForPerson, onEditPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, peopleSort = "default", onTogglePeopleSort }) => {
 	const [onlyWithBench, setOnlyWithBench] = (0, import_react.useState)(false);
 	const [minBenchPct, setMinBenchPct] = (0, import_react.useState)(20);
 	const summaries = people.map((p) => getPersonBenchSummary(p, selectedYear, allocations, leaves)).filter((s) => {
@@ -14795,8 +14952,17 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
 							className: "py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center justify-between",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "flex items-center justify-between gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-1.5",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Team Member" }), onTogglePeopleSort && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										type: "button",
+										onClick: onTogglePeopleSort,
+										className: `inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${peopleSort !== "default" ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60"}`,
+										title: "Sort team members alphabetically (A–Z / Z–A)",
+										children: [peopleSort.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3 h-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: peopleSort.endsWith("-desc") ? "Z–A" : "A–Z" })]
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 									className: "text-[11px] font-mono font-normal text-slate-400",
 									children: "Avg Bench"
 								})]
@@ -19135,7 +19301,9 @@ function App() {
 		department: "all",
 		employmentFilter: "all",
 		utilization: "all",
-		clientFilter: "all"
+		clientFilter: "all",
+		peopleSort: "default",
+		clientSort: "default"
 	});
 	const [expandedPersonIds, setExpandedPersonIds] = (0, import_react.useState)(() => new Set(appState.people.map((p) => p.id)));
 	const [expandedProjectIds, setExpandedProjectIds] = (0, import_react.useState)(() => new Set(appState.projects.map((p) => p.id)));
@@ -19169,7 +19337,7 @@ function App() {
 		selectedYear
 	]);
 	const filteredPeople = (0, import_react.useMemo)(() => {
-		return people.filter((person) => {
+		const matched = people.filter((person) => {
 			if (filters.department !== "all" && person.department !== filters.department) return false;
 			if (filters.employmentFilter && filters.employmentFilter !== "all" && (person.employmentType || "Internal") !== filters.employmentFilter) return false;
 			if (filters.search.trim() !== "") {
@@ -19189,6 +19357,19 @@ function App() {
 			}
 			return true;
 		});
+		const sortMode = filters.peopleSort || "default";
+		if (sortMode === "default") return matched;
+		return [...matched].sort((a, b) => {
+			const aFirst = (a.firstName || a.name.split(" ")[0] || a.name).trim();
+			const bFirst = (b.firstName || b.name.split(" ")[0] || b.name).trim();
+			const aLast = (a.lastName || a.name.split(" ").slice(1).join(" ") || a.name).trim();
+			const bLast = (b.lastName || b.name.split(" ").slice(1).join(" ") || b.name).trim();
+			if (sortMode === "firstName-asc") return aFirst.localeCompare(bFirst, void 0, { sensitivity: "base" }) || aLast.localeCompare(bLast, void 0, { sensitivity: "base" });
+			if (sortMode === "firstName-desc") return bFirst.localeCompare(aFirst, void 0, { sensitivity: "base" }) || bLast.localeCompare(aLast, void 0, { sensitivity: "base" });
+			if (sortMode === "lastName-asc") return aLast.localeCompare(bLast, void 0, { sensitivity: "base" }) || aFirst.localeCompare(bFirst, void 0, { sensitivity: "base" });
+			if (sortMode === "lastName-desc") return bLast.localeCompare(aLast, void 0, { sensitivity: "base" }) || bFirst.localeCompare(aFirst, void 0, { sensitivity: "base" });
+			return 0;
+		});
 	}, [
 		people,
 		allocations,
@@ -19198,8 +19379,14 @@ function App() {
 		selectedYear,
 		filters
 	]);
+	const sortedClients = (0, import_react.useMemo)(() => {
+		const sortMode = filters.clientSort || "default";
+		if (sortMode === "client-asc" || sortMode === "project-asc") return [...clients].sort((a, b) => a.name.localeCompare(b.name, void 0, { sensitivity: "base" }));
+		if (sortMode === "client-desc" || sortMode === "project-desc") return [...clients].sort((a, b) => b.name.localeCompare(a.name, void 0, { sensitivity: "base" }));
+		return clients;
+	}, [clients, filters.clientSort]);
 	const filteredProjects = (0, import_react.useMemo)(() => {
-		return projects.filter((proj) => {
+		const matched = projects.filter((proj) => {
 			if (filters.clientFilter !== "all" && proj.clientId !== filters.clientFilter) return false;
 			if (filters.search.trim() !== "") {
 				const q = filters.search.toLowerCase();
@@ -19208,11 +19395,27 @@ function App() {
 			}
 			return true;
 		});
+		const sortMode = filters.clientSort || "default";
+		if (sortMode === "project-asc" || sortMode === "client-asc") return [...matched].sort((a, b) => a.name.localeCompare(b.name, void 0, { sensitivity: "base" }));
+		if (sortMode === "project-desc" || sortMode === "client-desc") return [...matched].sort((a, b) => b.name.localeCompare(a.name, void 0, { sensitivity: "base" }));
+		return matched;
 	}, [
 		projects,
 		clients,
 		filters
 	]);
+	const handleTogglePeopleSort = () => {
+		setFilters((prev) => ({
+			...prev,
+			peopleSort: prev.peopleSort === "firstName-asc" ? "firstName-desc" : prev.peopleSort === "firstName-desc" ? "default" : "firstName-asc"
+		}));
+	};
+	const handleToggleClientSort = () => {
+		setFilters((prev) => ({
+			...prev,
+			clientSort: prev.clientSort === "client-asc" ? "client-desc" : prev.clientSort === "client-desc" ? "default" : "client-asc"
+		}));
+	};
 	const handleTogglePersonExpand = (personId) => {
 		setExpandedPersonIds((prev) => {
 			const next = new Set(prev);
@@ -19599,7 +19802,7 @@ function App() {
 					...partial
 				})),
 				departments,
-				clients,
+				clients: sortedClients,
 				onOpenManageDepartmentsModal: () => setIsManageDepartmentsOpen(true),
 				kpis,
 				isAllExpanded,
@@ -19622,7 +19825,7 @@ function App() {
 				children: [
 					viewMode === "people" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PeopleMatrixView, {
 						people: filteredPeople,
-						clients,
+						clients: sortedClients,
 						projects,
 						allocations,
 						leaves,
@@ -19655,10 +19858,12 @@ function App() {
 						},
 						onUpdatePersonNotes: handleUpdatePersonNotes,
 						onUpdatePersonEmployment: handleUpdatePersonEmployment,
-						onUpdateAllocationNotes: handleUpdateAllocationNotes
+						onUpdateAllocationNotes: handleUpdateAllocationNotes,
+						peopleSort: filters.peopleSort || "default",
+						onTogglePeopleSort: handleTogglePeopleSort
 					}),
 					viewMode === "clients" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClientProjectMatrixView, {
-						clients,
+						clients: sortedClients,
 						projects: filteredProjects,
 						people,
 						allocations,
@@ -19691,7 +19896,9 @@ function App() {
 							setIsAddPersonOpen(true);
 						},
 						onUpdateProjectNotes: handleUpdateProjectNotes,
-						onUpdateAllocationNotes: handleUpdateAllocationNotes
+						onUpdateAllocationNotes: handleUpdateAllocationNotes,
+						clientSort: filters.clientSort || "default",
+						onToggleClientSort: handleToggleClientSort
 					}),
 					viewMode === "availability" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvailabilityMatrixView, {
 						people: filteredPeople,
@@ -19716,12 +19923,14 @@ function App() {
 						},
 						onUpdatePersonNotes: handleUpdatePersonNotes,
 						onUpdatePersonEmployment: handleUpdatePersonEmployment,
-						onUpdateLeaveNotes: handleUpdateLeaveNotes
+						onUpdateLeaveNotes: handleUpdateLeaveNotes,
+						peopleSort: filters.peopleSort || "default",
+						onTogglePeopleSort: handleTogglePeopleSort
 					}),
 					viewMode === "bench" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BenchMatrixView, {
 						people: filteredPeople,
 						projects,
-						clients,
+						clients: sortedClients,
 						allocations,
 						leaves,
 						selectedYear,
@@ -19739,7 +19948,9 @@ function App() {
 							if (found) setPersonToDelete(found);
 						},
 						onUpdatePersonNotes: handleUpdatePersonNotes,
-						onUpdatePersonEmployment: handleUpdatePersonEmployment
+						onUpdatePersonEmployment: handleUpdatePersonEmployment,
+						peopleSort: filters.peopleSort || "default",
+						onTogglePeopleSort: handleTogglePeopleSort
 					})
 				]
 			}),

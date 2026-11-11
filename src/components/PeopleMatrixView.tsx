@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, MessageSquare, ArrowDownAZ, ArrowUpZA } from 'lucide-react';
 import {
   MONTH_NAMES,
   Person,
@@ -9,7 +9,8 @@ import {
   LeaveEntry,
   EmploymentType,
   EMPLOYMENT_TYPES,
-  EMPLOYMENT_BADGE_CONFIG
+  EMPLOYMENT_BADGE_CONFIG,
+  PeopleSortOrder
 } from '../types';
 import { getPersonCapacitySummary, getUtilizationColorClass } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
@@ -33,6 +34,8 @@ interface PeopleMatrixViewProps {
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
   onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
   onUpdateAllocationNotes?: (allocationId: string, notes: string) => void;
+  peopleSort?: PeopleSortOrder;
+  onTogglePeopleSort?: () => void;
 }
 
 export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
@@ -53,7 +56,9 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
   onDeletePerson,
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
-  onUpdateAllocationNotes
+  onUpdateAllocationNotes,
+  peopleSort = 'default',
+  onTogglePeopleSort
 }) => {
   const getProject = (id: string) => projects.find((p) => p.id === id);
   const getClient = (id: string) => clients.find((c) => c.id === id);
@@ -73,8 +78,29 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
         <thead>
           <tr className="bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
             <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between">
-                <span>Team Member & Assigned Projects</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span>Team Member & Assigned Projects</span>
+                  {onTogglePeopleSort && (
+                    <button
+                      type="button"
+                      onClick={onTogglePeopleSort}
+                      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${
+                        peopleSort !== 'default'
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold'
+                          : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
+                      }`}
+                      title="Sort team members alphabetically (A–Z / Z–A)"
+                    >
+                      {peopleSort.endsWith('-desc') ? (
+                        <ArrowUpZA className="w-3 h-3" />
+                      ) : (
+                        <ArrowDownAZ className="w-3 h-3" />
+                      )}
+                      <span>{peopleSort.endsWith('-desc') ? 'Z–A' : 'A–Z'}</span>
+                    </button>
+                  )}
+                </div>
                 <span className="text-[11px] font-mono font-normal text-slate-400">Avg %</span>
               </div>
             </th>

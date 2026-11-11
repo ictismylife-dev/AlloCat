@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, Building, MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, Building, MessageSquare, ArrowDownAZ, ArrowUpZA } from 'lucide-react';
 import {
   MONTH_NAMES,
   Person,
@@ -8,7 +8,8 @@ import {
   Allocation,
   LeaveEntry,
   EmploymentType,
-  EMPLOYMENT_BADGE_CONFIG
+  EMPLOYMENT_BADGE_CONFIG,
+  ClientSortOrder
 } from '../types';
 import { getProjectStaffingSummary, getPersonCapacitySummary } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
@@ -30,6 +31,8 @@ interface ClientProjectMatrixViewProps {
   onEditPerson?: (person: Person) => void;
   onUpdateProjectNotes?: (projectId: string, notes: string) => void;
   onUpdateAllocationNotes?: (allocationId: string, notes: string) => void;
+  clientSort?: ClientSortOrder;
+  onToggleClientSort?: () => void;
 }
 
 export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = ({
@@ -48,7 +51,9 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
   onEditProject,
   onEditPerson,
   onUpdateProjectNotes,
-  onUpdateAllocationNotes
+  onUpdateAllocationNotes,
+  clientSort = 'default',
+  onToggleClientSort
 }) => {
   const getPerson = (id: string) => people.find((p) => p.id === id);
 
@@ -77,8 +82,29 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
         <thead>
           <tr className="bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
             <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between">
-                <span>Client & Deliverable Projects</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span>Client & Deliverable Projects</span>
+                  {onToggleClientSort && (
+                    <button
+                      type="button"
+                      onClick={onToggleClientSort}
+                      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors cursor-pointer ${
+                        clientSort !== 'default'
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold'
+                          : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
+                      }`}
+                      title="Sort clients alphabetically (A–Z / Z–A)"
+                    >
+                      {clientSort.endsWith('-desc') ? (
+                        <ArrowUpZA className="w-3 h-3" />
+                      ) : (
+                        <ArrowDownAZ className="w-3 h-3" />
+                      )}
+                      <span>{clientSort.endsWith('-desc') ? 'Z–A' : 'A–Z'}</span>
+                    </button>
+                  )}
+                </div>
                 <span className="text-[11px] font-mono font-normal text-slate-400">Team / FTE</span>
               </div>
             </th>

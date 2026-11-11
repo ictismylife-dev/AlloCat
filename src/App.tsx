@@ -54,7 +54,9 @@ export function App() {
     department: 'all',
     employmentFilter: 'all',
     utilization: 'all',
-    clientFilter: 'all'
+    clientFilter: 'all',
+    peopleSort: 'default',
+    clientSort: 'default'
   });
 
   const [expandedPersonIds, setExpandedPersonIds] = useState<Set<string>>(
@@ -125,9 +127,9 @@ export function App() {
     [people, projects, allocations, leaves, selectedYear]
   );
 
-  // Filtered people
+  // Filtered & sorted people
   const filteredPeople = useMemo(() => {
-    return people.filter((person) => {
+    const matched = people.filter((person) => {
       if (filters.department !== 'all' && person.department !== filters.department) {
         return false;
       }
@@ -189,11 +191,55 @@ export function App() {
 
       return true;
     });
+
+    const sortMode = filters.peopleSort || 'default';
+    if (sortMode === 'default') return matched;
+
+    return [...matched].sort((a, b) => {
+      const aFirst = (a.firstName || a.name.split(' ')[0] || a.name).trim();
+      const bFirst = (b.firstName || b.name.split(' ')[0] || b.name).trim();
+      const aLast = (a.lastName || a.name.split(' ').slice(1).join(' ') || a.name).trim();
+      const bLast = (b.lastName || b.name.split(' ').slice(1).join(' ') || b.name).trim();
+
+      if (sortMode === 'firstName-asc') {
+        return aFirst.localeCompare(bFirst, undefined, { sensitivity: 'base' }) ||
+          aLast.localeCompare(bLast, undefined, { sensitivity: 'base' });
+      }
+      if (sortMode === 'firstName-desc') {
+        return bFirst.localeCompare(aFirst, undefined, { sensitivity: 'base' }) ||
+          bLast.localeCompare(aLast, undefined, { sensitivity: 'base' });
+      }
+      if (sortMode === 'lastName-asc') {
+        return aLast.localeCompare(bLast, undefined, { sensitivity: 'base' }) ||
+          aFirst.localeCompare(bFirst, undefined, { sensitivity: 'base' });
+      }
+      if (sortMode === 'lastName-desc') {
+        return bLast.localeCompare(aLast, undefined, { sensitivity: 'base' }) ||
+          bFirst.localeCompare(aFirst, undefined, { sensitivity: 'base' });
+      }
+      return 0;
+    });
   }, [people, allocations, projects, clients, leaves, selectedYear, filters]);
 
-  // Filtered projects
+  // Sorted clients
+  const sortedClients = useMemo(() => {
+    const sortMode = filters.clientSort || 'default';
+    if (sortMode === 'client-asc' || sortMode === 'project-asc') {
+      return [...clients].sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+      );
+    }
+    if (sortMode === 'client-desc' || sortMode === 'project-desc') {
+      return [...clients].sort((a, b) =>
+        b.name.localeCompare(a.name, undefined, { sensitivity: 'base' })
+      );
+    }
+    return clients;
+  }, [clients, filters.clientSort]);
+
+  // Filtered & sorted projects
   const filteredProjects = useMemo(() => {
-    return projects.filter((proj) => {
+    const matched = projects.filter((proj) => {
       if (filters.clientFilter !== 'all' && proj.clientId !== filters.clientFilter) {
         return false;
       }
@@ -209,7 +255,44 @@ export function App() {
       }
       return true;
     });
+
+    const sortMode = filters.clientSort || 'default';
+    if (sortMode === 'project-asc' || sortMode === 'client-asc') {
+      return [...matched].sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+      );
+    }
+    if (sortMode === 'project-desc' || sortMode === 'client-desc') {
+      return [...matched].sort((a, b) =>
+        b.name.localeCompare(a.name, undefined, { sensitivity: 'base' })
+      );
+    }
+    return matched;
   }, [projects, clients, filters]);
+
+  const handleTogglePeopleSort = () => {
+    setFilters((prev) => ({
+      ...prev,
+      peopleSort:
+        prev.peopleSort === 'firstName-asc'
+          ? 'firstName-desc'
+          : prev.peopleSort === 'firstName-desc'
+          ? 'default'
+          : 'firstName-asc'
+    }));
+  };
+
+  const handleToggleClientSort = () => {
+    setFilters((prev) => ({
+      ...prev,
+      clientSort:
+        prev.clientSort === 'client-asc'
+          ? 'client-desc'
+          : prev.clientSort === 'client-desc'
+          ? 'default'
+          : 'client-asc'
+    }));
+  };
 
   const handleTogglePersonExpand = (personId: string) => {
     setExpandedPersonIds((prev) => {
@@ -712,7 +795,7 @@ export function App() {
         filters={filters}
         onFilterChange={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
         departments={departments}
-        clients={clients}
+        clients={sortedClients}
         onOpenManageDepartmentsModal={() => setIsManageDepartmentsOpen(true)}
         kpis={kpis}
         isAllExpanded={isAllExpanded}
@@ -760,7 +843,7 @@ export function App() {
         {viewMode === 'people' && (
           <PeopleMatrixView
             people={filteredPeople}
-            clients={clients}
+            clients={sortedClients}
             projects={projects}
             allocations={allocations}
             leaves={leaves}
@@ -791,12 +874,14 @@ export function App() {
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
+            peopleSort={filters.peopleSort || 'default'}
+            onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
 
         {viewMode === 'clients' && (
           <ClientProjectMatrixView
-            clients={clients}
+            clients={sortedClients}
             projects={filteredProjects}
             people={people}
             allocations={allocations}
@@ -827,6 +912,8 @@ export function App() {
             }}
             onUpdateProjectNotes={handleUpdateProjectNotes}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
+            clientSort={filters.clientSort || 'default'}
+            onToggleClientSort={handleToggleClientSort}
           />
         )}
 
@@ -853,6 +940,8 @@ export function App() {
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateLeaveNotes={handleUpdateLeaveNotes}
+            peopleSort={filters.peopleSort || 'default'}
+            onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
 
@@ -860,7 +949,7 @@ export function App() {
           <BenchMatrixView
             people={filteredPeople}
             projects={projects}
-            clients={clients}
+            clients={sortedClients}
             allocations={allocations}
             leaves={leaves}
             selectedYear={selectedYear}
@@ -877,6 +966,8 @@ export function App() {
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
+            peopleSort={filters.peopleSort || 'default'}
+            onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
       </main>

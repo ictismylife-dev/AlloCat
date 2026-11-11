@@ -57,7 +57,7 @@ const SCOPE_TABS: Array<{
     description:
       'Complete workspace backup and multi-view master spreadsheet covering People, Clients, Projects, Allocations, Leaves, Departments, and Years.',
     csvColumnsHint:
-      'Year, Record Type (Person/Project/Allocation/Leave), Person Name, Role, Department, Employment (Internal/External/B2B), Client, Project, Leave Category, Jan..Dec',
+      'Year, Record Type (Person/Project/Allocation/Leave), First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Client, Project, Leave Category, Jan..Dec',
     icon: Layers
   },
   {
@@ -67,7 +67,7 @@ const SCOPE_TABS: Array<{
     description:
       'Team member capacity summaries, employment type, staffing comments, and project allocation rows across all 12 months.',
     csvColumnsHint:
-      'Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Client, Project, Project Code, Assignment Note, Jan..Dec',
+      'Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Client, Project, Project Code, Assignment Note, Jan..Dec',
     icon: Users
   },
   {
@@ -77,7 +77,7 @@ const SCOPE_TABS: Array<{
     description:
       'Client portfolios, deliverable projects, scope notes, monthly FTE totals, and assigned staff breakdowns.',
     csvColumnsHint:
-      'Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, Person Name, Role, Department, Employment, Assignment Note, Jan..Dec',
+      'Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, First Name, Last Name, Role, Department, Employment, Assignment Note, Jan..Dec',
     icon: Briefcase
   },
   {
@@ -87,7 +87,7 @@ const SCOPE_TABS: Array<{
     description:
       'Effective monthly working capacities and scheduled time off (vacations, parental leave, sick leave, sabbaticals).',
     csvColumnsHint:
-      'Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec',
+      'Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec',
     icon: CalendarOff
   },
   {
@@ -97,7 +97,7 @@ const SCOPE_TABS: Array<{
     description:
       'Unallocated bench capacity percentages, free months count, and team member skills / bench notes.',
     csvColumnsHint:
-      'Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec',
+      'Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec',
     icon: Armchair
   }
 ];

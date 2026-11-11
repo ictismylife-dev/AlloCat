@@ -27,6 +27,8 @@ export const EMPLOYMENT_BADGE_CONFIG: Record<
 
 export interface Person {
   id: string;
+  firstName: string;
+  lastName: string;
   name: string;
   role: string;
   department: Department;

@@ -11457,6 +11457,8 @@ var import_client = require_client();
 var INITIAL_PEOPLE = [
 	{
 		id: "p-1",
+		firstName: "Marcus",
+		lastName: "Vance",
 		name: "Marcus Vance",
 		role: "Principal Cloud Architect",
 		department: "Engineering",
@@ -11469,6 +11471,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-2",
+		firstName: "Elena",
+		lastName: "Rostova",
 		name: "Elena Rostova",
 		role: "Staff Product Designer",
 		department: "Design",
@@ -11481,6 +11485,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-3",
+		firstName: "Devon",
+		lastName: "Zhao",
 		name: "Devon Zhao",
 		role: "Senior Full-Stack Engineer",
 		department: "Engineering",
@@ -11493,6 +11499,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-4",
+		firstName: "Sarah",
+		lastName: "Lindqvist",
 		name: "Sarah Lindqvist",
 		role: "Lead Product Manager",
 		department: "Product",
@@ -11505,6 +11513,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-5",
+		firstName: "Tariq",
+		lastName: "Al-Mansoor",
 		name: "Tariq Al-Mansoor",
 		role: "Senior Mobile Engineer (iOS/Android)",
 		department: "Engineering",
@@ -11517,6 +11527,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-6",
+		firstName: "Amara",
+		lastName: "Okafor",
 		name: "Amara Okafor",
 		role: "Senior UX Researcher",
 		department: "Design",
@@ -11529,6 +11541,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-7",
+		firstName: "Kenji",
+		lastName: "Takahashi",
 		name: "Kenji Takahashi",
 		role: "Staff Data Scientist & ML",
 		department: "Data",
@@ -11541,6 +11555,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-8",
+		firstName: "Chloe",
+		lastName: "Bennett",
 		name: "Chloe Bennett",
 		role: "QA Automation Lead",
 		department: "QA",
@@ -11553,6 +11569,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-9",
+		firstName: "Liam",
+		lastName: "Henderson",
 		name: "Liam Henderson",
 		role: "Frontend Engineer",
 		department: "Engineering",
@@ -11565,6 +11583,8 @@ var INITIAL_PEOPLE = [
 	},
 	{
 		id: "p-10",
+		firstName: "Priya",
+		lastName: "Patel",
 		name: "Priya Patel",
 		role: "Technical Program Manager",
 		department: "Operations",
@@ -12175,8 +12195,16 @@ function loadAppState() {
 			const departments = Array.isArray(parsed.departments) && parsed.departments.length > 0 ? parsed.departments : INITIAL_DEPARTMENTS;
 			const loadedPeople = parsed.people.map((p) => {
 				const defaultPerson = INITIAL_PEOPLE.find((ip) => ip.id === p.id);
+				const rawFullName = (p.name || "").trim();
+				const nameParts = rawFullName ? rawFullName.split(/\s+/) : [];
+				const firstName = p.firstName?.trim() || defaultPerson?.firstName || nameParts[0] || "Team";
+				const lastName = p.lastName !== void 0 && p.lastName.trim() !== "" ? p.lastName.trim() : defaultPerson?.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "");
+				const fullName = `${firstName} ${lastName}`.trim() || rawFullName;
 				return {
 					...p,
+					firstName,
+					lastName,
+					name: fullName,
 					employmentType: p.employmentType === "Internal" || p.employmentType === "External" || p.employmentType === "B2B" ? p.employmentType : defaultPerson?.employmentType || "Internal",
 					notes: p.notes !== void 0 ? p.notes : defaultPerson?.notes || ""
 				};
@@ -15534,7 +15562,8 @@ var AVATAR_COLORS$1 = [
 	"#0891B2"
 ];
 var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
-	const [name, setName] = (0, import_react.useState)("");
+	const [firstName, setFirstName] = (0, import_react.useState)("");
+	const [lastName, setLastName] = (0, import_react.useState)("");
 	const [role, setRole] = (0, import_react.useState)("");
 	const [department, setDepartment] = (0, import_react.useState)(departments[0] || "Engineering");
 	const [employmentType, setEmploymentType] = (0, import_react.useState)("Internal");
@@ -15542,28 +15571,35 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 	const [maxCapacityPercent, setMaxCapacityPercent] = (0, import_react.useState)(100);
 	const [notes, setNotes] = (0, import_react.useState)("");
 	if (!isOpen) return null;
-	const getInitials = (fullName) => {
-		const parts = fullName.trim().split(/\s+/);
-		if (parts.length === 0 || !parts[0]) return "TM";
-		if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-		return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+	const getInitials = (first, last) => {
+		const f = first.trim();
+		const l = last.trim();
+		if (!f && !l) return "TM";
+		if (f && l) return (f[0] + l[0]).toUpperCase();
+		return (f || l).slice(0, 2).toUpperCase();
 	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		if (!name.trim() || !role.trim()) return;
+		const cleanFirst = firstName.trim();
+		const cleanLast = lastName.trim();
+		if (!cleanFirst || !cleanLast || !role.trim()) return;
+		const fullName = `${cleanFirst} ${cleanLast}`.trim();
 		const color = AVATAR_COLORS$1[Math.floor(Math.random() * AVATAR_COLORS$1.length)];
 		onSavePerson({
-			name: name.trim(),
+			firstName: cleanFirst,
+			lastName: cleanLast,
+			name: fullName,
 			role: role.trim(),
 			department,
 			employmentType,
-			email: email.trim() || `${name.trim().toLowerCase().replace(/\s+/g, ".")}@company.internal`,
+			email: email.trim() || `${cleanFirst.toLowerCase()}.${cleanLast.toLowerCase().replace(/\s+/g, "")}@company.internal`,
 			maxCapacityPercent,
 			avatarColor: color,
-			initials: getInitials(name),
+			initials: getInitials(cleanFirst, cleanLast),
 			notes: notes.trim() || void 0
 		});
-		setName("");
+		setFirstName("");
+		setLastName("");
 		setRole("");
 		setEmploymentType("Internal");
 		setEmail("");
@@ -15597,18 +15633,31 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 				onSubmit: handleSubmit,
 				className: "p-5 space-y-4 text-xs",
 				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
-						children: "Full Name"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-						type: "text",
-						placeholder: "e.g., Alex Rivera",
-						value: name,
-						onChange: (e) => setName(e.target.value),
-						className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
-						required: true,
-						autoFocus: true
-					})] }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "First Name"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: "text",
+							placeholder: "e.g., Alex",
+							value: firstName,
+							onChange: (e) => setFirstName(e.target.value),
+							className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+							required: true,
+							autoFocus: true
+						})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+							className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Last Name"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							type: "text",
+							placeholder: "e.g., Rivera",
+							value: lastName,
+							onChange: (e) => setLastName(e.target.value),
+							className: "w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+							required: true
+						})] })]
+					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid grid-cols-2 gap-3",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
@@ -16709,6 +16758,17 @@ function getInitials(name) {
 	if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
 	return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
+function splitPersonName(person) {
+	const rawFull = (person.name || "").trim();
+	const parts = rawFull ? rawFull.split(/\s+/) : [];
+	const firstName = person.firstName?.trim() || parts[0] || "";
+	const lastName = person.lastName !== void 0 && person.lastName.trim() !== "" ? person.lastName.trim() : parts.length > 1 ? parts.slice(1).join(" ") : "";
+	return {
+		firstName,
+		lastName,
+		fullName: `${firstName} ${lastName}`.trim() || rawFull
+	};
+}
 function escapeCsvCell(val) {
 	const str = String(val ?? "");
 	if (str.includes(",") || str.includes("\"") || str.includes("\n") || str.includes("\r")) return `"${str.replace(/"/g, "\"\"")}"`;
@@ -16804,7 +16864,8 @@ function generatePeopleViewCSV(state, peopleSubset) {
 	const rows = [[
 		"Year",
 		"Row Type",
-		"Person Name",
+		"First Name",
+		"Last Name",
 		"Role",
 		"Department",
 		"Employment",
@@ -16819,11 +16880,13 @@ function generatePeopleViewCSV(state, peopleSubset) {
 		...MONTH_NAMES
 	]];
 	for (const person of targetPeople) {
+		const { firstName, lastName } = splitPersonName(person);
 		const summary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 		rows.push([
 			selectedYear,
 			"Person Summary",
-			person.name,
+			firstName,
+			lastName,
 			person.role,
 			person.department,
 			person.employmentType || "Internal",
@@ -16846,7 +16909,8 @@ function generatePeopleViewCSV(state, peopleSubset) {
 			rows.push([
 				selectedYear,
 				"Project Assignment",
-				person.name,
+				firstName,
+				lastName,
 				person.role,
 				person.department,
 				person.employmentType || "Internal",
@@ -16881,7 +16945,8 @@ function generateClientsViewCSV(state, projectsSubset) {
 		"Project Status",
 		"Billable",
 		"Project Scope Comment",
-		"Person Name",
+		"First Name",
+		"Last Name",
 		"Role",
 		"Department",
 		"Employment",
@@ -16908,6 +16973,7 @@ function generateClientsViewCSV(state, projectsSubset) {
 				"",
 				"",
 				"",
+				"",
 				`${summary.avgMonthlyFTE} FTE`,
 				...summary.totals.map((v) => `${v}%`)
 			]);
@@ -16915,6 +16981,7 @@ function generateClientsViewCSV(state, projectsSubset) {
 			for (const alloc of projectAllocs) {
 				const person = people.find((p) => p.id === alloc.personId);
 				if (!person) continue;
+				const { firstName, lastName } = splitPersonName(person);
 				const avg = Math.round(alloc.monthlyPercentage.reduce((s, n) => s + (n || 0), 0) / 12);
 				rows.push([
 					selectedYear,
@@ -16926,7 +16993,8 @@ function generateClientsViewCSV(state, projectsSubset) {
 					project.status,
 					project.billable ? "Yes" : "No",
 					project.notes || "",
-					person.name,
+					firstName,
+					lastName,
 					person.role,
 					person.department,
 					person.employmentType || "Internal",
@@ -16949,7 +17017,8 @@ function generateAvailabilityViewCSV(state, peopleSubset) {
 	const rows = [[
 		"Year",
 		"Row Type",
-		"Person Name",
+		"First Name",
+		"Last Name",
 		"Role",
 		"Department",
 		"Employment",
@@ -16964,12 +17033,14 @@ function generateAvailabilityViewCSV(state, peopleSubset) {
 		...MONTH_NAMES
 	]];
 	for (const person of targetPeople) {
+		const { firstName, lastName } = splitPersonName(person);
 		const summary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 		const personLeaves = leaves.filter((l) => l.personId === person.id && l.year === selectedYear);
 		rows.push([
 			selectedYear,
 			"Effective Capacity",
-			person.name,
+			firstName,
+			lastName,
 			person.role,
 			person.department,
 			person.employmentType || "Internal",
@@ -16990,7 +17061,8 @@ function generateAvailabilityViewCSV(state, peopleSubset) {
 			rows.push([
 				selectedYear,
 				"Leave Entry",
-				person.name,
+				firstName,
+				lastName,
 				person.role,
 				person.department,
 				person.employmentType || "Internal",
@@ -17018,7 +17090,8 @@ function generateBenchViewCSV(state, peopleSubset) {
 	const rows = [[
 		"Year",
 		"Row Type",
-		"Person Name",
+		"First Name",
+		"Last Name",
 		"Role",
 		"Department",
 		"Employment",
@@ -17030,11 +17103,13 @@ function generateBenchViewCSV(state, peopleSubset) {
 		...MONTH_NAMES
 	]];
 	for (const person of targetPeople) {
+		const { firstName, lastName } = splitPersonName(person);
 		const bench = getPersonBenchSummary(person, selectedYear, allocations, leaves);
 		rows.push([
 			selectedYear,
 			"Bench Availability",
-			person.name,
+			firstName,
+			lastName,
 			person.role,
 			person.department,
 			person.employmentType || "Internal",
@@ -17058,7 +17133,8 @@ function generateAllViewsCSV(state) {
 	const rows = [[
 		"Year",
 		"Record Type",
-		"Person Name",
+		"First Name",
+		"Last Name",
 		"Role",
 		"Department",
 		"Employment",
@@ -17081,11 +17157,13 @@ function generateAllViewsCSV(state) {
 		...MONTH_NAMES
 	]];
 	for (const person of people) {
+		const { firstName, lastName } = splitPersonName(person);
 		const summary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 		rows.push([
 			selectedYear,
 			"Person",
-			person.name,
+			firstName,
+			lastName,
 			person.role,
 			person.department,
 			person.employmentType || "Internal",
@@ -17121,6 +17199,7 @@ function generateAllViewsCSV(state) {
 			"",
 			"",
 			"",
+			"",
 			client?.name || "Internal",
 			client?.industry || "Technology",
 			project.name,
@@ -17141,11 +17220,13 @@ function generateAllViewsCSV(state) {
 		const person = people.find((p) => p.id === alloc.personId);
 		const project = projects.find((p) => p.id === alloc.projectId);
 		if (!person || !project) continue;
+		const { firstName, lastName } = splitPersonName(person);
 		const client = clients.find((c) => c.id === project.clientId);
 		rows.push([
 			alloc.year,
 			"Allocation",
-			person.name,
+			firstName,
+			lastName,
 			person.role,
 			person.department,
 			person.employmentType || "Internal",
@@ -17171,13 +17252,15 @@ function generateAllViewsCSV(state) {
 	for (const leave of leaves) {
 		const person = people.find((p) => p.id === leave.personId);
 		if (!person) continue;
+		const { firstName, lastName } = splitPersonName(person);
 		const startM = Math.min(leave.startMonth, leave.endMonth);
 		const endM = Math.max(leave.startMonth, leave.endMonth);
 		const monthCells = MONTH_NAMES.map((_, idx) => idx >= startM && idx <= endM ? `-${leave.impactPercent}%` : "0%");
 		rows.push([
 			leave.year,
 			"Leave",
-			person.name,
+			firstName,
+			lastName,
 			person.role,
 			person.department,
 			person.employmentType || "Internal",
@@ -17233,9 +17316,12 @@ function generateViewJSON(state, scope) {
 	}, null, 2);
 	const benchSummaries = people.map((person) => {
 		const b = getPersonBenchSummary(person, selectedYear, allocations, leaves);
+		const { firstName, lastName, fullName } = splitPersonName(person);
 		return {
 			personId: person.id,
-			name: person.name,
+			firstName,
+			lastName,
+			name: fullName,
 			role: person.role,
 			department: person.department,
 			employmentType: person.employmentType || "Internal",
@@ -17263,7 +17349,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		const headers = [
 			"Year",
 			"Row Type",
-			"Person Name",
+			"First Name",
+			"Last Name",
 			"Role",
 			"Department",
 			"Employment",
@@ -17280,7 +17367,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		return rowsToCsv([headers, ...includeExampleRows ? [[
 			selectedYear,
 			"Project Assignment",
-			"Jane Doe",
+			"Jane",
+			"Doe",
 			"Senior Frontend Engineer",
 			"Engineering",
 			"Internal",
@@ -17307,7 +17395,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		], [
 			selectedYear,
 			"Project Assignment",
-			"Jane Doe",
+			"Jane",
+			"Doe",
 			"Senior Frontend Engineer",
 			"Engineering",
 			"Internal",
@@ -17344,7 +17433,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Project Status",
 			"Billable",
 			"Project Scope Comment",
-			"Person Name",
+			"First Name",
+			"Last Name",
 			"Role",
 			"Department",
 			"Employment",
@@ -17362,6 +17452,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"active",
 			"Yes",
 			"Q2-Q4 Rollout",
+			"",
 			"",
 			"",
 			"",
@@ -17390,7 +17481,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"active",
 			"Yes",
 			"Q2-Q4 Rollout",
-			"Alex Rivera",
+			"Alex",
+			"Rivera",
 			"Product Designer",
 			"Design",
 			"B2B",
@@ -17414,7 +17506,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		const headers = [
 			"Year",
 			"Row Type",
-			"Person Name",
+			"First Name",
+			"Last Name",
 			"Role",
 			"Department",
 			"Employment",
@@ -17431,7 +17524,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		return rowsToCsv([headers, ...includeExampleRows ? [[
 			selectedYear,
 			"Leave Entry",
-			"Jane Doe",
+			"Jane",
+			"Doe",
 			"Senior Frontend Engineer",
 			"Engineering",
 			"Internal",
@@ -17458,7 +17552,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		], [
 			selectedYear,
 			"Leave Entry",
-			"Sam Taylor",
+			"Sam",
+			"Taylor",
 			"Backend Architect",
 			"Engineering",
 			"B2B",
@@ -17488,7 +17583,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		const headers = [
 			"Year",
 			"Row Type",
-			"Person Name",
+			"First Name",
+			"Last Name",
 			"Role",
 			"Department",
 			"Employment",
@@ -17502,7 +17598,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		return rowsToCsv([headers, ...includeExampleRows ? [[
 			selectedYear,
 			"Bench Availability",
-			"Chris Morgan",
+			"Chris",
+			"Morgan",
 			"DevOps Engineer",
 			"Cloud & Infra",
 			"External",
@@ -17528,7 +17625,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 	const headers = [
 		"Year",
 		"Record Type",
-		"Person Name",
+		"First Name",
+		"Last Name",
 		"Role",
 		"Department",
 		"Employment",
@@ -17553,7 +17651,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 	return rowsToCsv([headers, ...includeExampleRows ? [[
 		selectedYear,
 		"Allocation",
-		"Jane Doe",
+		"Jane",
+		"Doe",
 		"Senior Frontend Engineer",
 		"Engineering",
 		"Internal",
@@ -17588,7 +17687,8 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 	], [
 		selectedYear,
 		"Leave",
-		"Jane Doe",
+		"Jane",
+		"Doe",
 		"Senior Frontend Engineer",
 		"Engineering",
 		"Internal",
@@ -17639,32 +17739,45 @@ function importFromJsonContent(jsonText, currentState, targetScope, mergeMode) {
 	let allocationsCount = 0;
 	let leavesCount = 0;
 	if (Array.isArray(parsed.people)) for (const p of parsed.people) {
-		if (!p || !p.name) continue;
+		if (!p || !p.name && !p.firstName) continue;
+		const { firstName, lastName, fullName } = splitPersonName(p);
+		if (!fullName) continue;
 		peopleCount++;
-		const idx = nextPeople.findIndex((existing) => existing.id === p.id || existing.name.toLowerCase() === p.name.toLowerCase());
+		const idx = nextPeople.findIndex((existing) => existing.id === p.id || existing.name.toLowerCase() === fullName.toLowerCase());
 		if (idx >= 0) nextPeople[idx] = {
 			...nextPeople[idx],
 			...p,
+			firstName,
+			lastName,
+			name: fullName,
 			id: nextPeople[idx].id
 		};
 		else nextPeople.push({
 			...p,
 			id: p.id || `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+			firstName,
+			lastName,
+			name: fullName,
 			role: p.role || "Specialist",
 			department: p.department || "Engineering",
 			employmentType: parseEmploymentType(p.employmentType, "Internal"),
-			email: p.email || `${p.name.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
+			email: p.email || `${fullName.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent: p.maxCapacityPercent ?? 100,
 			avatarColor: p.avatarColor || AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
-			initials: p.initials || getInitials(p.name)
+			initials: p.initials || getInitials(fullName)
 		});
 	}
 	if (Array.isArray(parsed.benchSummaries)) for (const b of parsed.benchSummaries) {
-		if (!b || !b.name) continue;
+		if (!b || !b.name && !b.firstName) continue;
+		const { firstName, lastName, fullName } = splitPersonName(b);
+		if (!fullName) continue;
 		peopleCount++;
-		const idx = nextPeople.findIndex((existing) => existing.id === b.personId || existing.name.toLowerCase() === b.name.toLowerCase());
+		const idx = nextPeople.findIndex((existing) => existing.id === b.personId || existing.name.toLowerCase() === fullName.toLowerCase());
 		if (idx >= 0) nextPeople[idx] = {
 			...nextPeople[idx],
+			firstName,
+			lastName,
+			name: fullName,
 			role: b.role ?? nextPeople[idx].role,
 			department: b.department ?? nextPeople[idx].department,
 			employmentType: b.employmentType ? parseEmploymentType(b.employmentType, nextPeople[idx].employmentType || "Internal") : nextPeople[idx].employmentType || "Internal",
@@ -17673,14 +17786,16 @@ function importFromJsonContent(jsonText, currentState, targetScope, mergeMode) {
 		};
 		else nextPeople.push({
 			id: b.personId || `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-			name: b.name,
+			firstName,
+			lastName,
+			name: fullName,
 			role: b.role || "Specialist",
 			department: b.department || "Engineering",
 			employmentType: parseEmploymentType(b.employmentType, "Internal"),
-			email: b.email || `${b.name.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
+			email: b.email || `${fullName.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent: b.maxCapacityPercent ?? 100,
 			avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
-			initials: getInitials(b.name),
+			initials: getInitials(fullName),
 			notes: b.notes || void 0
 		});
 	}
@@ -17804,11 +17919,22 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		"record type",
 		"type"
 	]);
+	const idxFirstName = colIndex([
+		"first name",
+		"firstname",
+		"given name"
+	]);
+	const idxLastName = colIndex([
+		"last name",
+		"lastname",
+		"surname",
+		"family name"
+	]);
 	const idxPersonName = colIndex([
 		"person name",
+		"full name",
 		"team member",
 		"person",
-		"name",
 		"staff"
 	]);
 	const idxRole = colIndex([
@@ -17877,12 +18003,20 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 	let updatedProjectsCount = 0;
 	let updatedAllocationsCount = 0;
 	let updatedLeavesCount = 0;
-	const ensurePerson = (name, role, dept, employmentRaw, email, maxCap, notes) => {
-		const existingIdx = nextPeople.findIndex((p) => p.name.toLowerCase() === name.toLowerCase());
+	const ensurePerson = (firstNameRaw, lastNameRaw, legacyFullNameRaw, role, dept, employmentRaw, email, maxCap, notes) => {
+		const { firstName, lastName, fullName } = splitPersonName({
+			firstName: firstNameRaw,
+			lastName: lastNameRaw,
+			name: legacyFullNameRaw
+		});
+		const existingIdx = nextPeople.findIndex((p) => p.name.toLowerCase() === fullName.toLowerCase());
 		if (existingIdx >= 0) {
 			const existing = nextPeople[existingIdx];
 			const updated = {
 				...existing,
+				firstName: firstName || existing.firstName,
+				lastName: lastName || existing.lastName,
+				name: fullName || existing.name,
 				role: role || existing.role,
 				department: dept || existing.department,
 				employmentType: employmentRaw ? parseEmploymentType(employmentRaw, existing.employmentType || "Internal") : existing.employmentType || "Internal",
@@ -17896,14 +18030,16 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		}
 		const created = {
 			id: `p-${Date.now()}-${nextPeople.length + 1}`,
-			name,
+			firstName,
+			lastName,
+			name: fullName,
 			role: role || "Specialist",
 			department: dept || "Engineering",
 			employmentType: parseEmploymentType(employmentRaw, "Internal"),
-			email: email || `${name.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
+			email: email || `${fullName.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent: maxCap ?? 100,
 			avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
-			initials: getInitials(name),
+			initials: getInitials(fullName),
 			notes: notes || void 0
 		};
 		nextPeople.push(created);
@@ -17971,7 +18107,10 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		const rowYearNum = parseInt(getCell(idxYear), 10);
 		const year = !isNaN(rowYearNum) && rowYearNum >= 2e3 && rowYearNum <= 2100 ? rowYearNum : currentState.selectedYear;
 		const rowType = getCell(idxRowType).toLowerCase();
-		const personName = getCell(idxPersonName);
+		const firstNameVal = getCell(idxFirstName);
+		const lastNameVal = getCell(idxLastName);
+		const legacyFullNameVal = getCell(idxPersonName);
+		const hasPersonIdentity = Boolean(firstNameVal || lastNameVal || legacyFullNameVal);
 		const role = getCell(idxRole);
 		const dept = getCell(idxDept);
 		const employmentRaw = getCell(idxEmployment);
@@ -17996,7 +18135,7 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		const monthValues = monthIndices.map((colIdx) => colIdx >= 0 ? parsePercentValue(getCell(colIdx), 0) : 0);
 		const hasMonthColumns = monthIndices.some((colIdx) => colIdx >= 0);
 		let personObj = null;
-		if (personName) personObj = ensurePerson(personName, role, dept, employmentRaw, email, maxCap, personComment);
+		if (hasPersonIdentity) personObj = ensurePerson(firstNameVal, lastNameVal, legacyFullNameVal, role, dept, employmentRaw, email, maxCap, personComment);
 		let projectObj = null;
 		if (projectName) projectObj = ensureProject(projectName, projectCode, ensureClient(clientName || "Internal", industry).id, projectStatus, billableStr, projectComment);
 		if ((rowType.includes("leave") || personObj && (leaveTypeRaw in LEAVE_TYPE_CONFIG || leaveTitle && !leaveTitle.includes("scheduled leave(s)"))) && personObj) {
@@ -18090,7 +18229,7 @@ var SCOPE_TABS = [
 		label: "All Tabs (Full Workspace)",
 		shortLabel: "All Tabs",
 		description: "Complete workspace backup and multi-view master spreadsheet covering People, Clients, Projects, Allocations, Leaves, Departments, and Years.",
-		csvColumnsHint: "Year, Record Type (Person/Project/Allocation/Leave), Person Name, Role, Department, Employment (Internal/External/B2B), Client, Project, Leave Category, Jan..Dec",
+		csvColumnsHint: "Year, Record Type (Person/Project/Allocation/Leave), First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Client, Project, Leave Category, Jan..Dec",
 		icon: Layers
 	},
 	{
@@ -18098,7 +18237,7 @@ var SCOPE_TABS = [
 		label: "By People View",
 		shortLabel: "By People",
 		description: "Team member capacity summaries, employment type, staffing comments, and project allocation rows across all 12 months.",
-		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Client, Project, Project Code, Assignment Note, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Client, Project, Project Code, Assignment Note, Jan..Dec",
 		icon: Users
 	},
 	{
@@ -18106,7 +18245,7 @@ var SCOPE_TABS = [
 		label: "By Clients & Projects View",
 		shortLabel: "Clients & Projects",
 		description: "Client portfolios, deliverable projects, scope notes, monthly FTE totals, and assigned staff breakdowns.",
-		csvColumnsHint: "Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, Person Name, Role, Department, Employment, Assignment Note, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, First Name, Last Name, Role, Department, Employment, Assignment Note, Jan..Dec",
 		icon: Briefcase
 	},
 	{
@@ -18114,7 +18253,7 @@ var SCOPE_TABS = [
 		label: "Availability & Leaves View",
 		shortLabel: "Availability & Leaves",
 		description: "Effective monthly working capacities and scheduled time off (vacations, parental leave, sick leave, sabbaticals).",
-		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec",
 		icon: CalendarOff
 	},
 	{
@@ -18122,7 +18261,7 @@ var SCOPE_TABS = [
 		label: "Bench View",
 		shortLabel: "Bench",
 		description: "Unallocated bench capacity percentages, free months count, and team member skills / bench notes.",
-		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec",
 		icon: Armchair
 	}
 ];
@@ -18664,7 +18803,7 @@ function App() {
 					const client = proj ? clients.find((c) => c.id === proj.clientId) : void 0;
 					return proj?.name.toLowerCase().includes(q) || proj?.code.toLowerCase().includes(q) || client?.name.toLowerCase().includes(q);
 				});
-				if (!(person.name.toLowerCase().includes(q) || person.role.toLowerCase().includes(q) || person.department.toLowerCase().includes(q) || (person.employmentType || "Internal").toLowerCase().includes(q) || person.notes && person.notes.toLowerCase().includes(q)) && !matchesProject) return false;
+				if (!(person.name.toLowerCase().includes(q) || person.firstName && person.firstName.toLowerCase().includes(q) || person.lastName && person.lastName.toLowerCase().includes(q) || person.role.toLowerCase().includes(q) || person.department.toLowerCase().includes(q) || (person.employmentType || "Internal").toLowerCase().includes(q) || person.notes && person.notes.toLowerCase().includes(q)) && !matchesProject) return false;
 			}
 			if (filters.utilization !== "all") {
 				const summary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);

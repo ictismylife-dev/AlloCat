@@ -31,7 +31,8 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
   departments,
   onSavePerson
 }) => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [role, setRole] = useState('');
   const [department, setDepartment] = useState<Department>(departments[0] || 'Engineering');
   const [employmentType, setEmploymentType] = useState<EmploymentType>('Internal');
@@ -41,29 +42,39 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
 
   if (!isOpen) return null;
 
-  const getInitials = (fullName: string) => {
-    const parts = fullName.trim().split(/\s+/);
-    if (parts.length === 0 || !parts[0]) return 'TM';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  const getInitials = (first: string, last: string) => {
+    const f = first.trim();
+    const l = last.trim();
+    if (!f && !l) return 'TM';
+    if (f && l) return (f[0] + l[0]).toUpperCase();
+    const single = f || l;
+    return single.slice(0, 2).toUpperCase();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !role.trim()) return;
+    const cleanFirst = firstName.trim();
+    const cleanLast = lastName.trim();
+    if (!cleanFirst || !cleanLast || !role.trim()) return;
+    const fullName = `${cleanFirst} ${cleanLast}`.trim();
     const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
     onSavePerson({
-      name: name.trim(),
+      firstName: cleanFirst,
+      lastName: cleanLast,
+      name: fullName,
       role: role.trim(),
       department,
       employmentType,
-      email: email.trim() || `${name.trim().toLowerCase().replace(/\s+/g, '.')}@company.internal`,
+      email:
+        email.trim() ||
+        `${cleanFirst.toLowerCase()}.${cleanLast.toLowerCase().replace(/\s+/g, '')}@company.internal`,
       maxCapacityPercent,
       avatarColor: color,
-      initials: getInitials(name),
+      initials: getInitials(cleanFirst, cleanLast),
       notes: notes.trim() || undefined
     });
-    setName('');
+    setFirstName('');
+    setLastName('');
     setRole('');
     setEmploymentType('Internal');
     setEmail('');
@@ -90,17 +101,35 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
-          <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
-            <input
-              type="text"
-              placeholder="e.g., Alex Rivera"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
-              required
-              autoFocus
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                First Name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g., Alex"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                required
+                autoFocus
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Last Name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g., Rivera"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                required
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

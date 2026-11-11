@@ -3,6 +3,8 @@ import { Person, Client, Project, Allocation, LeaveEntry } from '../types';
 export const INITIAL_PEOPLE: Person[] = [
   {
     id: 'p-1',
+    firstName: 'Marcus',
+    lastName: 'Vance',
     name: 'Marcus Vance',
     role: 'Principal Cloud Architect',
     department: 'Engineering',
@@ -15,6 +17,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-2',
+    firstName: 'Elena',
+    lastName: 'Rostova',
     name: 'Elena Rostova',
     role: 'Staff Product Designer',
     department: 'Design',
@@ -27,6 +31,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-3',
+    firstName: 'Devon',
+    lastName: 'Zhao',
     name: 'Devon Zhao',
     role: 'Senior Full-Stack Engineer',
     department: 'Engineering',
@@ -39,6 +45,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-4',
+    firstName: 'Sarah',
+    lastName: 'Lindqvist',
     name: 'Sarah Lindqvist',
     role: 'Lead Product Manager',
     department: 'Product',
@@ -51,6 +59,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-5',
+    firstName: 'Tariq',
+    lastName: 'Al-Mansoor',
     name: 'Tariq Al-Mansoor',
     role: 'Senior Mobile Engineer (iOS/Android)',
     department: 'Engineering',
@@ -63,6 +73,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-6',
+    firstName: 'Amara',
+    lastName: 'Okafor',
     name: 'Amara Okafor',
     role: 'Senior UX Researcher',
     department: 'Design',
@@ -75,6 +87,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-7',
+    firstName: 'Kenji',
+    lastName: 'Takahashi',
     name: 'Kenji Takahashi',
     role: 'Staff Data Scientist & ML',
     department: 'Data',
@@ -87,6 +101,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-8',
+    firstName: 'Chloe',
+    lastName: 'Bennett',
     name: 'Chloe Bennett',
     role: 'QA Automation Lead',
     department: 'QA',
@@ -99,6 +115,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-9',
+    firstName: 'Liam',
+    lastName: 'Henderson',
     name: 'Liam Henderson',
     role: 'Frontend Engineer',
     department: 'Engineering',
@@ -111,6 +129,8 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-10',
+    firstName: 'Priya',
+    lastName: 'Patel',
     name: 'Priya Patel',
     role: 'Technical Program Manager',
     department: 'Operations',
@@ -504,8 +524,24 @@ export function loadAppState(): AppState {
 
       const loadedPeople = parsed.people.map((p: Person) => {
         const defaultPerson = INITIAL_PEOPLE.find((ip) => ip.id === p.id);
+        const rawFullName = (p.name || '').trim();
+        const nameParts = rawFullName ? rawFullName.split(/\s+/) : [];
+        const firstName =
+          p.firstName?.trim() ||
+          defaultPerson?.firstName ||
+          nameParts[0] ||
+          'Team';
+        const lastName =
+          p.lastName !== undefined && p.lastName.trim() !== ''
+            ? p.lastName.trim()
+            : defaultPerson?.lastName ||
+              (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '');
+        const fullName = `${firstName} ${lastName}`.trim() || rawFullName;
         return {
           ...p,
+          firstName,
+          lastName,
+          name: fullName,
           employmentType:
             p.employmentType === 'Internal' ||
             p.employmentType === 'External' ||

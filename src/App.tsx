@@ -154,6 +154,8 @@ export function App() {
 
         const matchesPerson =
           person.name.toLowerCase().includes(q) ||
+          (person.firstName && person.firstName.toLowerCase().includes(q)) ||
+          (person.lastName && person.lastName.toLowerCase().includes(q)) ||
           person.role.toLowerCase().includes(q) ||
           person.department.toLowerCase().includes(q) ||
           (person.employmentType || 'Internal').toLowerCase().includes(q) ||

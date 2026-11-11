@@ -39,6 +39,24 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+function splitPersonName(person: {
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+}): { firstName: string; lastName: string; fullName: string } {
+  const rawFull = (person.name || '').trim();
+  const parts = rawFull ? rawFull.split(/\s+/) : [];
+  const firstName = person.firstName?.trim() || parts[0] || '';
+  const lastName =
+    person.lastName !== undefined && person.lastName.trim() !== ''
+      ? person.lastName.trim()
+      : parts.length > 1
+      ? parts.slice(1).join(' ')
+      : '';
+  const fullName = `${firstName} ${lastName}`.trim() || rawFull;
+  return { firstName, lastName, fullName };
+}
+
 export function escapeCsvCell(val: string | number | boolean | undefined | null): string {
   const str = String(val ?? '');
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
@@ -179,7 +197,8 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
   const headers = [
     'Year',
     'Row Type',
-    'Person Name',
+    'First Name',
+    'Last Name',
     'Role',
     'Department',
     'Employment',
@@ -197,6 +216,7 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
   const rows: (string | number)[][] = [headers];
 
   for (const person of targetPeople) {
+    const { firstName, lastName } = splitPersonName(person);
     const summary = getPersonCapacitySummary(
       person.id,
       selectedYear,
@@ -209,7 +229,8 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
     rows.push([
       selectedYear,
       'Person Summary',
-      person.name,
+      firstName,
+      lastName,
       person.role,
       person.department,
       person.employmentType || 'Internal',
@@ -240,7 +261,8 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
       rows.push([
         selectedYear,
         'Project Assignment',
-        person.name,
+        firstName,
+        lastName,
         person.role,
         person.department,
         person.employmentType || 'Internal',
@@ -278,7 +300,8 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
     'Project Status',
     'Billable',
     'Project Scope Comment',
-    'Person Name',
+    'First Name',
+    'Last Name',
     'Role',
     'Department',
     'Employment',
@@ -310,6 +333,7 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
         '',
         '',
         '',
+        '',
         `${summary.avgMonthlyFTE} FTE`,
         ...summary.totals.map((v) => `${v}%`)
       ]);
@@ -322,6 +346,7 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
       for (const alloc of projectAllocs) {
         const person = people.find((p) => p.id === alloc.personId);
         if (!person) continue;
+        const { firstName, lastName } = splitPersonName(person);
         const avg = Math.round(
           alloc.monthlyPercentage.reduce((s, n) => s + (n || 0), 0) / 12
         );
@@ -336,7 +361,8 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
           project.status,
           project.billable ? 'Yes' : 'No',
           project.notes || '',
-          person.name,
+          firstName,
+          lastName,
           person.role,
           person.department,
           person.employmentType || 'Internal',
@@ -362,7 +388,8 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
   const headers = [
     'Year',
     'Row Type',
-    'Person Name',
+    'First Name',
+    'Last Name',
     'Role',
     'Department',
     'Employment',
@@ -380,6 +407,7 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
   const rows: (string | number)[][] = [headers];
 
   for (const person of targetPeople) {
+    const { firstName, lastName } = splitPersonName(person);
     const summary = getPersonCapacitySummary(
       person.id,
       selectedYear,
@@ -395,7 +423,8 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
     rows.push([
       selectedYear,
       'Effective Capacity',
-      person.name,
+      firstName,
+      lastName,
       person.role,
       person.department,
       person.employmentType || 'Internal',
@@ -421,7 +450,8 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
       rows.push([
         selectedYear,
         'Leave Entry',
-        person.name,
+        firstName,
+        lastName,
         person.role,
         person.department,
         person.employmentType || 'Internal',
@@ -452,7 +482,8 @@ export function generateBenchViewCSV(state: AppState, peopleSubset?: Person[]): 
   const headers = [
     'Year',
     'Row Type',
-    'Person Name',
+    'First Name',
+    'Last Name',
     'Role',
     'Department',
     'Employment',
@@ -467,12 +498,14 @@ export function generateBenchViewCSV(state: AppState, peopleSubset?: Person[]): 
   const rows: (string | number)[][] = [headers];
 
   for (const person of targetPeople) {
+    const { firstName, lastName } = splitPersonName(person);
     const bench = getPersonBenchSummary(person, selectedYear, allocations, leaves);
 
     rows.push([
       selectedYear,
       'Bench Availability',
-      person.name,
+      firstName,
+      lastName,
       person.role,
       person.department,
       person.employmentType || 'Internal',
@@ -499,7 +532,8 @@ export function generateAllViewsCSV(state: AppState): string {
   const headers = [
     'Year',
     'Record Type',
-    'Person Name',
+    'First Name',
+    'Last Name',
     'Role',
     'Department',
     'Employment',
@@ -526,6 +560,7 @@ export function generateAllViewsCSV(state: AppState): string {
 
   // 1. All People
   for (const person of people) {
+    const { firstName, lastName } = splitPersonName(person);
     const summary = getPersonCapacitySummary(
       person.id,
       selectedYear,
@@ -536,7 +571,8 @@ export function generateAllViewsCSV(state: AppState): string {
     rows.push([
       selectedYear,
       'Person',
-      person.name,
+      firstName,
+      lastName,
       person.role,
       person.department,
       person.employmentType || 'Internal',
@@ -574,6 +610,7 @@ export function generateAllViewsCSV(state: AppState): string {
       '',
       '',
       '',
+      '',
       client?.name || 'Internal',
       client?.industry || 'Technology',
       project.name,
@@ -596,12 +633,14 @@ export function generateAllViewsCSV(state: AppState): string {
     const person = people.find((p) => p.id === alloc.personId);
     const project = projects.find((p) => p.id === alloc.projectId);
     if (!person || !project) continue;
+    const { firstName, lastName } = splitPersonName(person);
     const client = clients.find((c) => c.id === project.clientId);
 
     rows.push([
       alloc.year,
       'Allocation',
-      person.name,
+      firstName,
+      lastName,
       person.role,
       person.department,
       person.employmentType || 'Internal',
@@ -629,6 +668,7 @@ export function generateAllViewsCSV(state: AppState): string {
   for (const leave of leaves) {
     const person = people.find((p) => p.id === leave.personId);
     if (!person) continue;
+    const { firstName, lastName } = splitPersonName(person);
     const startM = Math.min(leave.startMonth, leave.endMonth);
     const endM = Math.max(leave.startMonth, leave.endMonth);
     const monthCells = MONTH_NAMES.map((_, idx) =>
@@ -638,7 +678,8 @@ export function generateAllViewsCSV(state: AppState): string {
     rows.push([
       leave.year,
       'Leave',
-      person.name,
+      firstName,
+      lastName,
       person.role,
       person.department,
       person.employmentType || 'Internal',
@@ -722,9 +763,12 @@ export function generateViewJSON(state: AppState, scope: ExportScope): string {
   // bench
   const benchSummaries = people.map((person) => {
     const b = getPersonBenchSummary(person, selectedYear, allocations, leaves);
+    const { firstName, lastName, fullName } = splitPersonName(person);
     return {
       personId: person.id,
-      name: person.name,
+      firstName,
+      lastName,
+      name: fullName,
       role: person.role,
       department: person.department,
       employmentType: person.employmentType || 'Internal',
@@ -762,7 +806,8 @@ export function generateTemplateCSV(
     const headers = [
       'Year',
       'Row Type',
-      'Person Name',
+      'First Name',
+      'Last Name',
       'Role',
       'Department',
       'Employment',
@@ -781,7 +826,8 @@ export function generateTemplateCSV(
           [
             selectedYear,
             'Project Assignment',
-            'Jane Doe',
+            'Jane',
+            'Doe',
             'Senior Frontend Engineer',
             'Engineering',
             'Internal',
@@ -809,7 +855,8 @@ export function generateTemplateCSV(
           [
             selectedYear,
             'Project Assignment',
-            'Jane Doe',
+            'Jane',
+            'Doe',
             'Senior Frontend Engineer',
             'Engineering',
             'Internal',
@@ -851,7 +898,8 @@ export function generateTemplateCSV(
       'Project Status',
       'Billable',
       'Project Scope Comment',
-      'Person Name',
+      'First Name',
+      'Last Name',
       'Role',
       'Department',
       'Employment',
@@ -871,6 +919,7 @@ export function generateTemplateCSV(
             'active',
             'Yes',
             'Q2-Q4 Rollout',
+            '',
             '',
             '',
             '',
@@ -900,7 +949,8 @@ export function generateTemplateCSV(
             'active',
             'Yes',
             'Q2-Q4 Rollout',
-            'Alex Rivera',
+            'Alex',
+            'Rivera',
             'Product Designer',
             'Design',
             'B2B',
@@ -929,7 +979,8 @@ export function generateTemplateCSV(
     const headers = [
       'Year',
       'Row Type',
-      'Person Name',
+      'First Name',
+      'Last Name',
       'Role',
       'Department',
       'Employment',
@@ -948,7 +999,8 @@ export function generateTemplateCSV(
           [
             selectedYear,
             'Leave Entry',
-            'Jane Doe',
+            'Jane',
+            'Doe',
             'Senior Frontend Engineer',
             'Engineering',
             'Internal',
@@ -976,7 +1028,8 @@ export function generateTemplateCSV(
           [
             selectedYear,
             'Leave Entry',
-            'Sam Taylor',
+            'Sam',
+            'Taylor',
             'Backend Architect',
             'Engineering',
             'B2B',
@@ -1011,7 +1064,8 @@ export function generateTemplateCSV(
     const headers = [
       'Year',
       'Row Type',
-      'Person Name',
+      'First Name',
+      'Last Name',
       'Role',
       'Department',
       'Employment',
@@ -1027,7 +1081,8 @@ export function generateTemplateCSV(
           [
             selectedYear,
             'Bench Availability',
-            'Chris Morgan',
+            'Chris',
+            'Morgan',
             'DevOps Engineer',
             'Cloud & Infra',
             'External',
@@ -1059,7 +1114,8 @@ export function generateTemplateCSV(
   const headers = [
     'Year',
     'Record Type',
-    'Person Name',
+    'First Name',
+    'Last Name',
     'Role',
     'Department',
     'Employment',
@@ -1086,7 +1142,8 @@ export function generateTemplateCSV(
         [
           selectedYear,
           'Allocation',
-          'Jane Doe',
+          'Jane',
+          'Doe',
           'Senior Frontend Engineer',
           'Engineering',
           'Internal',
@@ -1122,7 +1179,8 @@ export function generateTemplateCSV(
         [
           selectedYear,
           'Leave',
-          'Jane Doe',
+          'Jane',
+          'Doe',
           'Senior Frontend Engineer',
           'Engineering',
           'Internal',
@@ -1216,24 +1274,37 @@ function importFromJsonContent(
 
   if (Array.isArray(parsed.people)) {
     for (const p of parsed.people as Person[]) {
-      if (!p || !p.name) continue;
+      if (!p || (!p.name && !p.firstName)) continue;
+      const { firstName, lastName, fullName } = splitPersonName(p);
+      if (!fullName) continue;
       peopleCount++;
       const idx = nextPeople.findIndex(
-        (existing) => existing.id === p.id || existing.name.toLowerCase() === p.name.toLowerCase()
+        (existing) =>
+          existing.id === p.id || existing.name.toLowerCase() === fullName.toLowerCase()
       );
       if (idx >= 0) {
-        nextPeople[idx] = { ...nextPeople[idx], ...p, id: nextPeople[idx].id };
+        nextPeople[idx] = {
+          ...nextPeople[idx],
+          ...p,
+          firstName,
+          lastName,
+          name: fullName,
+          id: nextPeople[idx].id
+        };
       } else {
         nextPeople.push({
           ...p,
           id: p.id || `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          firstName,
+          lastName,
+          name: fullName,
           role: p.role || 'Specialist',
           department: p.department || 'Engineering',
           employmentType: parseEmploymentType(p.employmentType, 'Internal'),
-          email: p.email || `${p.name.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
+          email: p.email || `${fullName.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
           maxCapacityPercent: p.maxCapacityPercent ?? 100,
           avatarColor: p.avatarColor || AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
-          initials: p.initials || getInitials(p.name)
+          initials: p.initials || getInitials(fullName)
         });
       }
     }
@@ -1242,14 +1313,20 @@ function importFromJsonContent(
   // Also support benchSummaries array if importing a bench JSON export
   if (Array.isArray(parsed.benchSummaries)) {
     for (const b of parsed.benchSummaries) {
-      if (!b || !b.name) continue;
+      if (!b || (!b.name && !b.firstName)) continue;
+      const { firstName, lastName, fullName } = splitPersonName(b);
+      if (!fullName) continue;
       peopleCount++;
       const idx = nextPeople.findIndex(
-        (existing) => existing.id === b.personId || existing.name.toLowerCase() === b.name.toLowerCase()
+        (existing) =>
+          existing.id === b.personId || existing.name.toLowerCase() === fullName.toLowerCase()
       );
       if (idx >= 0) {
         nextPeople[idx] = {
           ...nextPeople[idx],
+          firstName,
+          lastName,
+          name: fullName,
           role: b.role ?? nextPeople[idx].role,
           department: b.department ?? nextPeople[idx].department,
           employmentType: b.employmentType
@@ -1261,14 +1338,16 @@ function importFromJsonContent(
       } else {
         nextPeople.push({
           id: b.personId || `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-          name: b.name,
+          firstName,
+          lastName,
+          name: fullName,
           role: b.role || 'Specialist',
           department: b.department || 'Engineering',
           employmentType: parseEmploymentType(b.employmentType, 'Internal'),
-          email: b.email || `${b.name.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
+          email: b.email || `${fullName.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
           maxCapacityPercent: b.maxCapacityPercent ?? 100,
           avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
-          initials: getInitials(b.name),
+          initials: getInitials(fullName),
           notes: b.notes || undefined
         });
       }
@@ -1445,7 +1524,9 @@ function importFromCsvContent(
 
   const idxYear = colIndex(['year']);
   const idxRowType = colIndex(['row type', 'record type', 'type']);
-  const idxPersonName = colIndex(['person name', 'team member', 'person', 'name', 'staff']);
+  const idxFirstName = colIndex(['first name', 'firstname', 'given name']);
+  const idxLastName = colIndex(['last name', 'lastname', 'surname', 'family name']);
+  const idxPersonName = colIndex(['person name', 'full name', 'team member', 'person', 'staff']);
   const idxRole = colIndex(['role', 'title', 'job title']);
   const idxDept = colIndex(['department', 'dept']);
   const idxEmployment = colIndex(['employment', 'employment type', 'contract', 'contract type']);
@@ -1502,7 +1583,9 @@ function importFromCsvContent(
   let updatedLeavesCount = 0;
 
   const ensurePerson = (
-    name: string,
+    firstNameRaw: string,
+    lastNameRaw: string,
+    legacyFullNameRaw: string,
     role?: string,
     dept?: string,
     employmentRaw?: string,
@@ -1510,13 +1593,22 @@ function importFromCsvContent(
     maxCap?: number,
     notes?: string
   ): Person => {
+    const { firstName, lastName, fullName } = splitPersonName({
+      firstName: firstNameRaw,
+      lastName: lastNameRaw,
+      name: legacyFullNameRaw
+    });
+
     const existingIdx = nextPeople.findIndex(
-      (p) => p.name.toLowerCase() === name.toLowerCase()
+      (p) => p.name.toLowerCase() === fullName.toLowerCase()
     );
     if (existingIdx >= 0) {
       const existing = nextPeople[existingIdx];
       const updated: Person = {
         ...existing,
+        firstName: firstName || existing.firstName,
+        lastName: lastName || existing.lastName,
+        name: fullName || existing.name,
         role: role || existing.role,
         department: dept || existing.department,
         employmentType: employmentRaw
@@ -1532,15 +1624,17 @@ function importFromCsvContent(
     }
 
     const created: Person = {
-      id: `p-${Date.now()}-${ nextPeople.length + 1}`,
-      name,
+      id: `p-${Date.now()}-${nextPeople.length + 1}`,
+      firstName,
+      lastName,
+      name: fullName,
       role: role || 'Specialist',
       department: dept || 'Engineering',
       employmentType: parseEmploymentType(employmentRaw, 'Internal'),
-      email: email || `${name.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
+      email: email || `${fullName.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
       maxCapacityPercent: maxCap ?? 100,
       avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
-      initials: getInitials(name),
+      initials: getInitials(fullName),
       notes: notes || undefined
     };
     nextPeople.push(created);
@@ -1639,7 +1733,10 @@ function importFromCsvContent(
       : currentState.selectedYear;
 
     const rowType = getCell(idxRowType).toLowerCase();
-    const personName = getCell(idxPersonName);
+    const firstNameVal = getCell(idxFirstName);
+    const lastNameVal = getCell(idxLastName);
+    const legacyFullNameVal = getCell(idxPersonName);
+    const hasPersonIdentity = Boolean(firstNameVal || lastNameVal || legacyFullNameVal);
     const role = getCell(idxRole);
     const dept = getCell(idxDept);
     const employmentRaw = getCell(idxEmployment);
@@ -1669,11 +1766,13 @@ function importFromCsvContent(
     );
     const hasMonthColumns = monthIndices.some((colIdx) => colIdx >= 0);
 
-    // 1. Ensure Person if personName is present
+    // 1. Ensure Person if First Name / Last Name / Person Name is present
     let personObj: Person | null = null;
-    if (personName) {
+    if (hasPersonIdentity) {
       personObj = ensurePerson(
-        personName,
+        firstNameVal,
+        lastNameVal,
+        legacyFullNameVal,
         role,
         dept,
         employmentRaw,

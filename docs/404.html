@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlloCat - Resource & Capacity Planner</title>
+    <meta name="description" content="Interactive annual resource allocation matrix for planning team staffing across clients and projects with real-time capacity and overtime tracking." />
+    <meta property="og:title" content="AlloCat - Resource & Capacity Planner" />
+    <meta property="og:description" content="Interactive annual resource allocation matrix for planning team staffing across clients and projects with real-time capacity and overtime tracking." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ictismylife-dev.github.io/AlloCat/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@19.0.0",
+          "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+          "react-dom": "https://esm.sh/react-dom@19.0.0",
+          "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+          "lucide-react": "https://esm.sh/lucide-react@0.475.0?deps=react@19.0.0"
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased font-sans">
+    <div id="root"></div>
+    <script>
+      (async function bootAlloCat() {
+        try {
+          const check = await fetch('./assets/app.js', { method: 'HEAD' });
+          const contentType = check.headers.get('content-type') || '';
+          if (check.ok && !contentType.includes('text/html')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = './assets/app.css';
+            document.head.appendChild(link);
+
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = './assets/app.js';
+            document.body.appendChild(script);
+            return;
+          }
+        } catch (_) {}
+
+        const loadScript = (src) =>
+          new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+
+        await Promise.all([
+          loadScript('https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'),
+          loadScript('https://unpkg.com/@babel/standalone@7.26.9/babel.min.js')
+        ]);
+
+        const moduleOrder = [
+          'types/index.ts',
+          'utils/allocationMath.ts',
+          'data/seedData.ts',
+          'components/CommentCell.tsx',
+          'components/CellAllocationPopover.tsx',
+          'components/Header.tsx',
+          'components/Toolbar.tsx',
+          'components/PeopleMatrixView.tsx',
+          'components/ClientProjectMatrixView.tsx',
+          'components/AvailabilityMatrixView.tsx',
+          'components/BenchMatrixView.tsx',
+          'components/AddLeaveModal.tsx',
+          'components/AddPersonModal.tsx',
+          'components/AddClientProjectModal.tsx',
+          'components/BatchAssignModal.tsx',
+          'components/ConfirmDeletePersonModal.tsx',
+          'components/ManageDepartmentsModal.tsx',
+          'components/ManageYearsModal.tsx',
+          'components/OvertimeAlertsDrawer.tsx',
+          'components/ExportImportModal.tsx',
+          'App.tsx',
+          'main.tsx'
+        ];
+
+        const baseCandidates = [
+          '../src/',
+          './src/',
+          'https://raw.githubusercontent.com/ictismylife-dev/AlloCat/main/src/',
+          'https://raw.githubusercontent.com/ictismylife-dev/AlloCat/master/src/'
+        ];
+
+        async function fetchSource(relPath) {
+          for (const base of baseCandidates) {
+            try {
+              const res = await fetch(base + relPath);
+              if (res.ok) {
+                const txt = await res.text();
+                if (!txt.trim().startsWith('<!doctype') && !txt.trim().startsWith('<!DOCTYPE')) {
+                  return txt;
+                }
+              }
+            } catch (_) {}
+          }
+          throw new Error('Could not load ' + relPath);
+        }
+
+        const rawSources = {};
+        await Promise.all(
+          moduleOrder.map(async (modPath) => {
+            rawSources[modPath] = await fetchSource(modPath);
+          })
+        );
+
+        const blobUrls = {};
+        function resolveKey(fromModule, importSpec) {
+          if (!importSpec.startsWith('.')) return null;
+          const fromParts = fromModule.split('/');
+          fromParts.pop();
+          const specParts = importSpec.split('/');
+          for (const part of specParts) {
+            if (part === '.' || part === '') continue;
+            if (part === '..') fromParts.pop();
+            else fromParts.push(part);
+          }
+          const joined = fromParts.join('/');
+          const candidates = [
+            joined,
+            joined + '.ts',
+            joined + '.tsx',
+            joined + '/index.ts',
+            joined + '/index.tsx'
+          ];
+          return candidates.find((c) => Boolean(blobUrls[c])) || null;
+        }
+
+        for (const modPath of moduleOrder) {
+          let code = rawSources[modPath];
+          code = code.replace(/import\s+['"][^'"]+\.css['"];?/g, '');
+          code = code.replace(
+            /(from\s+['"])(\.[^'"]+)(['"])/g,
+            (match, prefix, spec, suffix) => {
+              const key = resolveKey(modPath, spec);
+              return key ? prefix + blobUrls[key] + suffix : match;
+            }
+          );
+
+          const compiled = window.Babel.transform(code, {
+            filename: modPath,
+            presets: [
+              ['typescript', { isTSX: true, allExtensions: true }],
+              ['react', { runtime: 'automatic' }]
+            ]
+          }).code;
+
+          const blob = new Blob([compiled], { type: 'text/javascript' });
+          blobUrls[modPath] = URL.createObjectURL(blob);
+        }
+
+        const entryScript = document.createElement('script');
+        entryScript.type = 'module';
+        entryScript.src = blobUrls['main.tsx'];
+        document.body.appendChild(entryScript);
+      })();
+    </script>
+  </body>
+</html>

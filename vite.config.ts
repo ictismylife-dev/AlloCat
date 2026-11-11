@@ -8,9 +8,8 @@ import { defineConfig, Plugin } from 'vite';
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- * Prepares the build output in both `dist/` (for GitHub Actions) and `docs/`
- * (for GitHub Pages branch deployment at https://ictismylife-dev.github.io/AlloCat/),
- * including SPA `404.html` and `.nojekyll`.
+ * Copies built assets into `docs/assets/` while preserving `docs/index.html`,
+ * `docs/404.html`, and `docs/.nojekyll` tracked by Git for GitHub Pages.
  */
 function githubPagesPlugin(): Plugin {
   return {
@@ -22,7 +21,7 @@ function githubPagesPlugin(): Plugin {
         const indexHtmlPath = path.join(distDir, 'index.html');
         if (!fs.existsSync(indexHtmlPath)) return;
 
-        // Remove the static-root fallback script from compiled index.html in dist/ and docs/
+        // Remove the static-root fallback script from compiled index.html in dist/
         let builtHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
         builtHtml = builtHtml.replace(
           /<script id="gh-pages-root-fallback">[\s\S]*?<\/script>\s*/i,
@@ -32,19 +31,15 @@ function githubPagesPlugin(): Plugin {
 
         // Create 404.html and .nojekyll in dist/
         fs.writeFileSync(path.join(distDir, '404.html'), builtHtml, 'utf-8');
-        fs.writeFileSync(path.join(distDir, '.nojekyll'), '', 'utf-8');
+        fs.writeFileSync(path.join(distDir, '.nojekyll'), '# Disable Jekyll\n', 'utf-8');
 
-        // Mirror dist/ into docs/ so GitHub Pages branch deployment (/docs or / root) works out of the box
-        const docsDir = path.resolve(rootDir, 'docs');
-        if (fs.existsSync(docsDir)) {
-          fs.rmSync(docsDir, { recursive: true, force: true });
+        // Copy compiled assets into docs/assets/ without deleting tracked docs/ files
+        const distAssetsDir = path.join(distDir, 'assets');
+        const docsAssetsDir = path.resolve(rootDir, 'docs', 'assets');
+        if (fs.existsSync(distAssetsDir)) {
+          fs.mkdirSync(docsAssetsDir, { recursive: true });
+          fs.cpSync(distAssetsDir, docsAssetsDir, { recursive: true });
         }
-        fs.cpSync(distDir, docsDir, { recursive: true });
-
-        // Ensure .nojekyll and 404.html exist in project root as well
-        fs.writeFileSync(path.resolve(rootDir, '.nojekyll'), '', 'utf-8');
-        const rootIndexHtml = fs.readFileSync(path.resolve(rootDir, 'index.html'), 'utf-8');
-        fs.writeFileSync(path.resolve(rootDir, '404.html'), rootIndexHtml, 'utf-8');
       } catch (err) {
         console.error('Failed to prepare GitHub Pages artifacts:', err);
       }

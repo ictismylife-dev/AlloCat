@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlloCat - Resource & Capacity Planner</title>
+    <meta name="description" content="Interactive annual resource allocation matrix for planning team staffing across clients and projects with real-time capacity and overtime tracking." />
+    <meta property="og:title" content="AlloCat - Resource & Capacity Planner" />
+    <meta property="og:description" content="Interactive annual resource allocation matrix for planning team staffing across clients and projects with real-time capacity and overtime tracking." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ictismylife-dev.github.io/AlloCat/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <script id="gh-pages-root-fallback">
+      // Automatic loader when https://github.com/ictismylife-dev/AlloCat is served from the root branch on GitHub Pages
+      (function () {
+        var isStaticHost =
+          window.location.hostname.indexOf('github.io') !== -1 ||
+          window.location.protocol === 'file:';
+
+        function injectPrebuiltDocsBundle() {
+          if (document.getElementById('allocat-prebuilt-js')) return;
+          var pathname = window.location.pathname || '/';
+          var basePrefix = pathname.indexOf('/AlloCat') === 0 ? '/AlloCat/' : './';
+
+          var link = document.createElement('link');
+          link.id = 'allocat-prebuilt-css';
+          link.rel = 'stylesheet';
+          link.href = basePrefix + 'docs/assets/app.css';
+          document.head.appendChild(link);
+
+          var script = document.createElement('script');
+          script.id = 'allocat-prebuilt-js';
+          script.type = 'module';
+          script.src = basePrefix + 'docs/assets/app.js';
+          document.head.appendChild(script);
+        }
+
+        if (isStaticHost) {
+          injectPrebuiltDocsBundle();
+        } else {
+          window.addEventListener('DOMContentLoaded', function () {
+            var isViteDev = Boolean(document.querySelector('script[src*="@vite/client"]'));
+            var hasRawTsx = Boolean(document.querySelector('script[src*="src/main.tsx"]'));
+            if (!isViteDev && hasRawTsx) {
+              injectPrebuiltDocsBundle();
+            }
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased font-sans">
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

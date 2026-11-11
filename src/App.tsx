@@ -34,6 +34,14 @@ import { ManageYearsModal } from './components/ManageYearsModal';
 import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
+import {
+  ExportScope,
+  generatePeopleViewCSV,
+  generateClientsViewCSV,
+  generateAvailabilityViewCSV,
+  generateBenchViewCSV,
+  triggerFileDownload
+} from './utils/importExportUtils';
 
 export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
@@ -79,6 +87,7 @@ export function App() {
   const [isManageYearsOpen, setIsManageYearsOpen] = useState(false);
   const [isManageDepartmentsOpen, setIsManageDepartmentsOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportModalScope, setExportModalScope] = useState<ExportScope>('all');
   const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
 
   // Save state changes to localStorage
@@ -594,20 +603,61 @@ export function App() {
         onOpenAddPersonModal={() => setIsAddPersonOpen(true)}
         onOpenAddProjectModal={() => setIsAddProjectOpen(true)}
         onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
-        onOpenExportModal={() => setIsExportModalOpen(true)}
+        onOpenExportModal={() => {
+          setExportModalScope('all');
+          setIsExportModalOpen(true);
+        }}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode((d) => !d)}
       />
 
       <Toolbar
+        viewMode={viewMode}
         filters={filters}
         onFilterChange={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
         departments={departments}
+        clients={clients}
         onOpenManageDepartmentsModal={() => setIsManageDepartmentsOpen(true)}
         kpis={kpis}
         isAllExpanded={isAllExpanded}
         onToggleExpandAll={handleToggleExpandAll}
         selectedYear={selectedYear}
+        onQuickExportCurrentViewCSV={() => {
+          const dateStr = new Date().toISOString().slice(0, 10);
+          if (viewMode === 'people') {
+            const csv = generatePeopleViewCSV(appState, filteredPeople);
+            triggerFileDownload(
+              csv,
+              `allocat-by-people-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          } else if (viewMode === 'clients') {
+            const csv = generateClientsViewCSV(appState, filteredProjects);
+            triggerFileDownload(
+              csv,
+              `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          } else if (viewMode === 'availability') {
+            const csv = generateAvailabilityViewCSV(appState, filteredPeople);
+            triggerFileDownload(
+              csv,
+              `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          } else if (viewMode === 'bench') {
+            const csv = generateBenchViewCSV(appState, filteredPeople);
+            triggerFileDownload(
+              csv,
+              `allocat-bench-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          }
+        }}
+        onOpenImportExportForCurrentView={() => {
+          setExportModalScope(viewMode);
+          setIsExportModalOpen(true);
+        }}
       />
 
       <main className="flex-1 max-w-[1720px] w-full mx-auto">
@@ -809,6 +859,8 @@ export function App() {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         appState={appState}
+        activeViewMode={viewMode}
+        initialScope={exportModalScope}
         onImportState={(newState) => setAppState(newState)}
         onResetToDefault={() => setAppState(resetAppState())}
       />

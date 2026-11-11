@@ -11,7 +11,7 @@ import {
   EMPLOYMENT_BADGE_CONFIG,
   ClientSortOrder
 } from '../types';
-import { getProjectStaffingSummary, getPersonCapacitySummary } from '../utils/allocationMath';
+import { getProjectStaffingSummary, getPersonCapacitySummary, formatPersonTableName } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
 
 interface ClientProjectMatrixViewProps {
@@ -296,7 +296,7 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
                                     </div>
                                     <div className="min-w-0 truncate">
                                       <div className="font-medium text-slate-800 dark:text-slate-200 truncate text-[11px] flex items-center gap-1.5">
-                                        <span>{person.name}</span>
+                                        <span>{formatPersonTableName(person)}</span>
                                         <span
                                           className={`px-1 py-0.1 text-[8px] font-mono font-semibold rounded border ${
                                             EMPLOYMENT_BADGE_CONFIG[

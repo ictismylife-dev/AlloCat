@@ -12408,6 +12408,23 @@ function getPersonBenchSummary(person, year, allocations, leaves = []) {
 		activeLeaves: personLeaves
 	};
 }
+/**
+* Formats a person's name as "Last Name, First Name" for table presentation.
+*/
+function formatPersonTableName(person) {
+	const first = (person.firstName ?? "").trim();
+	const last = (person.lastName ?? "").trim();
+	if (last && first) return `${last}, ${first}`;
+	const full = (person.name ?? "").trim();
+	if (!full) return "";
+	if (full.includes(",")) return full;
+	const parts = full.split(/\s+/);
+	if (parts.length >= 2) {
+		const firstPart = parts[0];
+		return `${parts.slice(1).join(" ")}, ${firstPart}`;
+	}
+	return full;
+}
 // node_modules/lucide-react/dist/esm/shared/src/utils.js
 /**
 * @license lucide-react v0.546.0 - ISC
@@ -13790,7 +13807,7 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 					className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 						type: "button",
-						onClick: () => onFilterChange({ peopleSort: filters.peopleSort === "firstName-asc" ? "firstName-desc" : "firstName-asc" }),
+						onClick: () => onFilterChange({ peopleSort: filters.peopleSort === "lastName-asc" ? "lastName-desc" : "lastName-asc" }),
 						className: `flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${filters.peopleSort && filters.peopleSort !== "default" ? "bg-blue-600 text-white font-semibold shadow-2xs" : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700"}`,
 						title: "Toggle alphabetical sort for People (A-Z / Z-A)",
 						children: [filters.peopleSort?.endsWith("-desc") ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowUpZA, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowDownAZ, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: filters.peopleSort?.endsWith("-desc") ? "Z–A" : "A–Z" })]
@@ -13798,19 +13815,11 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 						value: filters.peopleSort || "default",
 						onChange: (e) => onFilterChange({ peopleSort: e.target.value }),
 						className: "px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer",
-						title: "Sort People alphabetically by First Name or Last Name",
+						title: "Sort People alphabetically by Last Name or First Name",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
 								value: "default",
 								children: "Sort: Default Order"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
-								value: "firstName-asc",
-								children: "First Name: A → Z"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
-								value: "firstName-desc",
-								children: "First Name: Z → A"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
 								value: "lastName-asc",
@@ -13819,6 +13828,14 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
 								value: "lastName-desc",
 								children: "Last Name: Z → A"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "firstName-asc",
+								children: "First Name: A → Z"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+								value: "firstName-desc",
+								children: "First Name: Z → A"
 							})
 						]
 					})]
@@ -14102,7 +14119,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 													children: [
 														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 															className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
-															children: person.name
+															children: formatPersonTableName(person)
 														}),
 														onUpdatePersonEmployment ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
 															value: empType,
@@ -14517,7 +14534,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "font-medium text-slate-800 dark:text-slate-200 truncate text-[11px] flex items-center gap-1.5",
 													children: [
-														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: person.name }),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: formatPersonTableName(person) }),
 														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 															className: `px-1 py-0.1 text-[8px] font-mono font-semibold rounded border ${EMPLOYMENT_BADGE_CONFIG[person.employmentType || "Internal"].badgeClass}`,
 															children: person.employmentType || "Internal"
@@ -14698,7 +14715,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 													className: "flex items-center gap-1.5",
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 														className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
-														children: person.name
+														children: formatPersonTableName(person)
 													}), onUpdatePersonEmployment ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
 														value: empType,
 														onClick: (e) => e.stopPropagation(),
@@ -15011,7 +15028,7 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 													className: "flex items-center gap-1.5",
 													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 														className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
-														children: person.name
+														children: formatPersonTableName(person)
 													}), onUpdatePersonEmployment ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
 														value: empType,
 														onClick: (e) => e.stopPropagation(),
@@ -19407,7 +19424,7 @@ function App() {
 	const handleTogglePeopleSort = () => {
 		setFilters((prev) => ({
 			...prev,
-			peopleSort: prev.peopleSort === "firstName-asc" ? "firstName-desc" : prev.peopleSort === "firstName-desc" ? "default" : "firstName-asc"
+			peopleSort: prev.peopleSort === "lastName-asc" ? "lastName-desc" : prev.peopleSort === "lastName-desc" ? "default" : "lastName-asc"
 		}));
 	};
 	const handleToggleClientSort = () => {

@@ -274,11 +274,11 @@ export function App() {
     setFilters((prev) => ({
       ...prev,
       peopleSort:
-        prev.peopleSort === 'firstName-asc'
-          ? 'firstName-desc'
-          : prev.peopleSort === 'firstName-desc'
+        prev.peopleSort === 'lastName-asc'
+          ? 'lastName-desc'
+          : prev.peopleSort === 'lastName-desc'
           ? 'default'
-          : 'firstName-asc'
+          : 'lastName-asc'
     }));
   };
 

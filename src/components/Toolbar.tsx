@@ -237,9 +237,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 onClick={() =>
                   onFilterChange({
                     peopleSort:
-                      filters.peopleSort === 'firstName-asc'
-                        ? 'firstName-desc'
-                        : 'firstName-asc'
+                      filters.peopleSort === 'lastName-asc'
+                        ? 'lastName-desc'
+                        : 'lastName-asc'
                   })
                 }
                 className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
@@ -265,13 +265,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                   onFilterChange({ peopleSort: e.target.value as PeopleSortOrder })
                 }
                 className="px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer"
-                title="Sort People alphabetically by First Name or Last Name"
+                title="Sort People alphabetically by Last Name or First Name"
               >
                 <option value="default">Sort: Default Order</option>
-                <option value="firstName-asc">First Name: A → Z</option>
-                <option value="firstName-desc">First Name: Z → A</option>
                 <option value="lastName-asc">Last Name: A → Z</option>
                 <option value="lastName-desc">Last Name: Z → A</option>
+                <option value="firstName-asc">First Name: A → Z</option>
+                <option value="firstName-desc">First Name: Z → A</option>
               </select>
             </div>
           )}

@@ -21,7 +21,7 @@ import {
   EMPLOYMENT_BADGE_CONFIG,
   PeopleSortOrder
 } from '../types';
-import { getPersonBenchSummary } from '../utils/allocationMath';
+import { getPersonBenchSummary, formatPersonTableName } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
 
 interface BenchMatrixViewProps {
@@ -176,7 +176,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                         <div className="min-w-0 truncate">
                           <div className="flex items-center gap-1.5">
                             <span className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                              {person.name}
+                              {formatPersonTableName(person)}
                             </span>
                             {onUpdatePersonEmployment ? (
                               <select

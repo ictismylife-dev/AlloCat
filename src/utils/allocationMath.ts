@@ -297,3 +297,25 @@ export function getPersonBenchSummary(
     activeLeaves: personLeaves
   };
 }
+
+/**
+ * Formats a person's name as "Last Name, First Name" for table presentation.
+ */
+export function formatPersonTableName(person: Person): string {
+  const first = (person.firstName ?? '').trim();
+  const last = (person.lastName ?? '').trim();
+  if (last && first) {
+    return `${last}, ${first}`;
+  }
+  const full = (person.name ?? '').trim();
+  if (!full) return '';
+  if (full.includes(',')) return full;
+  const parts = full.split(/\s+/);
+  if (parts.length >= 2) {
+    const firstPart = parts[0];
+    const lastPart = parts.slice(1).join(' ');
+    return `${lastPart}, ${firstPart}`;
+  }
+  return full;
+}
+

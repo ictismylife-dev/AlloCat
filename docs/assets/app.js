@@ -17097,6 +17097,360 @@ function generateViewJSON(state, scope) {
 		benchSummaries
 	}, null, 2);
 }
+/**
+* Generates a pre-built CSV template (either with example rows or empty headers only)
+* for any tab/view so users can fill it out in Excel / Google Sheets and import it.
+*/
+function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
+	if (scope === "people") {
+		const headers = [
+			"Year",
+			"Row Type",
+			"Person Name",
+			"Role",
+			"Department",
+			"Email",
+			"Max Capacity %",
+			"Person Comment",
+			"Client",
+			"Project",
+			"Project Code",
+			"Assignment Note",
+			"Annual Avg %",
+			...MONTH_NAMES
+		];
+		return rowsToCsv([headers, ...includeExampleRows ? [[
+			selectedYear,
+			"Project Assignment",
+			"Jane Doe",
+			"Senior Frontend Engineer",
+			"Engineering",
+			"jane.doe@company.internal",
+			"100%",
+			"React & TypeScript Lead",
+			"Acme FinTech",
+			"NextGen Payments Portal",
+			"NGP-01",
+			"Frontend Architecture Lead",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%",
+			"50%"
+		], [
+			selectedYear,
+			"Project Assignment",
+			"Jane Doe",
+			"Senior Frontend Engineer",
+			"Engineering",
+			"jane.doe@company.internal",
+			"100%",
+			"React & TypeScript Lead",
+			"Internal",
+			"Design System v3",
+			"DS-03",
+			"Component Library",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%",
+			"25%"
+		]] : [Array(headers.length).fill("")]]);
+	}
+	if (scope === "clients") {
+		const headers = [
+			"Year",
+			"Row Type",
+			"Client",
+			"Industry",
+			"Project",
+			"Project Code",
+			"Project Status",
+			"Billable",
+			"Project Scope Comment",
+			"Person Name",
+			"Role",
+			"Department",
+			"Assignment Note",
+			"Avg FTE / %",
+			...MONTH_NAMES
+		];
+		return rowsToCsv([headers, ...includeExampleRows ? [[
+			selectedYear,
+			"Project Summary",
+			"Globex Retail",
+			"E-Commerce",
+			"Omnichannel Checkout",
+			"OMC-01",
+			"active",
+			"Yes",
+			"Q2-Q4 Rollout",
+			"",
+			"",
+			"",
+			"",
+			"0.8 FTE",
+			"0%",
+			"0%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"0%"
+		], [
+			selectedYear,
+			"Staff Assignment",
+			"Globex Retail",
+			"E-Commerce",
+			"Omnichannel Checkout",
+			"OMC-01",
+			"active",
+			"Yes",
+			"Q2-Q4 Rollout",
+			"Alex Rivera",
+			"Product Designer",
+			"Design",
+			"UX Lead",
+			"100%",
+			"0%",
+			"0%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"0%"
+		]] : [Array(headers.length).fill("")]]);
+	}
+	if (scope === "availability") {
+		const headers = [
+			"Year",
+			"Row Type",
+			"Person Name",
+			"Role",
+			"Department",
+			"Max Capacity %",
+			"Person Comment",
+			"Leave Category",
+			"Leave Title",
+			"Start Month",
+			"End Month",
+			"Impact %",
+			"Leave Note",
+			...MONTH_NAMES
+		];
+		return rowsToCsv([headers, ...includeExampleRows ? [[
+			selectedYear,
+			"Leave Entry",
+			"Jane Doe",
+			"Senior Frontend Engineer",
+			"Engineering",
+			"100%",
+			"Summer PTO planned",
+			"vacation",
+			"Summer Family Vacation",
+			"Jul",
+			"Aug",
+			"50%",
+			"Covered by Alex",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"-50%",
+			"-50%",
+			"0%",
+			"0%",
+			"0%",
+			"0%"
+		], [
+			selectedYear,
+			"Leave Entry",
+			"Sam Taylor",
+			"Backend Architect",
+			"Engineering",
+			"100%",
+			"",
+			"paternity",
+			"Paternity Leave",
+			"Oct",
+			"Nov",
+			"100%",
+			"Full time off Oct-Nov",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"-100%",
+			"-100%",
+			"0%"
+		]] : [Array(headers.length).fill("")]]);
+	}
+	if (scope === "bench") {
+		const headers = [
+			"Year",
+			"Row Type",
+			"Person Name",
+			"Role",
+			"Department",
+			"Email",
+			"Max Capacity %",
+			"Skills & Bench Comment",
+			"Avg Bench %",
+			"Free Months (>0%)",
+			...MONTH_NAMES
+		];
+		return rowsToCsv([headers, ...includeExampleRows ? [[
+			selectedYear,
+			"Bench Availability",
+			"Chris Morgan",
+			"DevOps Engineer",
+			"Cloud & Infra",
+			"chris.morgan@company.internal",
+			"100%",
+			"Kubernetes, Terraform, AWS Certified — ready for Q3 assignment",
+			"50%",
+			6,
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"0%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%",
+			"100%"
+		]] : [Array(headers.length).fill("")]]);
+	}
+	const headers = [
+		"Year",
+		"Record Type",
+		"Person Name",
+		"Role",
+		"Department",
+		"Email",
+		"Max Capacity %",
+		"Person Comment",
+		"Client",
+		"Industry",
+		"Project",
+		"Project Code",
+		"Billable",
+		"Project Scope Comment",
+		"Assignment Note",
+		"Leave Category",
+		"Leave Title",
+		"Start Month",
+		"End Month",
+		"Impact %",
+		"Leave Note",
+		...MONTH_NAMES
+	];
+	return rowsToCsv([headers, ...includeExampleRows ? [[
+		selectedYear,
+		"Allocation",
+		"Jane Doe",
+		"Senior Frontend Engineer",
+		"Engineering",
+		"jane.doe@company.internal",
+		"100%",
+		"React & TypeScript Lead",
+		"Acme FinTech",
+		"Financial Services",
+		"NextGen Payments Portal",
+		"NGP-01",
+		"Yes",
+		"Core Portal Delivery",
+		"Tech Lead",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"75%",
+		"75%",
+		"75%",
+		"75%",
+		"75%",
+		"75%",
+		"50%",
+		"50%",
+		"50%",
+		"50%",
+		"50%",
+		"50%"
+	], [
+		selectedYear,
+		"Leave",
+		"Jane Doe",
+		"Senior Frontend Engineer",
+		"Engineering",
+		"jane.doe@company.internal",
+		"100%",
+		"React & TypeScript Lead",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"vacation",
+		"Summer PTO",
+		"Jul",
+		"Aug",
+		"25%",
+		"1 week off each month",
+		"0%",
+		"0%",
+		"0%",
+		"0%",
+		"0%",
+		"0%",
+		"-25%",
+		"-25%",
+		"0%",
+		"0%",
+		"0%",
+		"0%"
+	]] : [Array(headers.length).fill("")]]);
+}
 function importDataFromFileContent(fileContent, fileName, currentState, targetScope, mergeMode = "merge") {
 	const trimmed = fileContent.trim();
 	if (trimmed.startsWith("{") || trimmed.startsWith("[") || fileName.toLowerCase().endsWith(".json")) return importFromJsonContent(trimmed, currentState, targetScope, mergeMode);
@@ -17708,6 +18062,16 @@ var ExportImportModal = ({ isOpen, onClose, appState, activeViewMode = "people",
 			message: scope === "all" ? "Exported Full Workspace Backup (.JSON)." : `Exported "${currentTabConfig.shortLabel}" data (.JSON).`
 		});
 	};
+	const handleDownloadTemplateCSV = (scope, includeExampleRows = true) => {
+		const yr = appState.selectedYear;
+		const csv = generateTemplateCSV(scope, yr, includeExampleRows);
+		const tabInfo = SCOPE_TABS.find((t) => t.id === scope) || SCOPE_TABS[0];
+		triggerFileDownload(csv, `allocat-${scope === "all" ? "all-views" : scope === "clients" ? "clients-projects" : scope === "availability" ? "availability-leaves" : scope}-${includeExampleRows ? "example-template" : "empty-template"}-${yr}.csv`, "text/csv;charset=utf-8;");
+		setStatus({
+			type: "success",
+			message: includeExampleRows ? `Downloaded pre-built "${tabInfo.shortLabel}" example template (.CSV). Fill in your rows and import it below!` : `Downloaded empty "${tabInfo.shortLabel}" template (.CSV) with headers ready to fill.`
+		});
+	};
 	const handleFileChange = (e) => {
 		const file = e.target.files?.[0];
 		if (!file) return;
@@ -17940,6 +18304,50 @@ var ExportImportModal = ({ isOpen, onClose, appState, activeViewMode = "people",
 										className: "font-semibold text-slate-700 dark:text-slate-300 font-sans",
 										children: ["Supported CSV columns:", " "]
 									}), currentTabConfig.csvColumnsHint]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 space-y-2.5",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-wrap items-center justify-between gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileSpreadsheet, { className: "w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+												"Pre-built CSV Import Templates (",
+												currentTabConfig.shortLabel,
+												")"
+											] })]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "text-[11px] text-slate-500 dark:text-slate-400",
+											children: "Download a ready-to-fill CSV template with the exact column headers for this view."
+										})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex flex-wrap items-center gap-1.5",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+												type: "button",
+												onClick: () => handleDownloadTemplateCSV(selectedScope, true),
+												className: "px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 flex items-center gap-1.5 transition-colors cursor-pointer",
+												title: "Download CSV template pre-populated with 1-2 example rows showing the format",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Example Template (.CSV)" })]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+												type: "button",
+												onClick: () => handleDownloadTemplateCSV(selectedScope, false),
+												className: "px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer",
+												title: "Download blank CSV template containing only the column headers",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Empty Headers (.CSV)" })]
+											})]
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-1.5",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-[10px] font-medium text-slate-400 dark:text-slate-500 mr-1",
+											children: "All view templates:"
+										}), SCOPE_TABS.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+											type: "button",
+											onClick: () => handleDownloadTemplateCSV(t.id, true),
+											className: `px-2 py-0.5 rounded text-[10px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${selectedScope === t.id ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800" : "bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-400"}`,
+											title: `Download ${t.label} example CSV template`,
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-2.5 h-2.5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t.shortLabel })]
+										}, t.id))]
+									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 									ref: fileInputRef,

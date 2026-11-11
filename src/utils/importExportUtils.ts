@@ -713,6 +713,404 @@ export function generateViewJSON(state: AppState, scope: ExportScope): string {
   );
 }
 
+/**
+ * Generates a pre-built CSV template (either with example rows or empty headers only)
+ * for any tab/view so users can fill it out in Excel / Google Sheets and import it.
+ */
+export function generateTemplateCSV(
+  scope: ExportScope,
+  selectedYear: number,
+  includeExampleRows: boolean = true
+): string {
+  if (scope === 'people') {
+    const headers = [
+      'Year',
+      'Row Type',
+      'Person Name',
+      'Role',
+      'Department',
+      'Email',
+      'Max Capacity %',
+      'Person Comment',
+      'Client',
+      'Project',
+      'Project Code',
+      'Assignment Note',
+      'Annual Avg %',
+      ...MONTH_NAMES
+    ];
+    const exampleRows: (string | number)[][] = includeExampleRows
+      ? [
+          [
+            selectedYear,
+            'Project Assignment',
+            'Jane Doe',
+            'Senior Frontend Engineer',
+            'Engineering',
+            'jane.doe@company.internal',
+            '100%',
+            'React & TypeScript Lead',
+            'Acme FinTech',
+            'NextGen Payments Portal',
+            'NGP-01',
+            'Frontend Architecture Lead',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%',
+            '50%'
+          ],
+          [
+            selectedYear,
+            'Project Assignment',
+            'Jane Doe',
+            'Senior Frontend Engineer',
+            'Engineering',
+            'jane.doe@company.internal',
+            '100%',
+            'React & TypeScript Lead',
+            'Internal',
+            'Design System v3',
+            'DS-03',
+            'Component Library',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%',
+            '25%'
+          ]
+        ]
+      : [Array(headers.length).fill('')];
+
+    return rowsToCsv([headers, ...exampleRows]);
+  }
+
+  if (scope === 'clients') {
+    const headers = [
+      'Year',
+      'Row Type',
+      'Client',
+      'Industry',
+      'Project',
+      'Project Code',
+      'Project Status',
+      'Billable',
+      'Project Scope Comment',
+      'Person Name',
+      'Role',
+      'Department',
+      'Assignment Note',
+      'Avg FTE / %',
+      ...MONTH_NAMES
+    ];
+    const exampleRows: (string | number)[][] = includeExampleRows
+      ? [
+          [
+            selectedYear,
+            'Project Summary',
+            'Globex Retail',
+            'E-Commerce',
+            'Omnichannel Checkout',
+            'OMC-01',
+            'active',
+            'Yes',
+            'Q2-Q4 Rollout',
+            '',
+            '',
+            '',
+            '',
+            '0.8 FTE',
+            '0%',
+            '0%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '0%'
+          ],
+          [
+            selectedYear,
+            'Staff Assignment',
+            'Globex Retail',
+            'E-Commerce',
+            'Omnichannel Checkout',
+            'OMC-01',
+            'active',
+            'Yes',
+            'Q2-Q4 Rollout',
+            'Alex Rivera',
+            'Product Designer',
+            'Design',
+            'UX Lead',
+            '100%',
+            '0%',
+            '0%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '0%'
+          ]
+        ]
+      : [Array(headers.length).fill('')];
+
+    return rowsToCsv([headers, ...exampleRows]);
+  }
+
+  if (scope === 'availability') {
+    const headers = [
+      'Year',
+      'Row Type',
+      'Person Name',
+      'Role',
+      'Department',
+      'Max Capacity %',
+      'Person Comment',
+      'Leave Category',
+      'Leave Title',
+      'Start Month',
+      'End Month',
+      'Impact %',
+      'Leave Note',
+      ...MONTH_NAMES
+    ];
+    const exampleRows: (string | number)[][] = includeExampleRows
+      ? [
+          [
+            selectedYear,
+            'Leave Entry',
+            'Jane Doe',
+            'Senior Frontend Engineer',
+            'Engineering',
+            '100%',
+            'Summer PTO planned',
+            'vacation',
+            'Summer Family Vacation',
+            'Jul',
+            'Aug',
+            '50%',
+            'Covered by Alex',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '-50%',
+            '-50%',
+            '0%',
+            '0%',
+            '0%',
+            '0%'
+          ],
+          [
+            selectedYear,
+            'Leave Entry',
+            'Sam Taylor',
+            'Backend Architect',
+            'Engineering',
+            '100%',
+            '',
+            'paternity',
+            'Paternity Leave',
+            'Oct',
+            'Nov',
+            '100%',
+            'Full time off Oct-Nov',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '-100%',
+            '-100%',
+            '0%'
+          ]
+        ]
+      : [Array(headers.length).fill('')];
+
+    return rowsToCsv([headers, ...exampleRows]);
+  }
+
+  if (scope === 'bench') {
+    const headers = [
+      'Year',
+      'Row Type',
+      'Person Name',
+      'Role',
+      'Department',
+      'Email',
+      'Max Capacity %',
+      'Skills & Bench Comment',
+      'Avg Bench %',
+      'Free Months (>0%)',
+      ...MONTH_NAMES
+    ];
+    const exampleRows: (string | number)[][] = includeExampleRows
+      ? [
+          [
+            selectedYear,
+            'Bench Availability',
+            'Chris Morgan',
+            'DevOps Engineer',
+            'Cloud & Infra',
+            'chris.morgan@company.internal',
+            '100%',
+            'Kubernetes, Terraform, AWS Certified — ready for Q3 assignment',
+            '50%',
+            6,
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '0%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%',
+            '100%'
+          ]
+        ]
+      : [Array(headers.length).fill('')];
+
+    return rowsToCsv([headers, ...exampleRows]);
+  }
+
+  // scope === 'all' (Master All-Views Template)
+  const headers = [
+    'Year',
+    'Record Type',
+    'Person Name',
+    'Role',
+    'Department',
+    'Email',
+    'Max Capacity %',
+    'Person Comment',
+    'Client',
+    'Industry',
+    'Project',
+    'Project Code',
+    'Billable',
+    'Project Scope Comment',
+    'Assignment Note',
+    'Leave Category',
+    'Leave Title',
+    'Start Month',
+    'End Month',
+    'Impact %',
+    'Leave Note',
+    ...MONTH_NAMES
+  ];
+  const exampleRows: (string | number)[][] = includeExampleRows
+    ? [
+        [
+          selectedYear,
+          'Allocation',
+          'Jane Doe',
+          'Senior Frontend Engineer',
+          'Engineering',
+          'jane.doe@company.internal',
+          '100%',
+          'React & TypeScript Lead',
+          'Acme FinTech',
+          'Financial Services',
+          'NextGen Payments Portal',
+          'NGP-01',
+          'Yes',
+          'Core Portal Delivery',
+          'Tech Lead',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '75%',
+          '75%',
+          '75%',
+          '75%',
+          '75%',
+          '75%',
+          '50%',
+          '50%',
+          '50%',
+          '50%',
+          '50%',
+          '50%'
+        ],
+        [
+          selectedYear,
+          'Leave',
+          'Jane Doe',
+          'Senior Frontend Engineer',
+          'Engineering',
+          'jane.doe@company.internal',
+          '100%',
+          'React & TypeScript Lead',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          'vacation',
+          'Summer PTO',
+          'Jul',
+          'Aug',
+          '25%',
+          '1 week off each month',
+          '0%',
+          '0%',
+          '0%',
+          '0%',
+          '0%',
+          '0%',
+          '-25%',
+          '-25%',
+          '0%',
+          '0%',
+          '0%',
+          '0%'
+        ]
+      ]
+    : [Array(headers.length).fill('')];
+
+  return rowsToCsv([headers, ...exampleRows]);
+}
+
 // ============================================================================
 // UNIFIED CSV & JSON IMPORTER ACROSS ALL TABS AND VIEWS
 // ============================================================================

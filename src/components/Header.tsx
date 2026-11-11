@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Users, Briefcase, Plus, AlertTriangle, Download, Sun, Moon, UserCheck, Cat } from 'lucide-react';
+import { Calendar, Users, Briefcase, Plus, AlertTriangle, Download, Sun, Moon, UserCheck, Cat, LogOut } from 'lucide-react';
 import { ViewMode } from '../types';
 
 interface HeaderProps {
@@ -18,6 +18,8 @@ interface HeaderProps {
   onOpenExportModal: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
+  currentUser?: string | null;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,7 +37,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddLeaveModal,
   onOpenExportModal,
   isDarkMode,
-  onToggleDarkMode
+  onToggleDarkMode,
+  currentUser,
+  onLogout
 }) => {
   return (
     <header className="shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors">
@@ -199,11 +203,24 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={onToggleDarkMode}
-            className="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
             title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
             {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
+
+          {/* Logout button */}
+          {currentUser && onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-800 cursor-pointer"
+              title={`Logged in as ${currentUser}. Click to log out and lock workspace.`}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden xl:inline font-mono">{currentUser}</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

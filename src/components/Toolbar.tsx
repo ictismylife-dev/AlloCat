@@ -10,7 +10,9 @@ import {
   FilterState,
   UtilizationFilter,
   ViewMode,
-  Client
+  Client,
+  EmploymentType,
+  EMPLOYMENT_TYPES
 } from '../types';
 
 interface ToolbarProps {
@@ -247,6 +249,37 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               >
                 <Settings className="w-3.5 h-3.5" />
               </button>
+            </div>
+          )}
+
+          {/* Employment Type filter (All / Internal / External / B2B) */}
+          {viewMode !== 'clients' && (
+            <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+              <button
+                type="button"
+                onClick={() => onFilterChange({ employmentFilter: 'all' })}
+                className={`px-2 py-1 text-xs rounded-md transition-all whitespace-nowrap ${
+                  !filters.employmentFilter || filters.employmentFilter === 'all'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+              >
+                All Employment
+              </button>
+              {EMPLOYMENT_TYPES.map((emp) => (
+                <button
+                  key={emp}
+                  type="button"
+                  onClick={() => onFilterChange({ employmentFilter: emp as EmploymentType })}
+                  className={`px-2 py-1 text-xs rounded-md transition-all whitespace-nowrap ${
+                    filters.employmentFilter === emp
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  }`}
+                >
+                  {emp}
+                </button>
+              ))}
             </div>
           )}
 

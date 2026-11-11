@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { X, UserPlus } from 'lucide-react';
-import { Department, Person } from '../types';
+import {
+  Department,
+  EmploymentType,
+  EMPLOYMENT_TYPES,
+  Person
+} from '../types';
 
 interface AddPersonModalProps {
   isOpen: boolean;
@@ -29,6 +34,7 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [department, setDepartment] = useState<Department>(departments[0] || 'Engineering');
+  const [employmentType, setEmploymentType] = useState<EmploymentType>('Internal');
   const [email, setEmail] = useState('');
   const [maxCapacityPercent, setMaxCapacityPercent] = useState<number>(100);
   const [notes, setNotes] = useState('');
@@ -50,6 +56,7 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
       name: name.trim(),
       role: role.trim(),
       department,
+      employmentType,
       email: email.trim() || `${name.trim().toLowerCase().replace(/\s+/g, '.')}@company.internal`,
       maxCapacityPercent,
       avatarColor: color,
@@ -58,6 +65,7 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
     });
     setName('');
     setRole('');
+    setEmploymentType('Internal');
     setEmail('');
     setNotes('');
     onClose();
@@ -121,6 +129,28 @@ export const AddPersonModal: React.FC<AddPersonModalProps> = ({
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Employment
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {EMPLOYMENT_TYPES.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setEmploymentType(type)}
+                  className={`py-2 px-3 rounded-lg border font-medium text-center transition-all cursor-pointer ${
+                    employmentType === type
+                      ? 'bg-blue-600 border-blue-600 text-white font-semibold shadow-2xs'
+                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
             </div>
           </div>
 

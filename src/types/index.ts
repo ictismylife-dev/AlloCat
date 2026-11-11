@@ -1,10 +1,36 @@
 export type Department = string;
 
+export type EmploymentType = 'Internal' | 'External' | 'B2B';
+
+export const EMPLOYMENT_TYPES: EmploymentType[] = ['Internal', 'External', 'B2B'];
+
+export const EMPLOYMENT_BADGE_CONFIG: Record<
+  EmploymentType,
+  { label: string; badgeClass: string }
+> = {
+  Internal: {
+    label: 'Internal',
+    badgeClass:
+      'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/70 dark:text-blue-300 dark:border-blue-800/80'
+  },
+  External: {
+    label: 'External',
+    badgeClass:
+      'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800/80'
+  },
+  B2B: {
+    label: 'B2B',
+    badgeClass:
+      'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800/80'
+  }
+};
+
 export interface Person {
   id: string;
   name: string;
   role: string;
   department: Department;
+  employmentType?: EmploymentType; // 'Internal' | 'External' | 'B2B' (defaults to 'Internal')
   email: string;
   maxCapacityPercent: number; // default 100
   avatarColor: string;
@@ -72,6 +98,7 @@ export type UtilizationFilter = 'all' | 'overbooked' | 'balanced' | 'underbooked
 export interface FilterState {
   search: string;
   department: Department | 'all';
+  employmentFilter?: EmploymentType | 'all';
   utilization: UtilizationFilter;
   clientFilter: string | 'all';
 }

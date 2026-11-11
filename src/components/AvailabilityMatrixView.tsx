@@ -13,7 +13,10 @@ import {
   Person,
   Allocation,
   LeaveEntry,
-  LEAVE_TYPE_CONFIG
+  LEAVE_TYPE_CONFIG,
+  EmploymentType,
+  EMPLOYMENT_TYPES,
+  EMPLOYMENT_BADGE_CONFIG
 } from '../types';
 import { getPersonCapacitySummary } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
@@ -29,6 +32,7 @@ interface AvailabilityMatrixViewProps {
   onDeleteLeave: (leaveId: string) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
+  onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
   onUpdateLeaveNotes?: (leaveId: string, notes: string) => void;
 }
 
@@ -43,6 +47,7 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
   onDeleteLeave,
   onDeletePerson,
   onUpdatePersonNotes,
+  onUpdatePersonEmployment,
   onUpdateLeaveNotes
 }) => {
   if (people.length === 0) {
@@ -89,6 +94,8 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
         <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
           {people.map((person) => {
             const isExpanded = expandedPersonIds.has(person.id);
+            const empType: EmploymentType = person.employmentType || 'Internal';
+            const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
             const capacitySummary = getPersonCapacitySummary(
               person.id,
               selectedYear,
@@ -126,8 +133,40 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
                         </div>
 
                         <div className="min-w-0 truncate">
-                          <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                            {person.name}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                              {person.name}
+                            </span>
+                            {onUpdatePersonEmployment ? (
+                              <select
+                                value={empType}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) =>
+                                  onUpdatePersonEmployment(
+                                    person.id,
+                                    e.target.value as EmploymentType
+                                  )
+                                }
+                                title="Change employment type (Internal, External, B2B)"
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`}
+                              >
+                                {EMPLOYMENT_TYPES.map((t) => (
+                                  <option
+                                    key={t}
+                                    value={t}
+                                    className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                                  >
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`}
+                              >
+                                {empType}
+                              </span>
+                            )}
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                             {person.role} · {person.department}

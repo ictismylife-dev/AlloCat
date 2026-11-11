@@ -6,7 +6,8 @@ import {
   Client,
   Project,
   LeaveEntry,
-  Department
+  Department,
+  EmploymentType
 } from './types';
 import {
   AppState,
@@ -51,6 +52,7 @@ export function App() {
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     department: 'all',
+    employmentFilter: 'all',
     utilization: 'all',
     clientFilter: 'all'
   });
@@ -127,6 +129,14 @@ export function App() {
         return false;
       }
 
+      if (
+        filters.employmentFilter &&
+        filters.employmentFilter !== 'all' &&
+        (person.employmentType || 'Internal') !== filters.employmentFilter
+      ) {
+        return false;
+      }
+
       if (filters.search.trim() !== '') {
         const q = filters.search.toLowerCase();
         const personAllocs = allocations.filter(
@@ -146,6 +156,7 @@ export function App() {
           person.name.toLowerCase().includes(q) ||
           person.role.toLowerCase().includes(q) ||
           person.department.toLowerCase().includes(q) ||
+          (person.employmentType || 'Internal').toLowerCase().includes(q) ||
           (person.notes && person.notes.toLowerCase().includes(q));
 
         if (!matchesPerson && !matchesProject) return false;
@@ -457,11 +468,23 @@ export function App() {
     }));
   };
 
-  // Notes updaters
+  // Notes & Employment updaters
   const handleUpdatePersonNotes = (personId: string, notes: string) => {
     setAppState((prev) => ({
       ...prev,
       people: prev.people.map((p) => (p.id === personId ? { ...p, notes } : p))
+    }));
+  };
+
+  const handleUpdatePersonEmployment = (
+    personId: string,
+    employmentType: EmploymentType
+  ) => {
+    setAppState((prev) => ({
+      ...prev,
+      people: prev.people.map((p) =>
+        p.id === personId ? { ...p, employmentType } : p
+      )
     }));
   };
 
@@ -684,6 +707,7 @@ export function App() {
               if (found) setPersonToDelete(found);
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
+            onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
           />
         )}
@@ -727,6 +751,7 @@ export function App() {
               if (found) setPersonToDelete(found);
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
+            onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateLeaveNotes={handleUpdateLeaveNotes}
           />
         )}
@@ -747,6 +772,7 @@ export function App() {
               if (found) setPersonToDelete(found);
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
+            onUpdatePersonEmployment={handleUpdatePersonEmployment}
           />
         )}
       </main>

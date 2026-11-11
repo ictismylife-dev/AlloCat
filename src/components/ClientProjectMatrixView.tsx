@@ -1,6 +1,15 @@
 import React from 'react';
 import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Building, MessageSquare } from 'lucide-react';
-import { MONTH_NAMES, Person, Project, Client, Allocation, LeaveEntry } from '../types';
+import {
+  MONTH_NAMES,
+  Person,
+  Project,
+  Client,
+  Allocation,
+  LeaveEntry,
+  EmploymentType,
+  EMPLOYMENT_BADGE_CONFIG
+} from '../types';
 import { getProjectStaffingSummary, getPersonCapacitySummary } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
 
@@ -231,6 +240,15 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
                                     <div className="min-w-0 truncate">
                                       <div className="font-medium text-slate-800 dark:text-slate-200 truncate text-[11px] flex items-center gap-1.5">
                                         <span>{person.name}</span>
+                                        <span
+                                          className={`px-1 py-0.1 text-[8px] font-mono font-semibold rounded border ${
+                                            EMPLOYMENT_BADGE_CONFIG[
+                                              (person.employmentType || 'Internal') as EmploymentType
+                                            ].badgeClass
+                                          }`}
+                                        >
+                                          {person.employmentType || 'Internal'}
+                                        </span>
                                         {personCapacity.hasOvertime && (
                                           <span title="This team member is overbooked or on leave in one or more months">
                                             <AlertTriangle className="w-3 h-3 text-rose-500 shrink-0" />
@@ -238,7 +256,7 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
                                         )}
                                       </div>
                                       <div className="text-[10px] text-slate-400 truncate">
-                                        {person.role}
+                                        {person.role} · {person.department}
                                       </div>
                                     </div>
                                   </div>

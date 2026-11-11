@@ -12,7 +12,10 @@ import {
   Project,
   Client,
   Allocation,
-  LeaveEntry
+  LeaveEntry,
+  EmploymentType,
+  EMPLOYMENT_TYPES,
+  EMPLOYMENT_BADGE_CONFIG
 } from '../types';
 import { getPersonBenchSummary } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
@@ -27,6 +30,7 @@ interface BenchMatrixViewProps {
   onOpenAssignModalForPerson: (personId: string, monthIndex?: number) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
+  onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
 }
 
 export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
@@ -36,7 +40,8 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
   selectedYear,
   onOpenAssignModalForPerson,
   onDeletePerson,
-  onUpdatePersonNotes
+  onUpdatePersonNotes,
+  onUpdatePersonEmployment
 }) => {
   const [onlyWithBench, setOnlyWithBench] = useState(false);
   const [minBenchPct, setMinBenchPct] = useState(20);
@@ -121,6 +126,8 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
             {summaries.map((summary) => {
               const { person } = summary;
+              const empType: EmploymentType = person.employmentType || 'Internal';
+              const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
               return (
                 <tr
                   key={person.id}
@@ -136,8 +143,40 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                           {person.initials}
                         </div>
                         <div className="min-w-0 truncate">
-                          <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                            {person.name}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                              {person.name}
+                            </span>
+                            {onUpdatePersonEmployment ? (
+                              <select
+                                value={empType}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) =>
+                                  onUpdatePersonEmployment(
+                                    person.id,
+                                    e.target.value as EmploymentType
+                                  )
+                                }
+                                title="Change employment type (Internal, External, B2B)"
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`}
+                              >
+                                {EMPLOYMENT_TYPES.map((t) => (
+                                  <option
+                                    key={t}
+                                    value={t}
+                                    className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                                  >
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`}
+                              >
+                                {empType}
+                              </span>
+                            )}
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                             {person.role} · {person.department}

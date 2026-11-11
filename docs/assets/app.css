@@ -1,4 +1,5 @@
-/*! AlloCat | tailwindcss v4.3.5 | MIT License | https://tailwindcss.com */
+/* AlloCat GitHub Pages CSS */
+/*! tailwindcss v4.3.5 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: block))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
@@ -1258,6 +1259,10 @@
 
   .border-teal-300 {
     border-color: var(--color-teal-300);
+  }
+
+  .bg-amber-50 {
+    background-color: var(--color-amber-50);
   }
 
   .bg-amber-50\/30 {
@@ -2657,6 +2662,16 @@
     border-color: var(--color-amber-800);
   }
 
+  .dark\:border-amber-800\/80:where(.dark, .dark *) {
+    border-color: #953d00cc;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:border-amber-800\/80:where(.dark, .dark *) {
+      border-color: color-mix(in oklab, var(--color-amber-800) 80%, transparent);
+    }
+  }
+
   .dark\:border-amber-900:where(.dark, .dark *) {
     border-color: var(--color-amber-900);
   }
@@ -2857,6 +2872,16 @@
     }
   }
 
+  .dark\:bg-amber-950\/70:where(.dark, .dark *) {
+    background-color: #461901b3;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:bg-amber-950\/70:where(.dark, .dark *) {
+      background-color: color-mix(in oklab, var(--color-amber-950) 70%, transparent);
+    }
+  }
+
   .dark\:bg-amber-950\/80:where(.dark, .dark *) {
     background-color: #461901cc;
   }
@@ -2898,6 +2923,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .dark\:bg-blue-950\/60:where(.dark, .dark *) {
       background-color: color-mix(in oklab, var(--color-blue-950) 60%, transparent);
+    }
+  }
+
+  .dark\:bg-blue-950\/70:where(.dark, .dark *) {
+    background-color: #162456b3;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:bg-blue-950\/70:where(.dark, .dark *) {
+      background-color: color-mix(in oklab, var(--color-blue-950) 70%, transparent);
     }
   }
 
@@ -2962,6 +2997,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .dark\:bg-emerald-950\/60:where(.dark, .dark *) {
       background-color: color-mix(in oklab, var(--color-emerald-950) 60%, transparent);
+    }
+  }
+
+  .dark\:bg-emerald-950\/70:where(.dark, .dark *) {
+    background-color: #002c22b3;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:bg-emerald-950\/70:where(.dark, .dark *) {
+      background-color: color-mix(in oklab, var(--color-emerald-950) 70%, transparent);
     }
   }
 

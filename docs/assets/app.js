@@ -1,3 +1,4 @@
+// AlloCat GitHub Pages Bundle
 // \0rolldown/runtime.js
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -11459,6 +11460,7 @@ var INITIAL_PEOPLE = [
 		name: "Marcus Vance",
 		role: "Principal Cloud Architect",
 		department: "Engineering",
+		employmentType: "Internal",
 		email: "marcus.v@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#2563EB",
@@ -11470,6 +11472,7 @@ var INITIAL_PEOPLE = [
 		name: "Elena Rostova",
 		role: "Staff Product Designer",
 		department: "Design",
+		employmentType: "Internal",
 		email: "elena.r@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#7C3AED",
@@ -11481,6 +11484,7 @@ var INITIAL_PEOPLE = [
 		name: "Devon Zhao",
 		role: "Senior Full-Stack Engineer",
 		department: "Engineering",
+		employmentType: "B2B",
 		email: "devon.z@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#059669",
@@ -11492,6 +11496,7 @@ var INITIAL_PEOPLE = [
 		name: "Sarah Lindqvist",
 		role: "Lead Product Manager",
 		department: "Product",
+		employmentType: "Internal",
 		email: "sarah.l@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#D97706",
@@ -11503,6 +11508,7 @@ var INITIAL_PEOPLE = [
 		name: "Tariq Al-Mansoor",
 		role: "Senior Mobile Engineer (iOS/Android)",
 		department: "Engineering",
+		employmentType: "B2B",
 		email: "tariq.m@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#0284C7",
@@ -11514,6 +11520,7 @@ var INITIAL_PEOPLE = [
 		name: "Amara Okafor",
 		role: "Senior UX Researcher",
 		department: "Design",
+		employmentType: "External",
 		email: "amara.o@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#DB2777",
@@ -11525,6 +11532,7 @@ var INITIAL_PEOPLE = [
 		name: "Kenji Takahashi",
 		role: "Staff Data Scientist & ML",
 		department: "Data",
+		employmentType: "Internal",
 		email: "kenji.t@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#4F46E5",
@@ -11536,6 +11544,7 @@ var INITIAL_PEOPLE = [
 		name: "Chloe Bennett",
 		role: "QA Automation Lead",
 		department: "QA",
+		employmentType: "External",
 		email: "chloe.b@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#0891B2",
@@ -11547,6 +11556,7 @@ var INITIAL_PEOPLE = [
 		name: "Liam Henderson",
 		role: "Frontend Engineer",
 		department: "Engineering",
+		employmentType: "B2B",
 		email: "liam.h@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#16A34A",
@@ -11558,6 +11568,7 @@ var INITIAL_PEOPLE = [
 		name: "Priya Patel",
 		role: "Technical Program Manager",
 		department: "Operations",
+		employmentType: "Internal",
 		email: "priya.p@company.internal",
 		maxCapacityPercent: 100,
 		avatarColor: "#EA580C",
@@ -12166,6 +12177,7 @@ function loadAppState() {
 				const defaultPerson = INITIAL_PEOPLE.find((ip) => ip.id === p.id);
 				return {
 					...p,
+					employmentType: p.employmentType === "Internal" || p.employmentType === "External" || p.employmentType === "B2B" ? p.employmentType : defaultPerson?.employmentType || "Internal",
 					notes: p.notes !== void 0 ? p.notes : defaultPerson?.notes || ""
 				};
 			});
@@ -13431,6 +13443,98 @@ var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYear
 		})
 	});
 };
+// src/types/index.ts
+var EMPLOYMENT_TYPES = [
+	"Internal",
+	"External",
+	"B2B"
+];
+var EMPLOYMENT_BADGE_CONFIG = {
+	Internal: {
+		label: "Internal",
+		badgeClass: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/70 dark:text-blue-300 dark:border-blue-800/80"
+	},
+	External: {
+		label: "External",
+		badgeClass: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800/80"
+	},
+	B2B: {
+		label: "B2B",
+		badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800/80"
+	}
+};
+var MONTH_NAMES = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec"
+];
+var MONTH_FULL_NAMES = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December"
+];
+var LEAVE_TYPE_CONFIG = {
+	sick: {
+		label: "Sick Leave",
+		badgeClass: "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800",
+		iconName: "Activity",
+		defaultImpact: 50
+	},
+	maternity: {
+		label: "Maternity Leave",
+		badgeClass: "bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border-purple-300 dark:border-purple-800",
+		iconName: "Baby",
+		defaultImpact: 100
+	},
+	paternity: {
+		label: "Paternity Leave",
+		badgeClass: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800",
+		iconName: "HeartHandshake",
+		defaultImpact: 100
+	},
+	vacation: {
+		label: "Annual Vacation / PTO",
+		badgeClass: "bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-800",
+		iconName: "Palmtree",
+		defaultImpact: 50
+	},
+	sabbatical: {
+		label: "Sabbatical",
+		badgeClass: "bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300 border-teal-300 dark:border-teal-800",
+		iconName: "BookOpen",
+		defaultImpact: 100
+	},
+	unpaid: {
+		label: "Unpaid Leave",
+		badgeClass: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700",
+		iconName: "Clock",
+		defaultImpact: 100
+	},
+	other: {
+		label: "Special Leave / Other",
+		badgeClass: "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800",
+		iconName: "CalendarOff",
+		defaultImpact: 50
+	}
+};
 // src/components/Toolbar.tsx
 var VIEW_LABELS = {
 	people: "By People",
@@ -13563,144 +13667,88 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-wrap items-center gap-2",
-				children: [viewMode === "clients" && clients.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-						type: "button",
-						onClick: () => onFilterChange({ clientFilter: "all" }),
-						className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.clientFilter === "all" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
-						children: "All Clients"
-					}), clients.map((client) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-						type: "button",
-						onClick: () => onFilterChange({ clientFilter: client.id }),
-						className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.clientFilter === client.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
-						children: client.name
-					}, client.id))]
-				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+				children: [
+					viewMode === "clients" && clients.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
-							onClick: () => onFilterChange({ department: "all" }),
-							className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.department === "all" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
-							children: "All Depts"
-						}),
-						departments.map((dept) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: () => onFilterChange({ clientFilter: "all" }),
+							className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.clientFilter === "all" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+							children: "All Clients"
+						}), clients.map((client) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
-							onClick: () => onFilterChange({ department: dept }),
-							className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.department === dept ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
-							children: dept
-						}, dept)),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: () => onFilterChange({ clientFilter: client.id }),
+							className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.clientFilter === client.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+							children: client.name
+						}, client.id))]
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: () => onFilterChange({ department: "all" }),
+								className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.department === "all" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+								children: "All Depts"
+							}),
+							departments.map((dept) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: () => onFilterChange({ department: dept }),
+								className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.department === dept ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+								children: dept
+							}, dept)),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: onOpenManageDepartmentsModal,
+								className: "p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded transition-colors ml-0.5",
+								title: "Modify, rename, or add departments",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings, { className: "w-3.5 h-3.5" })
+							})
+						]
+					}),
+					viewMode !== "clients" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
-							onClick: onOpenManageDepartmentsModal,
-							className: "p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded transition-colors ml-0.5",
-							title: "Modify, rename, or add departments",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Settings, { className: "w-3.5 h-3.5" })
-						})
-					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
-					children: [
-						{
-							id: "all",
-							label: "All Status"
-						},
-						{
-							id: "overbooked",
-							label: "Overbooked"
-						},
-						{
-							id: "balanced",
-							label: "Balanced (75–100%)"
-						},
-						{
-							id: "underbooked",
-							label: "Available (<75%)"
-						}
-					].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-						type: "button",
-						onClick: () => onFilterChange({ utilization: item.id }),
-						className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.utilization === item.id ? item.id === "overbooked" ? "bg-rose-600 text-white shadow-xs font-semibold" : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
-						children: item.label
-					}, item.id))
-				})]
+							onClick: () => onFilterChange({ employmentFilter: "all" }),
+							className: `px-2 py-1 text-xs rounded-md transition-all whitespace-nowrap ${!filters.employmentFilter || filters.employmentFilter === "all" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+							children: "All Employment"
+						}), EMPLOYMENT_TYPES.map((emp) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							type: "button",
+							onClick: () => onFilterChange({ employmentFilter: emp }),
+							className: `px-2 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.employmentFilter === emp ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+							children: emp
+						}, emp))]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60",
+						children: [
+							{
+								id: "all",
+								label: "All Status"
+							},
+							{
+								id: "overbooked",
+								label: "Overbooked"
+							},
+							{
+								id: "balanced",
+								label: "Balanced (75–100%)"
+							},
+							{
+								id: "underbooked",
+								label: "Available (<75%)"
+							}
+						].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							type: "button",
+							onClick: () => onFilterChange({ utilization: item.id }),
+							className: `px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${filters.utilization === item.id ? item.id === "overbooked" ? "bg-rose-600 text-white shadow-xs font-semibold" : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
+							children: item.label
+						}, item.id))
+					})
+				]
 			})]
 		})]
 	});
-};
-// src/types/index.ts
-var MONTH_NAMES = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec"
-];
-var MONTH_FULL_NAMES = [
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December"
-];
-var LEAVE_TYPE_CONFIG = {
-	sick: {
-		label: "Sick Leave",
-		badgeClass: "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800",
-		iconName: "Activity",
-		defaultImpact: 50
-	},
-	maternity: {
-		label: "Maternity Leave",
-		badgeClass: "bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border-purple-300 dark:border-purple-800",
-		iconName: "Baby",
-		defaultImpact: 100
-	},
-	paternity: {
-		label: "Paternity Leave",
-		badgeClass: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800",
-		iconName: "HeartHandshake",
-		defaultImpact: 100
-	},
-	vacation: {
-		label: "Annual Vacation / PTO",
-		badgeClass: "bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-800",
-		iconName: "Palmtree",
-		defaultImpact: 50
-	},
-	sabbatical: {
-		label: "Sabbatical",
-		badgeClass: "bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300 border-teal-300 dark:border-teal-800",
-		iconName: "BookOpen",
-		defaultImpact: 100
-	},
-	unpaid: {
-		label: "Unpaid Leave",
-		badgeClass: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700",
-		iconName: "Clock",
-		defaultImpact: 100
-	},
-	other: {
-		label: "Special Leave / Other",
-		badgeClass: "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800",
-		iconName: "CalendarOff",
-		defaultImpact: 50
-	}
 };
 // src/components/CommentCell.tsx
 var CommentCell = ({ value = "", onSave, placeholder = "Add comment...", readOnly = false, className = "" }) => {
@@ -13802,7 +13850,7 @@ var CommentCell = ({ value = "", onSave, placeholder = "Add comment...", readOnl
 	});
 };
 // src/components/PeopleMatrixView.tsx
-var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenCellEditor, onOpenPersonMonth, onOpenAssignModalForPerson, onDeleteAllocation, onDeletePerson, onUpdatePersonNotes, onUpdateAllocationNotes }) => {
+var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenCellEditor, onOpenPersonMonth, onOpenAssignModalForPerson, onDeleteAllocation, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateAllocationNotes }) => {
 	const getProject = (id) => projects.find((p) => p.id === id);
 	const getClient = (id) => clients.find((c) => c.id === id);
 	if (people.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -13812,7 +13860,7 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 			children: "No team members match the selected filters."
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "text-xs mt-1",
-			children: "Try adjusting the department, search keyword, or capacity status."
+			children: "Try adjusting the department, employment type, search keyword, or capacity status."
 		})]
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -13854,6 +13902,8 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 				className: "divide-y divide-slate-200 dark:divide-slate-800 text-xs",
 				children: people.map((person) => {
 					const isExpanded = expandedPersonIds.has(person.id);
+					const empType = person.employmentType || "Internal";
+					const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
 					const capacitySummary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 					const personAllocations = allocations.filter((a) => a.personId === person.id && a.year === selectedYear);
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
@@ -13882,14 +13932,32 @@ var PeopleMatrixView = ({ people, clients, projects, allocations, leaves = [], s
 												className: "min-w-0 truncate",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "flex items-center gap-1.5",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-														className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
-														children: person.name
-													}), capacitySummary.hasOvertime && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-														className: "inline-flex items-center gap-0.5 px-1.5 py-0.2 text-[10px] font-mono font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 rounded border border-rose-300 dark:border-rose-800",
-														title: "Contains overbooked months exceeding capacity limit",
-														children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 text-rose-600" }), "Overtime"]
-													})]
+													children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
+															children: person.name
+														}),
+														onUpdatePersonEmployment ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+															value: empType,
+															onClick: (e) => e.stopPropagation(),
+															onChange: (e) => onUpdatePersonEmployment(person.id, e.target.value),
+															title: "Change employment type (Internal, External, B2B)",
+															className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`,
+															children: EMPLOYMENT_TYPES.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+																value: t,
+																className: "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+																children: t
+															}, t))
+														}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`,
+															children: empType
+														}),
+														capacitySummary.hasOvertime && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+															className: "inline-flex items-center gap-0.5 px-1.5 py-0.2 text-[10px] font-mono font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 rounded border border-rose-300 dark:border-rose-800",
+															title: "Contains overbooked months exceeding capacity limit",
+															children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 text-rose-600" }), "Overtime"]
+														})
+													]
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "text-[11px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5 mt-0.5",
 													children: [
@@ -14234,13 +14302,24 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 												className: "min-w-0 truncate",
 												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "font-medium text-slate-800 dark:text-slate-200 truncate text-[11px] flex items-center gap-1.5",
-													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: person.name }), personCapacity.hasOvertime && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-														title: "This team member is overbooked or on leave in one or more months",
-														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 text-rose-500 shrink-0" })
-													})]
-												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+													children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: person.name }),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															className: `px-1 py-0.1 text-[8px] font-mono font-semibold rounded border ${EMPLOYMENT_BADGE_CONFIG[person.employmentType || "Internal"].badgeClass}`,
+															children: person.employmentType || "Internal"
+														}),
+														personCapacity.hasOvertime && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+															title: "This team member is overbooked or on leave in one or more months",
+															children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 text-rose-500 shrink-0" })
+														})
+													]
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "text-[10px] text-slate-400 truncate",
-													children: person.role
+													children: [
+														person.role,
+														" · ",
+														person.department
+													]
 												})]
 											})]
 										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
@@ -14309,7 +14388,7 @@ var ClientProjectMatrixView = ({ clients, projects, people, allocations, leaves 
 	});
 };
 // src/components/AvailabilityMatrixView.tsx
-var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenAddLeaveForPerson, onDeleteLeave, onDeletePerson, onUpdatePersonNotes, onUpdateLeaveNotes }) => {
+var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expandedPersonIds, onTogglePersonExpand, onOpenAddLeaveForPerson, onDeleteLeave, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment, onUpdateLeaveNotes }) => {
 	if (people.length === 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 m-6",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
@@ -14356,6 +14435,8 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 				className: "divide-y divide-slate-200 dark:divide-slate-800 text-xs",
 				children: people.map((person) => {
 					const isExpanded = expandedPersonIds.has(person.id);
+					const empType = person.employmentType || "Internal";
+					const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
 					const capacitySummary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
 					const personLeaves = leaves.filter((l) => l.personId === person.id && l.year === selectedYear);
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_react.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
@@ -14381,9 +14462,26 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 											}),
 											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "min-w-0 truncate",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-													className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
-													children: person.name
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex items-center gap-1.5",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
+														children: person.name
+													}), onUpdatePersonEmployment ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+														value: empType,
+														onClick: (e) => e.stopPropagation(),
+														onChange: (e) => onUpdatePersonEmployment(person.id, e.target.value),
+														title: "Change employment type (Internal, External, B2B)",
+														className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`,
+														children: EMPLOYMENT_TYPES.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+															value: t,
+															className: "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+															children: t
+														}, t))
+													}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`,
+														children: empType
+													})]
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "text-[11px] text-slate-500 dark:text-slate-400 truncate",
 													children: [
@@ -14547,7 +14645,7 @@ var AvailabilityMatrixView = ({ people, allocations, leaves, selectedYear, expan
 	});
 };
 // src/components/BenchMatrixView.tsx
-var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssignModalForPerson, onDeletePerson, onUpdatePersonNotes }) => {
+var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssignModalForPerson, onDeletePerson, onUpdatePersonNotes, onUpdatePersonEmployment }) => {
 	const [onlyWithBench, setOnlyWithBench] = (0, import_react.useState)(false);
 	const [minBenchPct, setMinBenchPct] = (0, import_react.useState)(20);
 	const summaries = people.map((p) => getPersonBenchSummary(p, selectedYear, allocations, leaves)).filter((s) => {
@@ -14638,6 +14736,8 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 					className: "divide-y divide-slate-200 dark:divide-slate-800 text-xs",
 					children: summaries.map((summary) => {
 						const { person } = summary;
+						const empType = person.employmentType || "Internal";
+						const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
 							className: "group bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors",
 							children: [
@@ -14653,9 +14753,26 @@ var BenchMatrixView = ({ people, allocations, leaves, selectedYear, onOpenAssign
 												children: person.initials
 											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 												className: "min-w-0 truncate",
-												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-													className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
-													children: person.name
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+													className: "flex items-center gap-1.5",
+													children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "font-semibold text-slate-900 dark:text-slate-100 truncate",
+														children: person.name
+													}), onUpdatePersonEmployment ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+														value: empType,
+														onClick: (e) => e.stopPropagation(),
+														onChange: (e) => onUpdatePersonEmployment(person.id, e.target.value),
+														title: "Change employment type (Internal, External, B2B)",
+														className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`,
+														children: EMPLOYMENT_TYPES.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+															value: t,
+															className: "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+															children: t
+														}, t))
+													}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`,
+														children: empType
+													})]
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 													className: "text-[11px] text-slate-500 dark:text-slate-400 truncate",
 													children: [
@@ -15420,6 +15537,7 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 	const [name, setName] = (0, import_react.useState)("");
 	const [role, setRole] = (0, import_react.useState)("");
 	const [department, setDepartment] = (0, import_react.useState)(departments[0] || "Engineering");
+	const [employmentType, setEmploymentType] = (0, import_react.useState)("Internal");
 	const [email, setEmail] = (0, import_react.useState)("");
 	const [maxCapacityPercent, setMaxCapacityPercent] = (0, import_react.useState)(100);
 	const [notes, setNotes] = (0, import_react.useState)("");
@@ -15438,6 +15556,7 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 			name: name.trim(),
 			role: role.trim(),
 			department,
+			employmentType,
 			email: email.trim() || `${name.trim().toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent,
 			avatarColor: color,
@@ -15446,6 +15565,7 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 		});
 		setName("");
 		setRole("");
+		setEmploymentType("Internal");
 		setEmail("");
 		setNotes("");
 		onClose();
@@ -15514,6 +15634,18 @@ var AddPersonModal = ({ isOpen, onClose, departments, onSavePerson }) => {
 							}, d))
 						})] })]
 					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Employment"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid grid-cols-3 gap-2",
+						children: EMPLOYMENT_TYPES.map((type) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							type: "button",
+							onClick: () => setEmploymentType(type),
+							className: `py-2 px-3 rounded-lg border font-medium text-center transition-all cursor-pointer ${employmentType === type ? "bg-blue-600 border-blue-600 text-white font-semibold shadow-2xs" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"}`,
+							children: type
+						}, type))
+					})] }),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 						className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
 						children: "Comments / Staffing Notes (Optional)"
@@ -16643,6 +16775,14 @@ function parseMonthToken(token) {
 	}
 	return null;
 }
+function parseEmploymentType(raw, fallback = "Internal") {
+	if (!raw) return fallback;
+	const normalized = raw.trim().toLowerCase();
+	if (normalized === "external" || normalized === "ext" || normalized === "contractor") return "External";
+	if (normalized === "b2b" || normalized === "b2b contract") return "B2B";
+	if (normalized === "internal" || normalized === "int" || normalized === "fte") return "Internal";
+	return fallback;
+}
 function triggerFileDownload(content, filename, mimeType) {
 	const blob = new Blob([content], { type: mimeType });
 	const url = URL.createObjectURL(blob);
@@ -16667,6 +16807,7 @@ function generatePeopleViewCSV(state, peopleSubset) {
 		"Person Name",
 		"Role",
 		"Department",
+		"Employment",
 		"Email",
 		"Max Capacity %",
 		"Person Comment",
@@ -16685,6 +16826,7 @@ function generatePeopleViewCSV(state, peopleSubset) {
 			person.name,
 			person.role,
 			person.department,
+			person.employmentType || "Internal",
 			person.email,
 			`${person.maxCapacityPercent}%`,
 			person.notes || "",
@@ -16707,6 +16849,7 @@ function generatePeopleViewCSV(state, peopleSubset) {
 				person.name,
 				person.role,
 				person.department,
+				person.employmentType || "Internal",
 				person.email,
 				`${person.maxCapacityPercent}%`,
 				person.notes || "",
@@ -16741,6 +16884,7 @@ function generateClientsViewCSV(state, projectsSubset) {
 		"Person Name",
 		"Role",
 		"Department",
+		"Employment",
 		"Assignment Note",
 		"Avg FTE / %",
 		...MONTH_NAMES
@@ -16759,6 +16903,7 @@ function generateClientsViewCSV(state, projectsSubset) {
 				project.status,
 				project.billable ? "Yes" : "No",
 				project.notes || "",
+				"",
 				"",
 				"",
 				"",
@@ -16784,6 +16929,7 @@ function generateClientsViewCSV(state, projectsSubset) {
 					person.name,
 					person.role,
 					person.department,
+					person.employmentType || "Internal",
 					alloc.notes || person.notes || "",
 					`${avg}%`,
 					...alloc.monthlyPercentage.map((v) => `${v}%`)
@@ -16806,6 +16952,7 @@ function generateAvailabilityViewCSV(state, peopleSubset) {
 		"Person Name",
 		"Role",
 		"Department",
+		"Employment",
 		"Max Capacity %",
 		"Person Comment",
 		"Leave Category",
@@ -16825,6 +16972,7 @@ function generateAvailabilityViewCSV(state, peopleSubset) {
 			person.name,
 			person.role,
 			person.department,
+			person.employmentType || "Internal",
 			`${person.maxCapacityPercent}%`,
 			person.notes || "",
 			"",
@@ -16845,6 +16993,7 @@ function generateAvailabilityViewCSV(state, peopleSubset) {
 				person.name,
 				person.role,
 				person.department,
+				person.employmentType || "Internal",
 				`${person.maxCapacityPercent}%`,
 				person.notes || "",
 				leave.type,
@@ -16872,6 +17021,7 @@ function generateBenchViewCSV(state, peopleSubset) {
 		"Person Name",
 		"Role",
 		"Department",
+		"Employment",
 		"Email",
 		"Max Capacity %",
 		"Skills & Bench Comment",
@@ -16887,6 +17037,7 @@ function generateBenchViewCSV(state, peopleSubset) {
 			person.name,
 			person.role,
 			person.department,
+			person.employmentType || "Internal",
 			person.email,
 			`${person.maxCapacityPercent}%`,
 			person.notes || "",
@@ -16910,6 +17061,7 @@ function generateAllViewsCSV(state) {
 		"Person Name",
 		"Role",
 		"Department",
+		"Employment",
 		"Email",
 		"Max Capacity %",
 		"Person Comment",
@@ -16936,6 +17088,7 @@ function generateAllViewsCSV(state) {
 			person.name,
 			person.role,
 			person.department,
+			person.employmentType || "Internal",
 			person.email,
 			`${person.maxCapacityPercent}%`,
 			person.notes || "",
@@ -16961,6 +17114,7 @@ function generateAllViewsCSV(state) {
 		rows.push([
 			selectedYear,
 			"Project",
+			"",
 			"",
 			"",
 			"",
@@ -16994,6 +17148,7 @@ function generateAllViewsCSV(state) {
 			person.name,
 			person.role,
 			person.department,
+			person.employmentType || "Internal",
 			person.email,
 			`${person.maxCapacityPercent}%`,
 			person.notes || "",
@@ -17025,6 +17180,7 @@ function generateAllViewsCSV(state) {
 			person.name,
 			person.role,
 			person.department,
+			person.employmentType || "Internal",
 			person.email,
 			`${person.maxCapacityPercent}%`,
 			person.notes || "",
@@ -17082,6 +17238,7 @@ function generateViewJSON(state, scope) {
 			name: person.name,
 			role: person.role,
 			department: person.department,
+			employmentType: person.employmentType || "Internal",
 			email: person.email,
 			maxCapacityPercent: person.maxCapacityPercent,
 			notes: person.notes || "",
@@ -17109,6 +17266,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Person Name",
 			"Role",
 			"Department",
+			"Employment",
 			"Email",
 			"Max Capacity %",
 			"Person Comment",
@@ -17125,6 +17283,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Jane Doe",
 			"Senior Frontend Engineer",
 			"Engineering",
+			"Internal",
 			"jane.doe@company.internal",
 			"100%",
 			"React & TypeScript Lead",
@@ -17151,6 +17310,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Jane Doe",
 			"Senior Frontend Engineer",
 			"Engineering",
+			"Internal",
 			"jane.doe@company.internal",
 			"100%",
 			"React & TypeScript Lead",
@@ -17187,6 +17347,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Person Name",
 			"Role",
 			"Department",
+			"Employment",
 			"Assignment Note",
 			"Avg FTE / %",
 			...MONTH_NAMES
@@ -17201,6 +17362,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"active",
 			"Yes",
 			"Q2-Q4 Rollout",
+			"",
 			"",
 			"",
 			"",
@@ -17231,6 +17393,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Alex Rivera",
 			"Product Designer",
 			"Design",
+			"B2B",
 			"UX Lead",
 			"100%",
 			"0%",
@@ -17254,6 +17417,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Person Name",
 			"Role",
 			"Department",
+			"Employment",
 			"Max Capacity %",
 			"Person Comment",
 			"Leave Category",
@@ -17270,6 +17434,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Jane Doe",
 			"Senior Frontend Engineer",
 			"Engineering",
+			"Internal",
 			"100%",
 			"Summer PTO planned",
 			"vacation",
@@ -17296,6 +17461,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Sam Taylor",
 			"Backend Architect",
 			"Engineering",
+			"B2B",
 			"100%",
 			"",
 			"paternity",
@@ -17325,6 +17491,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Person Name",
 			"Role",
 			"Department",
+			"Employment",
 			"Email",
 			"Max Capacity %",
 			"Skills & Bench Comment",
@@ -17338,6 +17505,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 			"Chris Morgan",
 			"DevOps Engineer",
 			"Cloud & Infra",
+			"External",
 			"chris.morgan@company.internal",
 			"100%",
 			"Kubernetes, Terraform, AWS Certified — ready for Q3 assignment",
@@ -17363,6 +17531,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		"Person Name",
 		"Role",
 		"Department",
+		"Employment",
 		"Email",
 		"Max Capacity %",
 		"Person Comment",
@@ -17387,6 +17556,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		"Jane Doe",
 		"Senior Frontend Engineer",
 		"Engineering",
+		"Internal",
 		"jane.doe@company.internal",
 		"100%",
 		"React & TypeScript Lead",
@@ -17421,6 +17591,7 @@ function generateTemplateCSV(scope, selectedYear, includeExampleRows = true) {
 		"Jane Doe",
 		"Senior Frontend Engineer",
 		"Engineering",
+		"Internal",
 		"jane.doe@company.internal",
 		"100%",
 		"React & TypeScript Lead",
@@ -17481,6 +17652,7 @@ function importFromJsonContent(jsonText, currentState, targetScope, mergeMode) {
 			id: p.id || `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
 			role: p.role || "Specialist",
 			department: p.department || "Engineering",
+			employmentType: parseEmploymentType(p.employmentType, "Internal"),
 			email: p.email || `${p.name.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent: p.maxCapacityPercent ?? 100,
 			avatarColor: p.avatarColor || AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
@@ -17495,6 +17667,7 @@ function importFromJsonContent(jsonText, currentState, targetScope, mergeMode) {
 			...nextPeople[idx],
 			role: b.role ?? nextPeople[idx].role,
 			department: b.department ?? nextPeople[idx].department,
+			employmentType: b.employmentType ? parseEmploymentType(b.employmentType, nextPeople[idx].employmentType || "Internal") : nextPeople[idx].employmentType || "Internal",
 			maxCapacityPercent: b.maxCapacityPercent ?? nextPeople[idx].maxCapacityPercent,
 			notes: b.notes !== void 0 ? b.notes : nextPeople[idx].notes
 		};
@@ -17503,6 +17676,7 @@ function importFromJsonContent(jsonText, currentState, targetScope, mergeMode) {
 			name: b.name,
 			role: b.role || "Specialist",
 			department: b.department || "Engineering",
+			employmentType: parseEmploymentType(b.employmentType, "Internal"),
 			email: b.email || `${b.name.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent: b.maxCapacityPercent ?? 100,
 			avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
@@ -17643,6 +17817,12 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		"job title"
 	]);
 	const idxDept = colIndex(["department", "dept"]);
+	const idxEmployment = colIndex([
+		"employment",
+		"employment type",
+		"contract",
+		"contract type"
+	]);
 	const idxEmail = colIndex(["email"]);
 	const idxMaxCap = colIndex([
 		"max capacity %",
@@ -17697,7 +17877,7 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 	let updatedProjectsCount = 0;
 	let updatedAllocationsCount = 0;
 	let updatedLeavesCount = 0;
-	const ensurePerson = (name, role, dept, email, maxCap, notes) => {
+	const ensurePerson = (name, role, dept, employmentRaw, email, maxCap, notes) => {
 		const existingIdx = nextPeople.findIndex((p) => p.name.toLowerCase() === name.toLowerCase());
 		if (existingIdx >= 0) {
 			const existing = nextPeople[existingIdx];
@@ -17705,6 +17885,7 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 				...existing,
 				role: role || existing.role,
 				department: dept || existing.department,
+				employmentType: employmentRaw ? parseEmploymentType(employmentRaw, existing.employmentType || "Internal") : existing.employmentType || "Internal",
 				email: email || existing.email,
 				maxCapacityPercent: maxCap !== void 0 ? maxCap : existing.maxCapacityPercent,
 				notes: notes !== void 0 && notes !== "" ? notes : existing.notes
@@ -17718,6 +17899,7 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 			name,
 			role: role || "Specialist",
 			department: dept || "Engineering",
+			employmentType: parseEmploymentType(employmentRaw, "Internal"),
 			email: email || `${name.toLowerCase().replace(/\s+/g, ".")}@company.internal`,
 			maxCapacityPercent: maxCap ?? 100,
 			avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
@@ -17792,6 +17974,7 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		const personName = getCell(idxPersonName);
 		const role = getCell(idxRole);
 		const dept = getCell(idxDept);
+		const employmentRaw = getCell(idxEmployment);
 		const email = getCell(idxEmail);
 		const maxCapRaw = getCell(idxMaxCap);
 		const maxCap = maxCapRaw ? parsePercentValue(maxCapRaw, 100) : void 0;
@@ -17813,7 +17996,7 @@ function importFromCsvContent(csvText, currentState, targetScope, mergeMode) {
 		const monthValues = monthIndices.map((colIdx) => colIdx >= 0 ? parsePercentValue(getCell(colIdx), 0) : 0);
 		const hasMonthColumns = monthIndices.some((colIdx) => colIdx >= 0);
 		let personObj = null;
-		if (personName) personObj = ensurePerson(personName, role, dept, email, maxCap, personComment);
+		if (personName) personObj = ensurePerson(personName, role, dept, employmentRaw, email, maxCap, personComment);
 		let projectObj = null;
 		if (projectName) projectObj = ensureProject(projectName, projectCode, ensureClient(clientName || "Internal", industry).id, projectStatus, billableStr, projectComment);
 		if ((rowType.includes("leave") || personObj && (leaveTypeRaw in LEAVE_TYPE_CONFIG || leaveTitle && !leaveTitle.includes("scheduled leave(s)"))) && personObj) {
@@ -17907,15 +18090,15 @@ var SCOPE_TABS = [
 		label: "All Tabs (Full Workspace)",
 		shortLabel: "All Tabs",
 		description: "Complete workspace backup and multi-view master spreadsheet covering People, Clients, Projects, Allocations, Leaves, Departments, and Years.",
-		csvColumnsHint: "Year, Record Type (Person/Project/Allocation/Leave), Person Name, Role, Department, Client, Project, Leave Category, Jan..Dec",
+		csvColumnsHint: "Year, Record Type (Person/Project/Allocation/Leave), Person Name, Role, Department, Employment (Internal/External/B2B), Client, Project, Leave Category, Jan..Dec",
 		icon: Layers
 	},
 	{
 		id: "people",
 		label: "By People View",
 		shortLabel: "By People",
-		description: "Team member capacity summaries, staffing comments, and project allocation rows across all 12 months.",
-		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Max Capacity %, Person Comment, Client, Project, Project Code, Assignment Note, Jan..Dec",
+		description: "Team member capacity summaries, employment type, staffing comments, and project allocation rows across all 12 months.",
+		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Client, Project, Project Code, Assignment Note, Jan..Dec",
 		icon: Users
 	},
 	{
@@ -17923,7 +18106,7 @@ var SCOPE_TABS = [
 		label: "By Clients & Projects View",
 		shortLabel: "Clients & Projects",
 		description: "Client portfolios, deliverable projects, scope notes, monthly FTE totals, and assigned staff breakdowns.",
-		csvColumnsHint: "Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, Person Name, Role, Department, Assignment Note, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, Person Name, Role, Department, Employment, Assignment Note, Jan..Dec",
 		icon: Briefcase
 	},
 	{
@@ -17931,7 +18114,7 @@ var SCOPE_TABS = [
 		label: "Availability & Leaves View",
 		shortLabel: "Availability & Leaves",
 		description: "Effective monthly working capacities and scheduled time off (vacations, parental leave, sick leave, sabbaticals).",
-		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec",
 		icon: CalendarOff
 	},
 	{
@@ -17939,7 +18122,7 @@ var SCOPE_TABS = [
 		label: "Bench View",
 		shortLabel: "Bench",
 		description: "Unallocated bench capacity percentages, free months count, and team member skills / bench notes.",
-		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec",
+		csvColumnsHint: "Year, Row Type, Person Name, Role, Department, Employment (Internal/External/B2B), Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec",
 		icon: Armchair
 	}
 ];
@@ -18438,6 +18621,7 @@ function App() {
 	const [filters, setFilters] = (0, import_react.useState)({
 		search: "",
 		department: "all",
+		employmentFilter: "all",
 		utilization: "all",
 		clientFilter: "all"
 	});
@@ -18472,6 +18656,7 @@ function App() {
 	const filteredPeople = (0, import_react.useMemo)(() => {
 		return people.filter((person) => {
 			if (filters.department !== "all" && person.department !== filters.department) return false;
+			if (filters.employmentFilter && filters.employmentFilter !== "all" && (person.employmentType || "Internal") !== filters.employmentFilter) return false;
 			if (filters.search.trim() !== "") {
 				const q = filters.search.toLowerCase();
 				const matchesProject = allocations.filter((a) => a.personId === person.id && a.year === selectedYear).some((a) => {
@@ -18479,7 +18664,7 @@ function App() {
 					const client = proj ? clients.find((c) => c.id === proj.clientId) : void 0;
 					return proj?.name.toLowerCase().includes(q) || proj?.code.toLowerCase().includes(q) || client?.name.toLowerCase().includes(q);
 				});
-				if (!(person.name.toLowerCase().includes(q) || person.role.toLowerCase().includes(q) || person.department.toLowerCase().includes(q) || person.notes && person.notes.toLowerCase().includes(q)) && !matchesProject) return false;
+				if (!(person.name.toLowerCase().includes(q) || person.role.toLowerCase().includes(q) || person.department.toLowerCase().includes(q) || (person.employmentType || "Internal").toLowerCase().includes(q) || person.notes && person.notes.toLowerCase().includes(q)) && !matchesProject) return false;
 			}
 			if (filters.utilization !== "all") {
 				const summary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
@@ -18704,6 +18889,15 @@ function App() {
 			} : p)
 		}));
 	};
+	const handleUpdatePersonEmployment = (personId, employmentType) => {
+		setAppState((prev) => ({
+			...prev,
+			people: prev.people.map((p) => p.id === personId ? {
+				...p,
+				employmentType
+			} : p)
+		}));
+	};
 	const handleUpdateProjectNotes = (projectId, notes) => {
 		setAppState((prev) => ({
 			...prev,
@@ -18887,6 +19081,7 @@ function App() {
 							if (found) setPersonToDelete(found);
 						},
 						onUpdatePersonNotes: handleUpdatePersonNotes,
+						onUpdatePersonEmployment: handleUpdatePersonEmployment,
 						onUpdateAllocationNotes: handleUpdateAllocationNotes
 					}),
 					viewMode === "clients" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClientProjectMatrixView, {
@@ -18929,6 +19124,7 @@ function App() {
 							if (found) setPersonToDelete(found);
 						},
 						onUpdatePersonNotes: handleUpdatePersonNotes,
+						onUpdatePersonEmployment: handleUpdatePersonEmployment,
 						onUpdateLeaveNotes: handleUpdateLeaveNotes
 					}),
 					viewMode === "bench" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BenchMatrixView, {
@@ -18947,7 +19143,8 @@ function App() {
 							const found = people.find((p) => p.id === personId);
 							if (found) setPersonToDelete(found);
 						},
-						onUpdatePersonNotes: handleUpdatePersonNotes
+						onUpdatePersonNotes: handleUpdatePersonNotes,
+						onUpdatePersonEmployment: handleUpdatePersonEmployment
 					})
 				]
 			}),
@@ -19053,5 +19250,5 @@ function App() {
 		]
 	});
 }
-// src/main.tsx - AlloCat
+// src/main.tsx
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App, {}));

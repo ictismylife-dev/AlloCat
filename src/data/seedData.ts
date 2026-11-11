@@ -6,6 +6,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Marcus Vance',
     role: 'Principal Cloud Architect',
     department: 'Engineering',
+    employmentType: 'Internal',
     email: 'marcus.v@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#2563EB',
@@ -17,6 +18,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Elena Rostova',
     role: 'Staff Product Designer',
     department: 'Design',
+    employmentType: 'Internal',
     email: 'elena.r@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#7C3AED',
@@ -28,6 +30,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Devon Zhao',
     role: 'Senior Full-Stack Engineer',
     department: 'Engineering',
+    employmentType: 'B2B',
     email: 'devon.z@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#059669',
@@ -39,6 +42,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Sarah Lindqvist',
     role: 'Lead Product Manager',
     department: 'Product',
+    employmentType: 'Internal',
     email: 'sarah.l@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#D97706',
@@ -50,6 +54,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Tariq Al-Mansoor',
     role: 'Senior Mobile Engineer (iOS/Android)',
     department: 'Engineering',
+    employmentType: 'B2B',
     email: 'tariq.m@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#0284C7',
@@ -61,6 +66,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Amara Okafor',
     role: 'Senior UX Researcher',
     department: 'Design',
+    employmentType: 'External',
     email: 'amara.o@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#DB2777',
@@ -72,6 +78,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Kenji Takahashi',
     role: 'Staff Data Scientist & ML',
     department: 'Data',
+    employmentType: 'Internal',
     email: 'kenji.t@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#4F46E5',
@@ -83,6 +90,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Chloe Bennett',
     role: 'QA Automation Lead',
     department: 'QA',
+    employmentType: 'External',
     email: 'chloe.b@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#0891B2',
@@ -94,6 +102,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Liam Henderson',
     role: 'Frontend Engineer',
     department: 'Engineering',
+    employmentType: 'B2B',
     email: 'liam.h@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#16A34A',
@@ -105,6 +114,7 @@ export const INITIAL_PEOPLE: Person[] = [
     name: 'Priya Patel',
     role: 'Technical Program Manager',
     department: 'Operations',
+    employmentType: 'Internal',
     email: 'priya.p@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#EA580C',
@@ -496,6 +506,12 @@ export function loadAppState(): AppState {
         const defaultPerson = INITIAL_PEOPLE.find((ip) => ip.id === p.id);
         return {
           ...p,
+          employmentType:
+            p.employmentType === 'Internal' ||
+            p.employmentType === 'External' ||
+            p.employmentType === 'B2B'
+              ? p.employmentType
+              : defaultPerson?.employmentType || 'Internal',
           notes: p.notes !== undefined ? p.notes : (defaultPerson?.notes || '')
         };
       });

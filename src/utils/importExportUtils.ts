@@ -5,6 +5,7 @@ import {
   Allocation,
   LeaveEntry,
   LeaveType,
+  EmploymentType,
   ViewMode,
   MONTH_NAMES,
   MONTH_FULL_NAMES,
@@ -133,6 +134,24 @@ function parseMonthToken(token: string | undefined): number | null {
   return null;
 }
 
+function parseEmploymentType(
+  raw: string | undefined,
+  fallback: EmploymentType = 'Internal'
+): EmploymentType {
+  if (!raw) return fallback;
+  const normalized = raw.trim().toLowerCase();
+  if (normalized === 'external' || normalized === 'ext' || normalized === 'contractor') {
+    return 'External';
+  }
+  if (normalized === 'b2b' || normalized === 'b2b contract') {
+    return 'B2B';
+  }
+  if (normalized === 'internal' || normalized === 'int' || normalized === 'fte') {
+    return 'Internal';
+  }
+  return fallback;
+}
+
 export function triggerFileDownload(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -163,6 +182,7 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
     'Person Name',
     'Role',
     'Department',
+    'Employment',
     'Email',
     'Max Capacity %',
     'Person Comment',
@@ -192,6 +212,7 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
       person.name,
       person.role,
       person.department,
+      person.employmentType || 'Internal',
       person.email,
       `${person.maxCapacityPercent}%`,
       person.notes || '',
@@ -222,6 +243,7 @@ export function generatePeopleViewCSV(state: AppState, peopleSubset?: Person[]):
         person.name,
         person.role,
         person.department,
+        person.employmentType || 'Internal',
         person.email,
         `${person.maxCapacityPercent}%`,
         person.notes || '',
@@ -259,6 +281,7 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
     'Person Name',
     'Role',
     'Department',
+    'Employment',
     'Assignment Note',
     'Avg FTE / %',
     ...MONTH_NAMES
@@ -282,6 +305,7 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
         project.status,
         project.billable ? 'Yes' : 'No',
         project.notes || '',
+        '',
         '',
         '',
         '',
@@ -315,6 +339,7 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
           person.name,
           person.role,
           person.department,
+          person.employmentType || 'Internal',
           alloc.notes || person.notes || '',
           `${avg}%`,
           ...alloc.monthlyPercentage.map((v) => `${v}%`)
@@ -340,6 +365,7 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
     'Person Name',
     'Role',
     'Department',
+    'Employment',
     'Max Capacity %',
     'Person Comment',
     'Leave Category',
@@ -372,6 +398,7 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
       person.name,
       person.role,
       person.department,
+      person.employmentType || 'Internal',
       `${person.maxCapacityPercent}%`,
       person.notes || '',
       '',
@@ -397,6 +424,7 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
         person.name,
         person.role,
         person.department,
+        person.employmentType || 'Internal',
         `${person.maxCapacityPercent}%`,
         person.notes || '',
         leave.type,
@@ -427,6 +455,7 @@ export function generateBenchViewCSV(state: AppState, peopleSubset?: Person[]): 
     'Person Name',
     'Role',
     'Department',
+    'Employment',
     'Email',
     'Max Capacity %',
     'Skills & Bench Comment',
@@ -446,6 +475,7 @@ export function generateBenchViewCSV(state: AppState, peopleSubset?: Person[]): 
       person.name,
       person.role,
       person.department,
+      person.employmentType || 'Internal',
       person.email,
       `${person.maxCapacityPercent}%`,
       person.notes || '',
@@ -472,6 +502,7 @@ export function generateAllViewsCSV(state: AppState): string {
     'Person Name',
     'Role',
     'Department',
+    'Employment',
     'Email',
     'Max Capacity %',
     'Person Comment',
@@ -508,6 +539,7 @@ export function generateAllViewsCSV(state: AppState): string {
       person.name,
       person.role,
       person.department,
+      person.employmentType || 'Internal',
       person.email,
       `${person.maxCapacityPercent}%`,
       person.notes || '',
@@ -535,6 +567,7 @@ export function generateAllViewsCSV(state: AppState): string {
     rows.push([
       selectedYear,
       'Project',
+      '',
       '',
       '',
       '',
@@ -571,6 +604,7 @@ export function generateAllViewsCSV(state: AppState): string {
       person.name,
       person.role,
       person.department,
+      person.employmentType || 'Internal',
       person.email,
       `${person.maxCapacityPercent}%`,
       person.notes || '',
@@ -607,6 +641,7 @@ export function generateAllViewsCSV(state: AppState): string {
       person.name,
       person.role,
       person.department,
+      person.employmentType || 'Internal',
       person.email,
       `${person.maxCapacityPercent}%`,
       person.notes || '',
@@ -692,6 +727,7 @@ export function generateViewJSON(state: AppState, scope: ExportScope): string {
       name: person.name,
       role: person.role,
       department: person.department,
+      employmentType: person.employmentType || 'Internal',
       email: person.email,
       maxCapacityPercent: person.maxCapacityPercent,
       notes: person.notes || '',
@@ -729,6 +765,7 @@ export function generateTemplateCSV(
       'Person Name',
       'Role',
       'Department',
+      'Employment',
       'Email',
       'Max Capacity %',
       'Person Comment',
@@ -747,6 +784,7 @@ export function generateTemplateCSV(
             'Jane Doe',
             'Senior Frontend Engineer',
             'Engineering',
+            'Internal',
             'jane.doe@company.internal',
             '100%',
             'React & TypeScript Lead',
@@ -774,6 +812,7 @@ export function generateTemplateCSV(
             'Jane Doe',
             'Senior Frontend Engineer',
             'Engineering',
+            'Internal',
             'jane.doe@company.internal',
             '100%',
             'React & TypeScript Lead',
@@ -815,6 +854,7 @@ export function generateTemplateCSV(
       'Person Name',
       'Role',
       'Department',
+      'Employment',
       'Assignment Note',
       'Avg FTE / %',
       ...MONTH_NAMES
@@ -831,6 +871,7 @@ export function generateTemplateCSV(
             'active',
             'Yes',
             'Q2-Q4 Rollout',
+            '',
             '',
             '',
             '',
@@ -862,6 +903,7 @@ export function generateTemplateCSV(
             'Alex Rivera',
             'Product Designer',
             'Design',
+            'B2B',
             'UX Lead',
             '100%',
             '0%',
@@ -890,6 +932,7 @@ export function generateTemplateCSV(
       'Person Name',
       'Role',
       'Department',
+      'Employment',
       'Max Capacity %',
       'Person Comment',
       'Leave Category',
@@ -908,6 +951,7 @@ export function generateTemplateCSV(
             'Jane Doe',
             'Senior Frontend Engineer',
             'Engineering',
+            'Internal',
             '100%',
             'Summer PTO planned',
             'vacation',
@@ -935,6 +979,7 @@ export function generateTemplateCSV(
             'Sam Taylor',
             'Backend Architect',
             'Engineering',
+            'B2B',
             '100%',
             '',
             'paternity',
@@ -969,6 +1014,7 @@ export function generateTemplateCSV(
       'Person Name',
       'Role',
       'Department',
+      'Employment',
       'Email',
       'Max Capacity %',
       'Skills & Bench Comment',
@@ -984,6 +1030,7 @@ export function generateTemplateCSV(
             'Chris Morgan',
             'DevOps Engineer',
             'Cloud & Infra',
+            'External',
             'chris.morgan@company.internal',
             '100%',
             'Kubernetes, Terraform, AWS Certified — ready for Q3 assignment',
@@ -1015,6 +1062,7 @@ export function generateTemplateCSV(
     'Person Name',
     'Role',
     'Department',
+    'Employment',
     'Email',
     'Max Capacity %',
     'Person Comment',
@@ -1041,6 +1089,7 @@ export function generateTemplateCSV(
           'Jane Doe',
           'Senior Frontend Engineer',
           'Engineering',
+          'Internal',
           'jane.doe@company.internal',
           '100%',
           'React & TypeScript Lead',
@@ -1076,6 +1125,7 @@ export function generateTemplateCSV(
           'Jane Doe',
           'Senior Frontend Engineer',
           'Engineering',
+          'Internal',
           'jane.doe@company.internal',
           '100%',
           'React & TypeScript Lead',
@@ -1179,6 +1229,7 @@ function importFromJsonContent(
           id: p.id || `p-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
           role: p.role || 'Specialist',
           department: p.department || 'Engineering',
+          employmentType: parseEmploymentType(p.employmentType, 'Internal'),
           email: p.email || `${p.name.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
           maxCapacityPercent: p.maxCapacityPercent ?? 100,
           avatarColor: p.avatarColor || AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
@@ -1201,6 +1252,9 @@ function importFromJsonContent(
           ...nextPeople[idx],
           role: b.role ?? nextPeople[idx].role,
           department: b.department ?? nextPeople[idx].department,
+          employmentType: b.employmentType
+            ? parseEmploymentType(b.employmentType, nextPeople[idx].employmentType || 'Internal')
+            : nextPeople[idx].employmentType || 'Internal',
           maxCapacityPercent: b.maxCapacityPercent ?? nextPeople[idx].maxCapacityPercent,
           notes: b.notes !== undefined ? b.notes : nextPeople[idx].notes
         };
@@ -1210,6 +1264,7 @@ function importFromJsonContent(
           name: b.name,
           role: b.role || 'Specialist',
           department: b.department || 'Engineering',
+          employmentType: parseEmploymentType(b.employmentType, 'Internal'),
           email: b.email || `${b.name.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
           maxCapacityPercent: b.maxCapacityPercent ?? 100,
           avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
@@ -1393,6 +1448,7 @@ function importFromCsvContent(
   const idxPersonName = colIndex(['person name', 'team member', 'person', 'name', 'staff']);
   const idxRole = colIndex(['role', 'title', 'job title']);
   const idxDept = colIndex(['department', 'dept']);
+  const idxEmployment = colIndex(['employment', 'employment type', 'contract', 'contract type']);
   const idxEmail = colIndex(['email']);
   const idxMaxCap = colIndex(['max capacity %', 'max capacity', 'base capacity']);
   const idxPersonComment = colIndex([
@@ -1449,6 +1505,7 @@ function importFromCsvContent(
     name: string,
     role?: string,
     dept?: string,
+    employmentRaw?: string,
     email?: string,
     maxCap?: number,
     notes?: string
@@ -1462,6 +1519,9 @@ function importFromCsvContent(
         ...existing,
         role: role || existing.role,
         department: dept || existing.department,
+        employmentType: employmentRaw
+          ? parseEmploymentType(employmentRaw, existing.employmentType || 'Internal')
+          : existing.employmentType || 'Internal',
         email: email || existing.email,
         maxCapacityPercent: maxCap !== undefined ? maxCap : existing.maxCapacityPercent,
         notes: notes !== undefined && notes !== '' ? notes : existing.notes
@@ -1476,6 +1536,7 @@ function importFromCsvContent(
       name,
       role: role || 'Specialist',
       department: dept || 'Engineering',
+      employmentType: parseEmploymentType(employmentRaw, 'Internal'),
       email: email || `${name.toLowerCase().replace(/\s+/g, '.')}@company.internal`,
       maxCapacityPercent: maxCap ?? 100,
       avatarColor: AVATAR_COLORS[nextPeople.length % AVATAR_COLORS.length],
@@ -1581,6 +1642,7 @@ function importFromCsvContent(
     const personName = getCell(idxPersonName);
     const role = getCell(idxRole);
     const dept = getCell(idxDept);
+    const employmentRaw = getCell(idxEmployment);
     const email = getCell(idxEmail);
     const maxCapRaw = getCell(idxMaxCap);
     const maxCap = maxCapRaw ? parsePercentValue(maxCapRaw, 100) : undefined;
@@ -1610,7 +1672,15 @@ function importFromCsvContent(
     // 1. Ensure Person if personName is present
     let personObj: Person | null = null;
     if (personName) {
-      personObj = ensurePerson(personName, role, dept, email, maxCap, personComment);
+      personObj = ensurePerson(
+        personName,
+        role,
+        dept,
+        employmentRaw,
+        email,
+        maxCap,
+        personComment
+      );
     }
 
     // 2. Ensure Client & Project if projectName is present

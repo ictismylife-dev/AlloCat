@@ -3,9 +3,12 @@ import { Person, Client, Project, Allocation, LeaveEntry } from '../types';
 export const INITIAL_PEOPLE: Person[] = [
   {
     id: 'p-1',
+    firstName: 'Marcus',
+    lastName: 'Vance',
     name: 'Marcus Vance',
     role: 'Principal Cloud Architect',
     department: 'Engineering',
+    employmentType: 'Internal',
     email: 'marcus.v@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#2563EB',
@@ -14,9 +17,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-2',
+    firstName: 'Elena',
+    lastName: 'Rostova',
     name: 'Elena Rostova',
     role: 'Staff Product Designer',
     department: 'Design',
+    employmentType: 'Internal',
     email: 'elena.r@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#7C3AED',
@@ -25,9 +31,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-3',
+    firstName: 'Devon',
+    lastName: 'Zhao',
     name: 'Devon Zhao',
     role: 'Senior Full-Stack Engineer',
     department: 'Engineering',
+    employmentType: 'B2B',
     email: 'devon.z@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#059669',
@@ -36,9 +45,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-4',
+    firstName: 'Sarah',
+    lastName: 'Lindqvist',
     name: 'Sarah Lindqvist',
     role: 'Lead Product Manager',
     department: 'Product',
+    employmentType: 'Internal',
     email: 'sarah.l@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#D97706',
@@ -47,9 +59,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-5',
+    firstName: 'Tariq',
+    lastName: 'Al-Mansoor',
     name: 'Tariq Al-Mansoor',
     role: 'Senior Mobile Engineer (iOS/Android)',
     department: 'Engineering',
+    employmentType: 'B2B',
     email: 'tariq.m@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#0284C7',
@@ -58,9 +73,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-6',
+    firstName: 'Amara',
+    lastName: 'Okafor',
     name: 'Amara Okafor',
     role: 'Senior UX Researcher',
     department: 'Design',
+    employmentType: 'External',
     email: 'amara.o@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#DB2777',
@@ -69,9 +87,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-7',
+    firstName: 'Kenji',
+    lastName: 'Takahashi',
     name: 'Kenji Takahashi',
     role: 'Staff Data Scientist & ML',
     department: 'Data',
+    employmentType: 'Internal',
     email: 'kenji.t@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#4F46E5',
@@ -80,9 +101,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-8',
+    firstName: 'Chloe',
+    lastName: 'Bennett',
     name: 'Chloe Bennett',
     role: 'QA Automation Lead',
     department: 'QA',
+    employmentType: 'External',
     email: 'chloe.b@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#0891B2',
@@ -91,9 +115,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-9',
+    firstName: 'Liam',
+    lastName: 'Henderson',
     name: 'Liam Henderson',
     role: 'Frontend Engineer',
     department: 'Engineering',
+    employmentType: 'B2B',
     email: 'liam.h@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#16A34A',
@@ -102,9 +129,12 @@ export const INITIAL_PEOPLE: Person[] = [
   },
   {
     id: 'p-10',
+    firstName: 'Priya',
+    lastName: 'Patel',
     name: 'Priya Patel',
     role: 'Technical Program Manager',
     department: 'Operations',
+    employmentType: 'Internal',
     email: 'priya.p@company.internal',
     maxCapacityPercent: 100,
     avatarColor: '#EA580C',
@@ -494,8 +524,30 @@ export function loadAppState(): AppState {
 
       const loadedPeople = parsed.people.map((p: Person) => {
         const defaultPerson = INITIAL_PEOPLE.find((ip) => ip.id === p.id);
+        const rawFullName = (p.name || '').trim();
+        const nameParts = rawFullName ? rawFullName.split(/\s+/) : [];
+        const firstName =
+          p.firstName?.trim() ||
+          defaultPerson?.firstName ||
+          nameParts[0] ||
+          'Team';
+        const lastName =
+          p.lastName !== undefined && p.lastName.trim() !== ''
+            ? p.lastName.trim()
+            : defaultPerson?.lastName ||
+              (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '');
+        const fullName = `${firstName} ${lastName}`.trim() || rawFullName;
         return {
           ...p,
+          firstName,
+          lastName,
+          name: fullName,
+          employmentType:
+            p.employmentType === 'Internal' ||
+            p.employmentType === 'External' ||
+            p.employmentType === 'B2B'
+              ? p.employmentType
+              : defaultPerson?.employmentType || 'Internal',
           notes: p.notes !== undefined ? p.notes : (defaultPerson?.notes || '')
         };
       });

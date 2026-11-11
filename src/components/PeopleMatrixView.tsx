@@ -1,6 +1,16 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, MessageSquare } from 'lucide-react';
-import { MONTH_NAMES, Person, Project, Client, Allocation, LeaveEntry } from '../types';
+import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, MessageSquare } from 'lucide-react';
+import {
+  MONTH_NAMES,
+  Person,
+  Project,
+  Client,
+  Allocation,
+  LeaveEntry,
+  EmploymentType,
+  EMPLOYMENT_TYPES,
+  EMPLOYMENT_BADGE_CONFIG
+} from '../types';
 import { getPersonCapacitySummary, getUtilizationColorClass } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
 
@@ -17,8 +27,11 @@ interface PeopleMatrixViewProps {
   onOpenPersonMonth?: (personId: string, monthIndex: number) => void;
   onOpenAssignModalForPerson: (personId: string) => void;
   onDeleteAllocation: (allocationId: string) => void;
+  onEditPerson?: (person: Person) => void;
+  onEditProject?: (project: Project) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
+  onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
   onUpdateAllocationNotes?: (allocationId: string, notes: string) => void;
 }
 
@@ -35,8 +48,11 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
   onOpenPersonMonth,
   onOpenAssignModalForPerson,
   onDeleteAllocation,
+  onEditPerson,
+  onEditProject,
   onDeletePerson,
   onUpdatePersonNotes,
+  onUpdatePersonEmployment,
   onUpdateAllocationNotes
 }) => {
   const getProject = (id: string) => projects.find((p) => p.id === id);
@@ -46,7 +62,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
     return (
       <div className="p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 m-6">
         <p className="font-medium text-sm">No team members match the selected filters.</p>
-        <p className="text-xs mt-1">Try adjusting the department, search keyword, or capacity status.</p>
+        <p className="text-xs mt-1">Try adjusting the department, employment type, search keyword, or capacity status.</p>
       </div>
     );
   }
@@ -87,6 +103,8 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
         <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
           {people.map((person) => {
             const isExpanded = expandedPersonIds.has(person.id);
+            const empType: EmploymentType = person.employmentType || 'Internal';
+            const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
             const capacitySummary = getPersonCapacitySummary(
               person.id,
               selectedYear,
@@ -130,6 +148,36 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                             <span className="font-semibold text-slate-900 dark:text-slate-100 truncate">
                               {person.name}
                             </span>
+                            {onUpdatePersonEmployment ? (
+                              <select
+                                value={empType}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) =>
+                                  onUpdatePersonEmployment(
+                                    person.id,
+                                    e.target.value as EmploymentType
+                                  )
+                                }
+                                title="Change employment type (Internal, External, B2B)"
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`}
+                              >
+                                {EMPLOYMENT_TYPES.map((t) => (
+                                  <option
+                                    key={t}
+                                    value={t}
+                                    className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                                  >
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`}
+                              >
+                                {empType}
+                              </span>
+                            )}
                             {capacitySummary.hasOvertime && (
                               <span
                                 className="inline-flex items-center gap-0.5 px-1.5 py-0.2 text-[10px] font-mono font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 rounded border border-rose-300 dark:border-rose-800"
@@ -150,7 +198,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="shrink-0 flex items-center gap-1.5">
+                      <div className="shrink-0 flex items-center gap-1">
                         <span
                           className={`font-mono font-bold text-xs tabular-nums px-1.5 py-0.5 rounded ${
                             getUtilizationColorClass(capacitySummary.annualAverage).badge
@@ -159,6 +207,20 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                           {capacitySummary.annualAverage}%
                         </span>
 
+                        {onEditPerson && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditPerson(person);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer"
+                            title={`Edit ${person.name}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+
                         {onDeletePerson && (
                           <button
                             type="button"
@@ -166,7 +228,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                               e.stopPropagation();
                               onDeletePerson(person.id);
                             }}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-all cursor-pointer"
                             title={`Remove ${person.name} from team`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -261,14 +323,26 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                                 </div>
                               </div>
 
-                              <button
-                                type="button"
-                                onClick={() => onDeleteAllocation(alloc.id)}
-                                className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all"
-                                title="Remove assignment"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              <div className="flex items-center gap-1 shrink-0">
+                                {onEditProject && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onEditProject(proj)}
+                                    className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-all cursor-pointer"
+                                    title={`Edit project ${proj.name}`}
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => onDeleteAllocation(alloc.id)}
+                                  className="opacity-0 group-hover/sub:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-all cursor-pointer"
+                                  title="Remove assignment"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </div>
                           </td>
 

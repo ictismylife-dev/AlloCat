@@ -6,7 +6,8 @@ import {
   Client,
   Project,
   LeaveEntry,
-  Department
+  Department,
+  EmploymentType
 } from './types';
 import {
   AppState,
@@ -34,6 +35,14 @@ import { ManageYearsModal } from './components/ManageYearsModal';
 import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
+import {
+  ExportScope,
+  generatePeopleViewCSV,
+  generateClientsViewCSV,
+  generateAvailabilityViewCSV,
+  generateBenchViewCSV,
+  triggerFileDownload
+} from './utils/importExportUtils';
 
 export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
@@ -43,6 +52,7 @@ export function App() {
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     department: 'all',
+    employmentFilter: 'all',
     utilization: 'all',
     clientFilter: 'all'
   });
@@ -69,7 +79,10 @@ export function App() {
     monthIndex?: number;
   }>({ isOpen: false });
   const [isAddPersonOpen, setIsAddPersonOpen] = useState(false);
+  const [personToEdit, setPersonToEdit] = useState<Person | null>(null);
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+  const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
   const [leaveModalState, setLeaveModalState] = useState<{
     isOpen: boolean;
     personId?: string;
@@ -79,6 +92,7 @@ export function App() {
   const [isManageYearsOpen, setIsManageYearsOpen] = useState(false);
   const [isManageDepartmentsOpen, setIsManageDepartmentsOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportModalScope, setExportModalScope] = useState<ExportScope>('all');
   const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
 
   // Save state changes to localStorage
@@ -118,6 +132,14 @@ export function App() {
         return false;
       }
 
+      if (
+        filters.employmentFilter &&
+        filters.employmentFilter !== 'all' &&
+        (person.employmentType || 'Internal') !== filters.employmentFilter
+      ) {
+        return false;
+      }
+
       if (filters.search.trim() !== '') {
         const q = filters.search.toLowerCase();
         const personAllocs = allocations.filter(
@@ -135,8 +157,11 @@ export function App() {
 
         const matchesPerson =
           person.name.toLowerCase().includes(q) ||
+          (person.firstName && person.firstName.toLowerCase().includes(q)) ||
+          (person.lastName && person.lastName.toLowerCase().includes(q)) ||
           person.role.toLowerCase().includes(q) ||
           person.department.toLowerCase().includes(q) ||
+          (person.employmentType || 'Internal').toLowerCase().includes(q) ||
           (person.notes && person.notes.toLowerCase().includes(q));
 
         if (!matchesPerson && !matchesProject) return false;
@@ -389,6 +414,13 @@ export function App() {
     setExpandedPersonIds((prev) => new Set(prev).add(newPerson.id));
   };
 
+  const handleUpdatePerson = (updatedPerson: Person) => {
+    setAppState((prev) => ({
+      ...prev,
+      people: prev.people.map((p) => (p.id === updatedPerson.id ? updatedPerson : p))
+    }));
+  };
+
   const handleDeletePerson = (personId: string) => {
     setAppState((prev) => ({
       ...prev,
@@ -429,6 +461,60 @@ export function App() {
     });
   };
 
+  const handleUpdateProject = (
+    updatedProject: Project,
+    updatedClient?: Client,
+    newClientData?: Omit<Client, 'id'>
+  ) => {
+    setAppState((prev) => {
+      let targetClientId = updatedProject.clientId;
+      let nextClients = [...prev.clients];
+
+      if (newClientData) {
+        const createdClient: Client = {
+          ...newClientData,
+          id: `c-${Date.now()}`
+        };
+        nextClients.push(createdClient);
+        targetClientId = createdClient.id;
+      } else if (updatedClient) {
+        nextClients = nextClients.map((c) =>
+          c.id === updatedClient.id ? updatedClient : c
+        );
+      }
+
+      const finalProject: Project = {
+        ...updatedProject,
+        clientId: targetClientId
+      };
+
+      return {
+        ...prev,
+        clients: nextClients,
+        projects: prev.projects.map((p) =>
+          p.id === finalProject.id ? finalProject : p
+        )
+      };
+    });
+  };
+
+  const handleUpdateClient = (updatedClient: Client) => {
+    setAppState((prev) => ({
+      ...prev,
+      clients: prev.clients.map((c) =>
+        c.id === updatedClient.id ? updatedClient : c
+      )
+    }));
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    setAppState((prev) => ({
+      ...prev,
+      projects: prev.projects.filter((p) => p.id !== projectId),
+      allocations: prev.allocations.filter((a) => a.projectId !== projectId)
+    }));
+  };
+
   const handleSaveLeave = (leaveData: Omit<LeaveEntry, 'id'>) => {
     const newLeave: LeaveEntry = {
       ...leaveData,
@@ -448,11 +534,23 @@ export function App() {
     }));
   };
 
-  // Notes updaters
+  // Notes & Employment updaters
   const handleUpdatePersonNotes = (personId: string, notes: string) => {
     setAppState((prev) => ({
       ...prev,
       people: prev.people.map((p) => (p.id === personId ? { ...p, notes } : p))
+    }));
+  };
+
+  const handleUpdatePersonEmployment = (
+    personId: string,
+    employmentType: EmploymentType
+  ) => {
+    setAppState((prev) => ({
+      ...prev,
+      people: prev.people.map((p) =>
+        p.id === personId ? { ...p, employmentType } : p
+      )
     }));
   };
 
@@ -591,23 +689,71 @@ export function App() {
         overtimeCount={kpis.totalPersonMonthsOverbooked}
         onOpenOvertimeDrawer={() => setIsOvertimeDrawerOpen(true)}
         onOpenAssignModal={() => setAssignModalState({ isOpen: true })}
-        onOpenAddPersonModal={() => setIsAddPersonOpen(true)}
-        onOpenAddProjectModal={() => setIsAddProjectOpen(true)}
+        onOpenAddPersonModal={() => {
+          setPersonToEdit(null);
+          setIsAddPersonOpen(true);
+        }}
+        onOpenAddProjectModal={() => {
+          setProjectToEdit(null);
+          setClientToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
         onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
-        onOpenExportModal={() => setIsExportModalOpen(true)}
+        onOpenExportModal={() => {
+          setExportModalScope('all');
+          setIsExportModalOpen(true);
+        }}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode((d) => !d)}
       />
 
       <Toolbar
+        viewMode={viewMode}
         filters={filters}
         onFilterChange={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
         departments={departments}
+        clients={clients}
         onOpenManageDepartmentsModal={() => setIsManageDepartmentsOpen(true)}
         kpis={kpis}
         isAllExpanded={isAllExpanded}
         onToggleExpandAll={handleToggleExpandAll}
         selectedYear={selectedYear}
+        onQuickExportCurrentViewCSV={() => {
+          const dateStr = new Date().toISOString().slice(0, 10);
+          if (viewMode === 'people') {
+            const csv = generatePeopleViewCSV(appState, filteredPeople);
+            triggerFileDownload(
+              csv,
+              `allocat-by-people-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          } else if (viewMode === 'clients') {
+            const csv = generateClientsViewCSV(appState, filteredProjects);
+            triggerFileDownload(
+              csv,
+              `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          } else if (viewMode === 'availability') {
+            const csv = generateAvailabilityViewCSV(appState, filteredPeople);
+            triggerFileDownload(
+              csv,
+              `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          } else if (viewMode === 'bench') {
+            const csv = generateBenchViewCSV(appState, filteredPeople);
+            triggerFileDownload(
+              csv,
+              `allocat-bench-${selectedYear}-${dateStr}.csv`,
+              'text/csv;charset=utf-8;'
+            );
+          }
+        }}
+        onOpenImportExportForCurrentView={() => {
+          setExportModalScope(viewMode);
+          setIsExportModalOpen(true);
+        }}
       />
 
       <main className="flex-1 max-w-[1720px] w-full mx-auto">
@@ -629,11 +775,21 @@ export function App() {
               setAssignModalState({ isOpen: true, personId })
             }
             onDeleteAllocation={handleDeleteAllocation}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
+            onEditProject={(project) => {
+              setProjectToEdit(project);
+              setClientToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
             onDeletePerson={(personId) => {
               const found = people.find((p) => p.id === personId);
               if (found) setPersonToDelete(found);
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
+            onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
           />
         )}
@@ -655,6 +811,20 @@ export function App() {
               setAssignModalState({ isOpen: true, projectId })
             }
             onDeleteAllocation={handleDeleteAllocation}
+            onEditClient={(client) => {
+              setClientToEdit(client);
+              setProjectToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditProject={(project) => {
+              setProjectToEdit(project);
+              setClientToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
             onUpdateProjectNotes={handleUpdateProjectNotes}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
           />
@@ -672,11 +842,16 @@ export function App() {
               setLeaveModalState({ isOpen: true, personId, monthIndex })
             }
             onDeleteLeave={handleDeleteLeave}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
             onDeletePerson={(personId) => {
               const found = people.find((p) => p.id === personId);
               if (found) setPersonToDelete(found);
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
+            onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateLeaveNotes={handleUpdateLeaveNotes}
           />
         )}
@@ -692,11 +867,16 @@ export function App() {
             onOpenAssignModalForPerson={(personId, monthIndex) =>
               setAssignModalState({ isOpen: true, personId, monthIndex })
             }
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
             onDeletePerson={(personId) => {
               const found = people.find((p) => p.id === personId);
               if (found) setPersonToDelete(found);
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
+            onUpdatePersonEmployment={handleUpdatePersonEmployment}
           />
         )}
       </main>
@@ -745,16 +925,30 @@ export function App() {
 
       <AddPersonModal
         isOpen={isAddPersonOpen}
-        onClose={() => setIsAddPersonOpen(false)}
+        onClose={() => {
+          setIsAddPersonOpen(false);
+          setPersonToEdit(null);
+        }}
         departments={departments}
+        personToEdit={personToEdit}
         onSavePerson={handleAddPerson}
+        onUpdatePerson={handleUpdatePerson}
       />
 
       <AddClientProjectModal
         isOpen={isAddProjectOpen}
-        onClose={() => setIsAddProjectOpen(false)}
+        onClose={() => {
+          setIsAddProjectOpen(false);
+          setProjectToEdit(null);
+          setClientToEdit(null);
+        }}
         clients={clients}
+        projectToEdit={projectToEdit}
+        clientToEdit={clientToEdit}
         onSaveProject={handleAddProject}
+        onUpdateProject={handleUpdateProject}
+        onUpdateClient={handleUpdateClient}
+        onDeleteProject={handleDeleteProject}
       />
 
       <AddLeaveModal
@@ -809,6 +1003,8 @@ export function App() {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         appState={appState}
+        activeViewMode={viewMode}
+        initialScope={exportModalScope}
         onImportState={(newState) => setAppState(newState)}
         onResetToDefault={() => setAppState(resetAppState())}
       />

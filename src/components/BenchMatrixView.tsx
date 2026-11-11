@@ -3,6 +3,7 @@ import {
   UserCheck,
   Plus,
   Trash2,
+  Pencil,
   Filter,
   MessageSquare
 } from 'lucide-react';
@@ -12,7 +13,10 @@ import {
   Project,
   Client,
   Allocation,
-  LeaveEntry
+  LeaveEntry,
+  EmploymentType,
+  EMPLOYMENT_TYPES,
+  EMPLOYMENT_BADGE_CONFIG
 } from '../types';
 import { getPersonBenchSummary } from '../utils/allocationMath';
 import { CommentCell } from './CommentCell';
@@ -25,8 +29,10 @@ interface BenchMatrixViewProps {
   leaves: LeaveEntry[];
   selectedYear: number;
   onOpenAssignModalForPerson: (personId: string, monthIndex?: number) => void;
+  onEditPerson?: (person: Person) => void;
   onDeletePerson?: (personId: string) => void;
   onUpdatePersonNotes?: (personId: string, notes: string) => void;
+  onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
 }
 
 export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
@@ -35,8 +41,10 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
   leaves,
   selectedYear,
   onOpenAssignModalForPerson,
+  onEditPerson,
   onDeletePerson,
-  onUpdatePersonNotes
+  onUpdatePersonNotes,
+  onUpdatePersonEmployment
 }) => {
   const [onlyWithBench, setOnlyWithBench] = useState(false);
   const [minBenchPct, setMinBenchPct] = useState(20);
@@ -121,6 +129,8 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
             {summaries.map((summary) => {
               const { person } = summary;
+              const empType: EmploymentType = person.employmentType || 'Internal';
+              const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
               return (
                 <tr
                   key={person.id}
@@ -136,8 +146,40 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                           {person.initials}
                         </div>
                         <div className="min-w-0 truncate">
-                          <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
-                            {person.name}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                              {person.name}
+                            </span>
+                            {onUpdatePersonEmployment ? (
+                              <select
+                                value={empType}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) =>
+                                  onUpdatePersonEmployment(
+                                    person.id,
+                                    e.target.value as EmploymentType
+                                  )
+                                }
+                                title="Change employment type (Internal, External, B2B)"
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border cursor-pointer focus:outline-hidden ${empBadge.badgeClass}`}
+                              >
+                                {EMPLOYMENT_TYPES.map((t) => (
+                                  <option
+                                    key={t}
+                                    value={t}
+                                    className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                                  >
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span
+                                className={`px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`}
+                              >
+                                {empType}
+                              </span>
+                            )}
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                             {person.role} · {person.department}
@@ -145,16 +187,27 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         <span className="font-mono text-xs font-bold px-1.5 py-0.5 rounded bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                           {summary.annualAverageBenchPct}% free
                         </span>
+
+                        {onEditPerson && (
+                          <button
+                            type="button"
+                            onClick={() => onEditPerson(person)}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-all cursor-pointer"
+                            title={`Edit ${person.name}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
 
                         {onDeletePerson && (
                           <button
                             type="button"
                             onClick={() => onDeletePerson(person.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-all cursor-pointer"
                             title={`Remove ${person.name}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />

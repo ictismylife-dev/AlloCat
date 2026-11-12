@@ -59,18 +59,23 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const quickAddRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsUserMenuOpen(false);
       }
+      if (quickAddRef.current && !quickAddRef.current.contains(e.target as Node)) {
+        setIsQuickAddOpen(false);
+      }
     };
-    if (isUserMenuOpen) {
+    if (isUserMenuOpen || isQuickAddOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isUserMenuOpen]);
+  }, [isUserMenuOpen, isQuickAddOpen]);
 
   return (
     <header className="shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors">
@@ -157,26 +162,38 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 2: View Switcher & Year Navigation */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* Year selector */}
-          <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60 gap-0.5">
-            {availableYears.map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => onYearChange(y)}
-                className={`px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all whitespace-nowrap ${
-                  selectedYear === y
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
+          {/* Year dropdown selector */}
+          <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
+            <div className="relative flex items-center">
+              <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 absolute left-2 pointer-events-none" />
+              <select
+                value={selectedYear}
+                onChange={(e) => {
+                  if (e.target.value === '__manage__') {
+                    onOpenManageYearsModal();
+                  } else {
+                    onYearChange(Number(e.target.value));
+                  }
+                }}
+                className="pl-7 pr-6 py-1 text-xs font-mono font-semibold rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs border-0 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none"
+                title="Select planning year"
               >
-                {y}
-              </button>
-            ))}
+                {availableYears.map((y) => (
+                  <option key={y} value={y} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono">
+                    {y}
+                  </option>
+                ))}
+                <option value="__manage__" className="bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-sans font-medium">
+                  + Manage Years...
+                </option>
+              </select>
+              <ChevronDown className="w-3 h-3 text-slate-500 dark:text-slate-400 absolute right-1.5 pointer-events-none" />
+            </div>
+
             <button
               type="button"
               onClick={onOpenManageYearsModal}
-              className="p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors"
+              className="p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors cursor-pointer"
               title="Add or remove planning years"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -251,29 +268,73 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Quick Add Buttons */}
-          <div className="hidden lg:flex items-center gap-1.5">
+          {/* Quick Add Dropdown list */}
+          <div className="relative flex items-center" ref={quickAddRef}>
             <button
               type="button"
-              onClick={onOpenAddLeaveModal}
-              className="px-2.5 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-lg transition-colors whitespace-nowrap border border-purple-200 dark:border-purple-800"
+              onClick={() => setIsQuickAddOpen((prev) => !prev)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-700 shadow-2xs cursor-pointer whitespace-nowrap"
+              title="Create new Time Off, Person, or Project"
             >
-              + Time Off
+              <Plus className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Add</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
-            <button
-              type="button"
-              onClick={onOpenAddPersonModal}
-              className="px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-800"
-            >
-              + Person
-            </button>
-            <button
-              type="button"
-              onClick={onOpenAddProjectModal}
-              className="px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-800"
-            >
-              + Project
-            </button>
+
+            {isQuickAddOpen && (
+              <div className="absolute right-0 top-10 w-52 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddOpen(false);
+                    onOpenAddLeaveModal();
+                  }}
+                  className="w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-700 dark:hover:text-purple-300 transition-colors cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <Calendar className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">+ Time Off</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">Vacations, PTO & leaves</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddOpen(false);
+                    onOpenAddPersonModal();
+                  }}
+                  className="w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <Users className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">+ Person</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">New team member</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddOpen(false);
+                    onOpenAddProjectModal();
+                  }}
+                  className="w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <Briefcase className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">+ Project</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">Client project & scope</div>
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Primary Action Button */}

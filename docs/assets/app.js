@@ -13533,13 +13533,16 @@ var import_jsx_runtime = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYearChange, onOpenManageYearsModal, overtimeCount, onOpenOvertimeDrawer, onOpenAssignModal, onOpenAddPersonModal, onOpenAddProjectModal, onOpenAddLeaveModal, onOpenExportModal, isDarkMode, onToggleDarkMode, currentUser, onLogout, onOpenChangeCredentialsModal }) => {
 	const [isUserMenuOpen, setIsUserMenuOpen] = (0, import_react.useState)(false);
 	const menuRef = (0, import_react.useRef)(null);
+	const [isQuickAddOpen, setIsQuickAddOpen] = (0, import_react.useState)(false);
+	const quickAddRef = (0, import_react.useRef)(null);
 	(0, import_react.useEffect)(() => {
 		const handleClickOutside = (e) => {
 			if (menuRef.current && !menuRef.current.contains(e.target)) setIsUserMenuOpen(false);
+			if (quickAddRef.current && !quickAddRef.current.contains(e.target)) setIsQuickAddOpen(false);
 		};
-		if (isUserMenuOpen) document.addEventListener("mousedown", handleClickOutside);
+		if (isUserMenuOpen || isQuickAddOpen) document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, [isUserMenuOpen]);
+	}, [isUserMenuOpen, isQuickAddOpen]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
 		className: "shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -13612,16 +13615,35 @@ var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYear
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex items-center gap-3 shrink-0",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60 gap-0.5",
-						children: [availableYears.map((y) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-							type: "button",
-							onClick: () => onYearChange(y),
-							className: `px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all whitespace-nowrap ${selectedYear === y ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"}`,
-							children: y
-						}, y)), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "relative flex items-center",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "w-3.5 h-3.5 text-slate-500 dark:text-slate-400 absolute left-2 pointer-events-none" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+									value: selectedYear,
+									onChange: (e) => {
+										if (e.target.value === "__manage__") onOpenManageYearsModal();
+										else onYearChange(Number(e.target.value));
+									},
+									className: "pl-7 pr-6 py-1 text-xs font-mono font-semibold rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs border-0 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none",
+									title: "Select planning year",
+									children: [availableYears.map((y) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+										value: y,
+										className: "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono",
+										children: y
+									}, y)), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+										value: "__manage__",
+										className: "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-sans font-medium",
+										children: "+ Manage Years..."
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "w-3 h-3 text-slate-500 dark:text-slate-400 absolute right-1.5 pointer-events-none" })
+							]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
 							onClick: onOpenManageYearsModal,
-							className: "p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors",
+							className: "p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors cursor-pointer",
 							title: "Add or remove planning years",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "w-3.5 h-3.5" })
 						})]
@@ -13676,27 +13698,77 @@ var Header = ({ viewMode, onViewModeChange, availableYears, selectedYear, onYear
 							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "hidden lg:flex items-center gap-1.5",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-									type: "button",
-									onClick: onOpenAddLeaveModal,
-									className: "px-2.5 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-lg transition-colors whitespace-nowrap border border-purple-200 dark:border-purple-800",
-									children: "+ Time Off"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-									type: "button",
-									onClick: onOpenAddPersonModal,
-									className: "px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-800",
-									children: "+ Person"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-									type: "button",
-									onClick: onOpenAddProjectModal,
-									className: "px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-800",
-									children: "+ Project"
-								})
-							]
+							className: "relative flex items-center",
+							ref: quickAddRef,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+								type: "button",
+								onClick: () => setIsQuickAddOpen((prev) => !prev),
+								className: "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-700 shadow-2xs cursor-pointer whitespace-nowrap",
+								title: "Create new Time Off, Person, or Project",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Add" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "w-3 h-3 text-slate-400" })
+								]
+							}), isQuickAddOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "absolute right-0 top-10 w-52 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										type: "button",
+										onClick: () => {
+											setIsQuickAddOpen(false);
+											onOpenAddLeaveModal();
+										},
+										className: "w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-700 dark:hover:text-purple-300 transition-colors cursor-pointer",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "w-6 h-6 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "w-3.5 h-3.5" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "font-semibold",
+											children: "+ Time Off"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-[10px] text-slate-400 dark:text-slate-500",
+											children: "Vacations, PTO & leaves"
+										})] })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										type: "button",
+										onClick: () => {
+											setIsQuickAddOpen(false);
+											onOpenAddPersonModal();
+										},
+										className: "w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, { className: "w-3.5 h-3.5" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "font-semibold",
+											children: "+ Person"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-[10px] text-slate-400 dark:text-slate-500",
+											children: "New team member"
+										})] })]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										type: "button",
+										onClick: () => {
+											setIsQuickAddOpen(false);
+											onOpenAddProjectModal();
+										},
+										className: "w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "w-6 h-6 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0",
+											children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Briefcase, { className: "w-3.5 h-3.5" })
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "font-semibold",
+											children: "+ Project"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+											className: "text-[10px] text-slate-400 dark:text-slate-500",
+											children: "Client project & scope"
+										})] })]
+									})
+								]
+							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 							type: "button",

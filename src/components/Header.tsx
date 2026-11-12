@@ -200,20 +200,8 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* Perspective switcher: People vs Clients vs Availability vs Bench */}
+          {/* Perspective switcher: Clients vs People vs Availability vs Bench */}
           <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
-            <button
-              type="button"
-              onClick={() => onViewModeChange('people')}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
-                viewMode === 'people'
-                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>By People</span>
-            </button>
             <button
               type="button"
               onClick={() => onViewModeChange('clients')}
@@ -225,6 +213,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Briefcase className="w-3.5 h-3.5" />
               <span>By Clients & Projects</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('people')}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
+                viewMode === 'people'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>By People</span>
             </button>
             <button
               type="button"

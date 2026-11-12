@@ -46,7 +46,7 @@ import { ExportScope } from './utils/importExportUtils';
 
 export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
-  const [viewMode, setViewMode] = useState<ViewMode>('people');
+  const [viewMode, setViewMode] = useState<ViewMode>('clients');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [authCredentials, setAuthCredentials] = useState<AuthCredentials>(() =>
     loadAuthCredentials()
@@ -74,7 +74,7 @@ export function App() {
     () => new Set<string>()
   );
   const [expandedProjectIds, setExpandedProjectIds] = useState<Set<string>>(
-    () => new Set<string>()
+    () => new Set(appState.projects.map((p) => p.id))
   );
 
   // Active cell editor popover state
@@ -840,6 +840,44 @@ export function App() {
       />
 
       <main className="flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden">
+        {viewMode === 'clients' && (
+          <ClientProjectMatrixView
+            clients={sortedClients}
+            projects={filteredProjects}
+            people={people}
+            allocations={allocations}
+            leaves={leaves}
+            selectedYear={selectedYear}
+            expandedProjectIds={expandedProjectIds}
+            onToggleProjectExpand={handleToggleProjectExpand}
+            onOpenCellEditor={(personId, projectId, monthIndex) =>
+              setActiveCellEditor({ personId, projectId, monthIndex })
+            }
+            onOpenAssignModalForProject={(projectId) =>
+              setAssignModalState({ isOpen: true, projectId })
+            }
+            onDeleteAllocation={handleDeleteAllocation}
+            onEditClient={(client) => {
+              setClientToEdit(client);
+              setProjectToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditProject={(project) => {
+              setProjectToEdit(project);
+              setClientToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
+            onUpdateProjectNotes={handleUpdateProjectNotes}
+            onUpdateAllocationNotes={handleUpdateAllocationNotes}
+            clientSort={filters.clientSort || 'client-asc'}
+            onToggleClientSort={handleToggleClientSort}
+          />
+        )}
+
         {viewMode === 'people' && (
           <PeopleMatrixView
             people={filteredPeople}
@@ -876,44 +914,6 @@ export function App() {
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
             peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
-          />
-        )}
-
-        {viewMode === 'clients' && (
-          <ClientProjectMatrixView
-            clients={sortedClients}
-            projects={filteredProjects}
-            people={people}
-            allocations={allocations}
-            leaves={leaves}
-            selectedYear={selectedYear}
-            expandedProjectIds={expandedProjectIds}
-            onToggleProjectExpand={handleToggleProjectExpand}
-            onOpenCellEditor={(personId, projectId, monthIndex) =>
-              setActiveCellEditor({ personId, projectId, monthIndex })
-            }
-            onOpenAssignModalForProject={(projectId) =>
-              setAssignModalState({ isOpen: true, projectId })
-            }
-            onDeleteAllocation={handleDeleteAllocation}
-            onEditClient={(client) => {
-              setClientToEdit(client);
-              setProjectToEdit(null);
-              setIsAddProjectOpen(true);
-            }}
-            onEditProject={(project) => {
-              setProjectToEdit(project);
-              setClientToEdit(null);
-              setIsAddProjectOpen(true);
-            }}
-            onEditPerson={(person) => {
-              setPersonToEdit(person);
-              setIsAddPersonOpen(true);
-            }}
-            onUpdateProjectNotes={handleUpdateProjectNotes}
-            onUpdateAllocationNotes={handleUpdateAllocationNotes}
-            clientSort={filters.clientSort || 'client-asc'}
-            onToggleClientSort={handleToggleClientSort}
           />
         )}
 

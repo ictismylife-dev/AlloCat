@@ -57,7 +57,7 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
   onUpdateLeaveNotes,
-  peopleSort = 'default',
+  peopleSort = 'lastName-asc',
   onTogglePeopleSort
 }) => {
   if (people.length === 0) {

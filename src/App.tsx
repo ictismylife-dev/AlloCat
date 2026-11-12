@@ -66,15 +66,15 @@ export function App() {
     employmentFilter: 'all',
     utilization: 'all',
     clientFilter: 'all',
-    peopleSort: 'default',
-    clientSort: 'default'
+    peopleSort: 'lastName-asc',
+    clientSort: 'client-asc'
   });
 
   const [expandedPersonIds, setExpandedPersonIds] = useState<Set<string>>(
-    () => new Set(appState.people.map((p) => p.id))
+    () => new Set<string>()
   );
   const [expandedProjectIds, setExpandedProjectIds] = useState<Set<string>>(
-    () => new Set(appState.projects.map((p) => p.id))
+    () => new Set<string>()
   );
 
   // Active cell editor popover state
@@ -203,7 +203,7 @@ export function App() {
       return true;
     });
 
-    const sortMode = filters.peopleSort || 'default';
+    const sortMode = filters.peopleSort || 'lastName-asc';
     if (sortMode === 'default') return matched;
 
     return [...matched].sort((a, b) => {
@@ -234,7 +234,7 @@ export function App() {
 
   // Sorted clients
   const sortedClients = useMemo(() => {
-    const sortMode = filters.clientSort || 'default';
+    const sortMode = filters.clientSort || 'client-asc';
     if (sortMode === 'client-asc' || sortMode === 'project-asc') {
       return [...clients].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
@@ -267,7 +267,7 @@ export function App() {
       return true;
     });
 
-    const sortMode = filters.clientSort || 'default';
+    const sortMode = filters.clientSort || 'client-asc';
     if (sortMode === 'project-asc' || sortMode === 'client-asc') {
       return [...matched].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
@@ -285,10 +285,8 @@ export function App() {
     setFilters((prev) => ({
       ...prev,
       peopleSort:
-        prev.peopleSort === 'lastName-asc'
+        (prev.peopleSort || 'lastName-asc') === 'lastName-asc'
           ? 'lastName-desc'
-          : prev.peopleSort === 'lastName-desc'
-          ? 'default'
           : 'lastName-asc'
     }));
   };
@@ -297,10 +295,8 @@ export function App() {
     setFilters((prev) => ({
       ...prev,
       clientSort:
-        prev.clientSort === 'client-asc'
+        (prev.clientSort || 'client-asc') === 'client-asc'
           ? 'client-desc'
-          : prev.clientSort === 'client-desc'
-          ? 'default'
           : 'client-asc'
     }));
   };
@@ -325,8 +321,8 @@ export function App() {
 
   const isAllExpanded =
     viewMode === 'clients'
-      ? expandedProjectIds.size >= projects.length
-      : expandedPersonIds.size >= people.length;
+      ? projects.length > 0 && expandedProjectIds.size >= projects.length
+      : people.length > 0 && expandedPersonIds.size >= people.length;
 
   const handleToggleExpandAll = () => {
     if (viewMode === 'clients') {
@@ -878,7 +874,7 @@ export function App() {
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
-            peopleSort={filters.peopleSort || 'default'}
+            peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
@@ -916,7 +912,7 @@ export function App() {
             }}
             onUpdateProjectNotes={handleUpdateProjectNotes}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
-            clientSort={filters.clientSort || 'default'}
+            clientSort={filters.clientSort || 'client-asc'}
             onToggleClientSort={handleToggleClientSort}
           />
         )}
@@ -944,7 +940,7 @@ export function App() {
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateLeaveNotes={handleUpdateLeaveNotes}
-            peopleSort={filters.peopleSort || 'default'}
+            peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
@@ -970,7 +966,7 @@ export function App() {
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
-            peopleSort={filters.peopleSort || 'default'}
+            peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}

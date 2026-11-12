@@ -16935,41 +16935,57 @@ var AddLeaveModal = ({ isOpen, onClose, people, selectedYear, defaultPersonId, d
 // src/components/OvertimeAlertsDrawer.tsx
 var OvertimeAlertsDrawer = ({ isOpen, onClose, people, projects, clients, allocations, leaves, selectedYear, onUpdateAllocationMonth }) => {
 	if (!isOpen) return null;
-	const conflicts = [];
+	const personGroups = [];
 	for (const person of people) {
 		const summary = getPersonCapacitySummary(person.id, selectedYear, allocations, person.maxCapacityPercent, leaves);
-		for (const ot of summary.overtimeMonths) {
-			const assignments = allocations.filter((a) => a.personId === person.id && a.year === selectedYear).map((a) => {
-				const project = projects.find((p) => p.id === a.projectId);
-				if (!project) return null;
+		if (summary.overtimeMonths.length > 0) {
+			const personAllocs = allocations.filter((a) => a.personId === person.id && a.year === selectedYear);
+			const conflictMonths = summary.overtimeMonths.map((ot) => {
+				const assignments = personAllocs.map((a) => {
+					const project = projects.find((p) => p.id === a.projectId);
+					if (!project) return null;
+					return {
+						project,
+						client: clients.find((c) => c.id === project.clientId),
+						percentage: a.monthlyPercentage[ot.monthIndex] || 0
+					};
+				}).filter((item) => Boolean(item && item.percentage > 0));
 				return {
-					project,
-					client: clients.find((c) => c.id === project.clientId),
-					percentage: a.monthlyPercentage[ot.monthIndex] || 0
+					monthIndex: ot.monthIndex,
+					totalPct: ot.totalPct,
+					effectiveCapacity: ot.effectiveCapacity,
+					excessPct: ot.excessPct,
+					activeLeaves: ot.activeLeaves,
+					assignments
 				};
-			}).filter((item) => Boolean(item && item.percentage > 0));
-			conflicts.push({
+			});
+			const maxExcessPct = Math.max(...conflictMonths.map((m) => m.excessPct));
+			personGroups.push({
 				person,
-				monthIndex: ot.monthIndex,
-				totalPct: ot.totalPct,
-				effectiveCapacity: ot.effectiveCapacity,
-				excessPct: ot.excessPct,
-				assignments
+				months: conflictMonths,
+				totalOverbookedMonths: conflictMonths.length,
+				maxExcessPct
 			});
 		}
 	}
-	const handleAutoBalance = (c) => {
-		if (c.totalPct <= 0) return;
-		const scale = c.effectiveCapacity / c.totalPct;
-		c.assignments.forEach((a) => {
+	const totalConflictsCount = personGroups.reduce((acc, g) => acc + g.months.length, 0);
+	const handleAutoBalanceMonth = (personId, monthIndex, totalPct, effectiveCapacity, assignments) => {
+		if (totalPct <= 0) return;
+		const scale = effectiveCapacity / totalPct;
+		assignments.forEach((a) => {
 			const scaled = Math.floor(a.percentage * scale / 5) * 5;
-			onUpdateAllocationMonth(c.person.id, a.project.id, c.monthIndex, scaled);
+			onUpdateAllocationMonth(personId, a.project.id, monthIndex, scaled);
+		});
+	};
+	const handleAutoBalancePersonAll = (group) => {
+		group.months.forEach((m) => {
+			handleAutoBalanceMonth(group.person.id, m.monthIndex, m.totalPct, m.effectiveCapacity, m.assignments);
 		});
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex justify-end",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "bg-white dark:bg-slate-900 w-full max-w-lg h-full shadow-2xl border-l border-slate-200 dark:border-slate-800 flex flex-col",
+			className: "bg-white dark:bg-slate-900 w-full max-w-xl h-full shadow-2xl border-l border-slate-200 dark:border-slate-800 flex flex-col",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -16983,25 +16999,31 @@ var OvertimeAlertsDrawer = ({ isOpen, onClose, people, projects, clients, alloca
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 						className: "text-xs text-slate-400",
 						children: [
-							conflicts.length,
+							totalConflictsCount,
 							" ",
-							conflicts.length === 1 ? "conflict" : "conflicts",
+							totalConflictsCount === 1 ? "conflict" : "conflicts",
+							" across",
+							" ",
+							personGroups.length,
+							" ",
+							personGroups.length === 1 ? "person" : "people",
 							" in ",
 							selectedYear
 						]
 					})] })]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 					onClick: onClose,
-					className: "p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800",
+					className: "p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 cursor-pointer transition-colors",
+					title: "Close alerts drawer",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "w-5 h-5" })
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/60 dark:bg-slate-950/50",
-				children: conflicts.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 bg-slate-50/70 dark:bg-slate-950/50",
+				children: personGroups.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "text-center py-16 px-4",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3",
+							className: "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-3",
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "w-6 h-6" })
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
@@ -17013,115 +17035,173 @@ var OvertimeAlertsDrawer = ({ isOpen, onClose, people, projects, clients, alloca
 							children: "Every team member is within their effective monthly capacity."
 						})
 					]
-				}) : conflicts.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "bg-white dark:bg-slate-900 rounded-xl border border-rose-200 dark:border-rose-900/80 shadow-xs overflow-hidden",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "px-4 py-3 bg-rose-50/60 dark:bg-rose-950/40 border-b border-rose-100 dark:border-rose-900/60 flex items-center justify-between",
+				}) : personGroups.map((group) => {
+					const empType = group.person.employmentType || "Internal";
+					const empBadge = EMPLOYMENT_BADGE_CONFIG[empType];
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "bg-white dark:bg-slate-900 rounded-xl border border-rose-200 dark:border-rose-900/80 shadow-xs overflow-hidden",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center gap-2.5",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "w-7 h-7 rounded-full text-white text-xs font-semibold flex items-center justify-center",
-								style: { backgroundColor: c.person.avatarColor },
-								children: c.person.initials
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: c.person.name }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-									className: "font-mono px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300",
-									children: [
-										MONTH_FULL_NAMES[c.monthIndex],
-										" ",
-										selectedYear
-									]
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "text-[11px] text-slate-500",
-								children: [
-									c.person.role,
-									" · ",
-									c.person.department
-								]
-							})] })]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "text-right font-mono",
+							className: "px-4 py-3 bg-rose-50/90 dark:bg-rose-950/50 border-b border-rose-200/80 dark:border-rose-900/60 flex flex-wrap items-center justify-between gap-3",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "text-xs font-bold text-rose-700 dark:text-rose-400",
-								children: [
-									c.totalPct,
-									"% / ",
-									c.effectiveCapacity,
-									"%"
-								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "text-[10px] font-semibold text-rose-600",
-								children: [
-									"+",
-									c.excessPct,
-									"% Over"
-								]
-							})]
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "p-4 space-y-3",
-						children: [c.assignments.map(({ project, client, percentage }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center justify-between gap-3",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2 min-w-0 flex-1",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "w-2.5 h-2.5 rounded-full shrink-0",
-										style: { backgroundColor: project.color }
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-xs font-medium text-slate-800 dark:text-slate-200 truncate",
-										children: project.name
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-										className: "text-[10px] text-slate-400 truncate",
+								className: "flex items-center gap-3 min-w-0",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "w-8 h-8 rounded-full text-white text-xs font-semibold flex items-center justify-center shrink-0 shadow-2xs",
+									style: { backgroundColor: group.person.avatarColor },
+									children: group.person.initials
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "min-w-0",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 flex-wrap",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "truncate",
+											children: formatPersonTableName(group.person)
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: `px-1.5 py-0.2 text-[9px] font-mono font-semibold rounded border ${empBadge.badgeClass}`,
+											children: empType
+										})]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "text-[11px] text-slate-500 dark:text-slate-400 truncate",
 										children: [
-											"(",
-											client?.name,
-											")"
+											group.person.role,
+											" · ",
+											group.person.department
 										]
-									})
-								]
+									})]
+								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex items-center gap-2 shrink-0",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-									type: "range",
-									min: 0,
-									max: 100,
-									step: 5,
-									value: percentage,
-									onChange: (e) => onUpdateAllocationMonth(c.person.id, project.id, c.monthIndex, Number(e.target.value)),
-									className: "w-24 accent-blue-600 cursor-pointer"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-									className: "w-10 text-right font-mono text-xs font-semibold",
-									children: [percentage, "%"]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "text-right font-mono",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+										className: "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200 border border-rose-300 dark:border-rose-800",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "w-3 h-3 text-rose-600 dark:text-rose-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+											group.totalOverbookedMonths,
+											" ",
+											group.totalOverbookedMonths === 1 ? "month" : "months"
+										] })]
+									})
+								}), group.totalOverbookedMonths > 1 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									type: "button",
+									onClick: () => handleAutoBalancePersonAll(group),
+									className: "px-2.5 py-1 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-medium flex items-center gap-1 shadow-2xs transition-colors cursor-pointer",
+									title: "Auto-cap all overbooked months for this person",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Sparkles, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Auto-Cap All" })]
 								})]
 							})]
-						}, project.id)), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-								className: "text-[11px] text-slate-400",
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "p-4 space-y-3.5 bg-white dark:bg-slate-900",
+							children: group.months.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "p-3.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-lg border border-slate-200 dark:border-slate-800 space-y-3",
 								children: [
-									"Reduce by ",
-									c.excessPct,
-									"% to resolve overtime"
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-800/80 pb-2.5",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "font-mono text-xs font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 shadow-2xs",
+												children: [
+													MONTH_FULL_NAMES[m.monthIndex],
+													" ",
+													selectedYear
+												]
+											}), m.activeLeaves.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+												className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300",
+												title: `Effective capacity reduced to ${m.effectiveCapacity}% due to ${m.activeLeaves.map((l) => l.title).join(", ")}`,
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+													"Time off: ",
+													m.effectiveCapacity,
+													"% cap"
+												] })]
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "text-right font-mono",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "text-xs font-bold text-rose-700 dark:text-rose-400",
+												children: [
+													m.totalPct,
+													"% allocated / ",
+													m.effectiveCapacity,
+													"% cap"
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "text-[10px] font-semibold text-rose-600 dark:text-rose-400",
+												children: [
+													"+",
+													m.excessPct,
+													"% overtime"
+												]
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "space-y-2",
+										children: m.assignments.map(({ project, client, percentage }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "flex items-center justify-between gap-3 text-xs",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-2 min-w-0 flex-1",
+												children: [
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "w-2.5 h-2.5 rounded-full shrink-0",
+														style: { backgroundColor: project.color }
+													}),
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+														className: "font-medium text-slate-800 dark:text-slate-200 truncate",
+														children: project.name
+													}),
+													client && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+														className: "text-[10px] text-slate-400 dark:text-slate-500 truncate",
+														children: [
+															"(",
+															client.name,
+															")"
+														]
+													})
+												]
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+												className: "flex items-center gap-2 shrink-0",
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+													type: "range",
+													min: 0,
+													max: 100,
+													step: 5,
+													value: percentage,
+													onChange: (e) => onUpdateAllocationMonth(group.person.id, project.id, m.monthIndex, Number(e.target.value)),
+													className: "w-24 accent-blue-600 cursor-pointer"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+													className: "w-10 text-right font-mono font-semibold tabular-nums text-slate-800 dark:text-slate-200",
+													children: [percentage, "%"]
+												})]
+											})]
+										}, project.id))
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "pt-2 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											className: "text-[11px] text-slate-500 dark:text-slate-400",
+											children: [
+												"Reduce total by ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("strong", {
+													className: "text-rose-600 dark:text-rose-400",
+													children: [m.excessPct, "%"]
+												}),
+												" to resolve"
+											]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+											type: "button",
+											onClick: () => handleAutoBalanceMonth(group.person.id, m.monthIndex, m.totalPct, m.effectiveCapacity, m.assignments),
+											className: "px-2.5 py-1 rounded bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "w-3 h-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+												"Auto-Cap to ",
+												m.effectiveCapacity,
+												"%"
+											] })]
+										})]
+									})
 								]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-								type: "button",
-								onClick: () => handleAutoBalance(c),
-								className: "px-2.5 py-1 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-medium flex items-center gap-1",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "w-3 h-3" }),
-									"Auto-Cap to ",
-									c.effectiveCapacity,
-									"%"
-								]
-							})]
+							}, `${group.person.id}-${m.monthIndex}`))
 						})]
-					})]
-				}, `${c.person.id}-${c.monthIndex}`))
+					}, group.person.id);
+				})
 			})]
 		})
 	});

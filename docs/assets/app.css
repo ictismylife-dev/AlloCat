@@ -2905,10 +2905,6 @@
   }
 
   @media (min-width: 80rem) {
-    .xl\:inline {
-      display: inline;
-    }
-
     .xl\:inline-block {
       display: inline-block;
     }

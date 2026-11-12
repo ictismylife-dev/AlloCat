@@ -13820,14 +13820,7 @@ var LEAVE_TYPE_CONFIG = {
 	}
 };
 // src/components/Toolbar.tsx
-var VIEW_LABELS = {
-	people: "By People",
-	clients: "Clients & Projects",
-	availability: "Availability & Leaves",
-	bench: "Bench"
-};
-var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], onOpenManageDepartmentsModal, kpis, isAllExpanded, onToggleExpandAll, onQuickExportCurrentViewCSV, onOpenImportExportForCurrentView }) => {
-	const currentViewLabel = VIEW_LABELS[viewMode];
+var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], onOpenManageDepartmentsModal, kpis, isAllExpanded, onToggleExpandAll }) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "shrink-0 z-30 bg-slate-100/95 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -13900,34 +13893,14 @@ var Toolbar = ({ viewMode, filters, onFilterChange, departments, clients = [], o
 						})]
 					})
 				]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-wrap items-center gap-2 shrink-0",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						onClick: onQuickExportCurrentViewCSV,
-						className: "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-md border border-emerald-200 dark:border-emerald-800/80 transition-colors cursor-pointer",
-						title: `Download ${currentViewLabel} view as a .CSV spreadsheet`,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileSpreadsheet, { className: "w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-							"Export ",
-							currentViewLabel,
-							" (.CSV)"
-						] })]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						onClick: onOpenImportExportForCurrentView,
-						className: "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-md border border-blue-200 dark:border-blue-800/80 transition-colors cursor-pointer",
-						title: `Import or export ${currentViewLabel} data (.CSV / .JSON)`,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "w-3.5 h-3.5 text-blue-600 dark:text-blue-400" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Import / Export ", currentViewLabel] })]
-					}),
-					viewMode !== "bench" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						onClick: onToggleExpandAll,
-						className: "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "w-3.5 h-3.5 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: isAllExpanded ? "Collapse All Rows" : "Expand All Rows" })]
-					})
-				]
+			}), viewMode !== "bench" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex items-center gap-2 shrink-0",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					type: "button",
+					onClick: onToggleExpandAll,
+					className: "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "w-3.5 h-3.5 text-slate-500" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: isAllExpanded ? "Collapse All Rows" : "Expand All Rows" })]
+				})
 			})]
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-wrap items-center justify-between gap-3 pt-1",
@@ -20354,18 +20327,7 @@ function App() {
 						kpis,
 						isAllExpanded,
 						onToggleExpandAll: handleToggleExpandAll,
-						selectedYear,
-						onQuickExportCurrentViewCSV: () => {
-							const dateStr = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-							if (viewMode === "people") triggerFileDownload(generatePeopleViewCSV(appState, filteredPeople), `allocat-by-people-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-							else if (viewMode === "clients") triggerFileDownload(generateClientsViewCSV(appState, filteredProjects), `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-							else if (viewMode === "availability") triggerFileDownload(generateAvailabilityViewCSV(appState, filteredPeople), `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-							else if (viewMode === "bench") triggerFileDownload(generateBenchViewCSV(appState, filteredPeople), `allocat-bench-${selectedYear}-${dateStr}.csv`, "text/csv;charset=utf-8;");
-						},
-						onOpenImportExportForCurrentView: () => {
-							setExportModalScope(viewMode);
-							setIsExportModalOpen(true);
-						}
+						selectedYear
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
 						className: "flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden",

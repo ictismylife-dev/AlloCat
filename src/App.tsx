@@ -42,14 +42,7 @@ import {
   loadAuthCredentials,
   saveAuthCredentials
 } from './components/LoginOverlay';
-import {
-  ExportScope,
-  generatePeopleViewCSV,
-  generateClientsViewCSV,
-  generateAvailabilityViewCSV,
-  generateBenchViewCSV,
-  triggerFileDownload
-} from './utils/importExportUtils';
+import { ExportScope } from './utils/importExportUtils';
 
 export function App() {
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
@@ -848,42 +841,6 @@ export function App() {
         isAllExpanded={isAllExpanded}
         onToggleExpandAll={handleToggleExpandAll}
         selectedYear={selectedYear}
-        onQuickExportCurrentViewCSV={() => {
-          const dateStr = new Date().toISOString().slice(0, 10);
-          if (viewMode === 'people') {
-            const csv = generatePeopleViewCSV(appState, filteredPeople);
-            triggerFileDownload(
-              csv,
-              `allocat-by-people-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          } else if (viewMode === 'clients') {
-            const csv = generateClientsViewCSV(appState, filteredProjects);
-            triggerFileDownload(
-              csv,
-              `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          } else if (viewMode === 'availability') {
-            const csv = generateAvailabilityViewCSV(appState, filteredPeople);
-            triggerFileDownload(
-              csv,
-              `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          } else if (viewMode === 'bench') {
-            const csv = generateBenchViewCSV(appState, filteredPeople);
-            triggerFileDownload(
-              csv,
-              `allocat-bench-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          }
-        }}
-        onOpenImportExportForCurrentView={() => {
-          setExportModalScope(viewMode);
-          setIsExportModalOpen(true);
-        }}
       />
 
       <main className="flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden">

@@ -3,8 +3,6 @@ import {
   Search,
   ChevronsUpDown,
   Settings,
-  FileSpreadsheet,
-  Upload,
   ArrowDownAZ,
   ArrowUpZA
 } from 'lucide-react';
@@ -38,16 +36,7 @@ interface ToolbarProps {
   isAllExpanded: boolean;
   onToggleExpandAll: () => void;
   selectedYear: number;
-  onQuickExportCurrentViewCSV: () => void;
-  onOpenImportExportForCurrentView: () => void;
 }
-
-const VIEW_LABELS: Record<ViewMode, string> = {
-  people: 'By People',
-  clients: 'Clients & Projects',
-  availability: 'Availability & Leaves',
-  bench: 'Bench'
-};
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   viewMode,
@@ -58,11 +47,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onOpenManageDepartmentsModal,
   kpis,
   isAllExpanded,
-  onToggleExpandAll,
-  onQuickExportCurrentViewCSV,
-  onOpenImportExportForCurrentView
+  onToggleExpandAll
 }) => {
-  const currentViewLabel = VIEW_LABELS[viewMode];
 
   return (
     <div className="shrink-0 z-30 bg-slate-100/95 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3">
@@ -128,29 +114,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </div>
         </div>
 
-        {/* Right actions: Contextual Tab Export CSV, Tab Import, and Expand/Collapse All */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={onQuickExportCurrentViewCSV}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-md border border-emerald-200 dark:border-emerald-800/80 transition-colors cursor-pointer"
-            title={`Download ${currentViewLabel} view as a .CSV spreadsheet`}
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Export {currentViewLabel} (.CSV)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenImportExportForCurrentView}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-md border border-blue-200 dark:border-blue-800/80 transition-colors cursor-pointer"
-            title={`Import or export ${currentViewLabel} data (.CSV / .JSON)`}
-          >
-            <Upload className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            <span>Import / Export {currentViewLabel}</span>
-          </button>
-
-          {viewMode !== 'bench' && (
+        {/* Right actions: Expand/Collapse All */}
+        {viewMode !== 'bench' && (
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={onToggleExpandAll}
@@ -159,8 +125,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               <ChevronsUpDown className="w-3.5 h-3.5 text-slate-500" />
               <span>{isAllExpanded ? 'Collapse All Rows' : 'Expand All Rows'}</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom row: Search bar + Alphabetical Sort + Department / Client tabs + Utilization filter */}

@@ -6,13 +6,20 @@
 
 ---
 
-## Authentication & Account Management
+## Authentication, Logo Menu & Admin Control Panel
 
 Before signing in, the entire workspace view is blurred and locked behind a sign-in modal.
 
 - **Default Login:** `admin`
 - **Default Password:** `admin`
-- **Logo Picture Account Menu**: Once signed in, click the **AlloCat logo picture** (top-left header, displaying the active username badge) to open the account menu:
+- **Logo Button Menu & Admin Control Panel**: Once signed in, click the **AlloCat logo button** (top-left header, displaying the active username badge) to open the administrator dropdown menu:
+  - **Open Admin Panel (`Manage All`)**: Launches the centralized **Admin Control Panel** modal with six dedicated tabs and Quick Jump shortcuts:
+    1. **People & Team**: Search and browse all team members (sorted `A → Z`), inspect roles, departments, contract types (`Internal`, `External`, `B2B`), and max capacity, or add, edit, and remove team members.
+    2. **Departments**: Create new organizational departments, inline-rename existing departments (automatically updating assigned team members), and remove empty departments.
+    3. **Clients**: Search client organizations, create new client companies directly with status (`Active`, `Lead`, `Completed`), industry, and brand color, or edit and delete clients along with their associated projects.
+    4. **Projects**: Search deliverable projects, view project codes, parent clients, billing status (`Billable` vs `Internal`), and assigned headcount for the active year, or add, edit, and delete projects.
+    5. **Time Off & Leaves**: View all scheduled leaves across team members and years, schedule new time off, or delete existing leave entries.
+    6. **Years & System**: Add/switch/remove planning years, change administrator login credentials, open Import/Export backup tools, or reset the workspace to default demo data.
   - **Change Login & Password**: Verify your current password and set a custom login and password (persisted in `localStorage`), or reset back to the default `admin:admin`.
   - **Log Out / Lock Workspace**: Immediately lock and blur the workspace view until signed in again.
 
@@ -22,18 +29,18 @@ Before signing in, the entire workspace view is blurred and locked behind a sign
 
 AlloCat lets you inspect and edit your organization's staffing plan from four synchronized perspectives, with a pinned header and KPI/filter toolbar so only the matrix table scrolls:
 
-1. **By People (`PeopleMatrixView`)**
-   - Displays every team member in **`Last Name, First Name`** format alongside their employment type badge (`Internal`, `External`, `B2B`), annual average utilization, and monthly capacity totals (`Jan` – `Dec`).
-   - Expand any person's row to view and edit their individual project allocations month by month.
+1. **By Clients & Projects (`ClientProjectMatrixView` — First & Default View)**
+   - Opens by default with all deliverable projects **expanded** under their respective client organizations, sorted alphabetically **`A → Z`**.
+   - Tracks monthly total project staffing (`%` and `FTE` equivalents) and headcount assigned to each initiative.
+   - Manage the specific team members assigned to each project and adjust their monthly allocation percentages directly.
+
+2. **By People (`PeopleMatrixView`)**
+   - Displays every team member in **`Last Name, First Name`** format (sorted **`A → Z`** by Last Name by default, with rows collapsed by default for a clean executive overview) alongside their employment type badge (`Internal`, `External`, `B2B`), annual average utilization, and monthly capacity totals (`Jan` – `Dec`).
+   - Expand any person's row (or click **Expand All Rows**) to view and edit their individual project allocations month by month.
    - Click any monthly summary cell or project cell to open the **Total Workload & Allocation Popover**, showing an itemized breakdown of where that person is allocated, a visual multi-segment capacity bar, active leave reductions, and quick project switching.
 
-2. **By Clients & Projects (`ClientProjectMatrixView`)**
-   - Groups all deliverable projects under their respective client organizations.
-   - Tracks monthly total project staffing (`%` and `FTE` equivalents) and headcount assigned to each initiative.
-   - Expand any project to manage the specific team members assigned to it and adjust their monthly allocation percentages.
-
 3. **Availability & Leaves (`AvailabilityMatrixView`)**
-   - Tracks scheduled vacations, PTO, sick leave, parental leave, and sabbaticals across the 12-month timeline.
+   - Tracks scheduled vacations, PTO, sick leave, parental leave, and sabbaticals across the 12-month timeline (collapsed by default for quick scanning).
    - Automatically calculates each person's **effective monthly capacity** (`Base Capacity − Leave Impact`) and flags months where project bookings exceed reduced availability.
 
 4. **Bench (`BenchMatrixView`)**
@@ -44,21 +51,20 @@ AlloCat lets you inspect and edit your organization's staffing plan from four sy
 
 ## Key Features
 
-- **Team Member & Company/Project Management**:
-  - Split **First Name** and **Last Name** fields with **`Last Name, First Name`** table presentation.
-  - **Employment Classification**: Track and filter staff by `Internal`, `External`, or `B2B` (editable both in the person modal and inline from any table row).
-  - **Full Editing Support**: Edit existing people, client companies, and deliverable projects directly from any view.
-- **Alphabetical Sorting**:
-  - One-click **`A–Z` / `Z–A`** sort toggles in the sticky table headers and toolbar.
-  - Sort people by **Last Name (`A → Z` / `Z → A`)** or **First Name (`A → Z` / `Z → A`)**, and sort **Clients** or **Projects** alphabetically (`A → Z` / `Z → A`).
-- **Real-Time Overtime & Conflict Detection**: Automatically flags over-allocated person-months and provides a dedicated **Overtime Alerts Drawer** with one-click **Auto-Cap** balancing.
+- **Streamlined Header Controls**:
+  - **Planning Year Dropdown**: Switch between active planning years (`2025`, `2026`, `2027`, etc.) or open **+ Manage Years...** directly from the top year selector dropdown.
+  - **Consolidated `+ Add` Menu**: Quickly add **+ Time Off**, **+ Person**, or **+ Project** from a single unified dropdown button alongside **Assign** and **Import / Export**.
+- **Default A → Z Alphabetical Sorting**:
+  - Defaults to **`A → Z`** sorting across all views (`Last Name: A → Z` for people and `Clients: A → Z` for clients & projects).
+  - One-click **`A–Z` / `Z–A`** sort toggles in the sticky table headers and toolbar, plus dropdown options for `First Name` or `Original Order`.
+- **Person-Grouped Overtime Alerts Drawer**:
+  - Real-time conflict detection groups all over-allocated months for a team member into a single unified person card.
+  - Includes both per-month **Auto-Cap** buttons and a one-click **Auto-Cap All Months** action per person.
 - **Interactive Cell Popover & Batch Assignment**: Adjust allocations via slider or presets (`0%`, `25%`, `50%`, `75%`, `100%`) and apply changes to a single month, the remainder of the year, or all 12 months.
 - **Inline Comments & Staffing Notes**: Add and edit inline comments directly between names and monthly columns for people, projects, assignments, and leaves.
-- **Multi-Year & Department Management**:
-  - Add, switch, or remove planning years (`2025`, `2026`, `2027`, etc.) on the fly.
-  - Create, rename, or remove departments with automatic updates across all team members.
 - **Comprehensive Import, Export & Pre-Built CSV Templates**:
-  - **Tab-Specific & All-Tabs CSV Export / Import**: Export or import `.csv` spreadsheets for `By People`, `By Clients & Projects`, `Availability & Leaves`, `Bench`, or all views.
+  - **Tab-Specific & All-Tabs CSV Export / Import**: Export or import `.csv` spreadsheets for `By Clients & Projects`, `By People`, `Availability & Leaves`, `Bench`, or all views.
   - **Downloadable Empty/Example CSV Templates**: Download ready-to-fill `.csv` templates directly from the Import modal.
   - **Full JSON Backup & Standalone HTML App**: Export the entire workspace state to `.json` or bundle the app into a portable single-file `.html` application.
+- **Local-First Persistence & Privacy**: All workspace data is automatically persisted in browser `localStorage` (`allocat_resource_planner_v3`) with instant updates and zero external database dependencies.
 - **Dark & Light Mode**: Defaults to **Dark Mode**, with a balanced soft-gray **Light Mode** toggle in the header.

@@ -12,9 +12,13 @@ import {
   Cat,
   LogOut,
   KeyRound,
-  ChevronDown
+  ChevronDown,
+  ShieldCheck,
+  Building2,
+  FolderKanban
 } from 'lucide-react';
 import { ViewMode } from '../types';
+import { AdminTab } from './AdminPanelModal';
 
 interface HeaderProps {
   viewMode: ViewMode;
@@ -35,6 +39,7 @@ interface HeaderProps {
   currentUser?: string | null;
   onLogout?: () => void;
   onOpenChangeCredentialsModal?: () => void;
+  onOpenAdminPanel?: (tab?: AdminTab) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -55,7 +60,8 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleDarkMode,
   currentUser,
   onLogout,
-  onOpenChangeCredentialsModal
+  onOpenChangeCredentialsModal,
+  onOpenAdminPanel
 }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -88,8 +94,8 @@ export const Header: React.FC<HeaderProps> = ({
             className="group flex items-center gap-2 p-1 pr-2 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors cursor-pointer focus:outline-hidden"
             title={
               currentUser
-                ? `Signed in as ${currentUser} — Click for account & password settings`
-                : 'Account menu'
+                ? `Signed in as ${currentUser} — Click for Admin Panel & account settings`
+                : 'Open Admin Panel & account menu'
             }
           >
             <div className="relative w-8 h-8 rounded-lg bg-indigo-600 group-hover:bg-indigo-700 text-white flex items-center justify-center shadow-xs transition-colors">
@@ -117,15 +123,92 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Dropdown Menu from Logo Picture */}
           {isUserMenuOpen && (
-            <div className="absolute left-0 top-13 w-60 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 z-50 text-xs">
-              <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800">
-                <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-                  Signed in as
+            <div className="absolute left-0 top-13 w-68 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 z-50 text-xs">
+              <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
+                    Signed in as
+                  </div>
+                  <div className="font-mono font-bold text-slate-900 dark:text-slate-100 truncate mt-0.5">
+                    {currentUser || 'admin'}
+                  </div>
                 </div>
-                <div className="font-mono font-bold text-slate-900 dark:text-slate-100 truncate mt-0.5">
-                  {currentUser || 'admin'}
-                </div>
+                <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 rounded border border-indigo-200/70 dark:border-indigo-800">
+                  Admin
+                </span>
               </div>
+
+              {onOpenAdminPanel && (
+                <div className="p-1.5 border-b border-slate-100 dark:border-slate-800 space-y-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      onOpenAdminPanel('people');
+                    }}
+                    className="w-full px-3 py-2 rounded-lg text-left flex items-center justify-between bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-2xs transition-colors cursor-pointer mb-1"
+                  >
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Open Admin Panel</span>
+                    </div>
+                    <span className="text-[10px] font-mono bg-indigo-700 px-1.5 py-0.5 rounded text-indigo-100">
+                      Manage All
+                    </span>
+                  </button>
+
+                  <div className="px-2 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Quick Jump
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1 px-1 pb-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('people');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <Users className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>People</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('departments');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Departments</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('clients');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <Briefcase className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Clients</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('projects');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <FolderKanban className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Projects</span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="py-1">
                 {onOpenChangeCredentialsModal && (

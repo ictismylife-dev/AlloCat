@@ -35,6 +35,7 @@ import { ManageYearsModal } from './components/ManageYearsModal';
 import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
+import { AdminPanelModal, AdminTab } from './components/AdminPanelModal';
 import {
   LoginOverlay,
   ChangeCredentialsModal,
@@ -107,6 +108,10 @@ export function App() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportModalScope, setExportModalScope] = useState<ExportScope>('all');
   const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
+  const [adminPanelState, setAdminPanelState] = useState<{
+    isOpen: boolean;
+    tab: AdminTab;
+  }>({ isOpen: false, tab: 'people' });
 
   // Save state changes to localStorage
   useEffect(() => {
@@ -588,6 +593,17 @@ export function App() {
     });
   };
 
+  const handleAddClient = (clientData: Omit<Client, 'id'>) => {
+    const newClient: Client = {
+      ...clientData,
+      id: `c-${Date.now()}`
+    };
+    setAppState((prev) => ({
+      ...prev,
+      clients: [...prev.clients, newClient]
+    }));
+  };
+
   const handleUpdateClient = (updatedClient: Client) => {
     setAppState((prev) => ({
       ...prev,
@@ -595,6 +611,23 @@ export function App() {
         c.id === updatedClient.id ? updatedClient : c
       )
     }));
+  };
+
+  const handleDeleteClient = (clientId: string) => {
+    setAppState((prev) => {
+      const removedProjectIds = new Set(
+        prev.projects.filter((p) => p.clientId === clientId).map((p) => p.id)
+      );
+      return {
+        ...prev,
+        clients: prev.clients.filter((c) => c.id !== clientId),
+        projects: prev.projects.filter((p) => p.clientId !== clientId),
+        allocations: prev.allocations.filter((a) => !removedProjectIds.has(a.projectId))
+      };
+    });
+    if (filters.clientFilter === clientId) {
+      setFilters((prev) => ({ ...prev, clientFilter: 'all' }));
+    }
   };
 
   const handleDeleteProject = (projectId: string) => {
@@ -816,6 +849,9 @@ export function App() {
           onToggleDarkMode={() => setIsDarkMode((d) => !d)}
           currentUser={currentUser}
           onOpenChangeCredentialsModal={() => setIsChangeCredentialsOpen(true)}
+          onOpenAdminPanel={(tab = 'people') =>
+            setAdminPanelState({ isOpen: true, tab })
+          }
           onLogout={() => {
             try {
               sessionStorage.removeItem('allocat_auth_user');
@@ -1013,6 +1049,62 @@ export function App() {
         defaultProjectId={assignModalState.projectId}
         defaultMonthIndex={assignModalState.monthIndex}
         onAssign={handleBatchAssign}
+      />
+
+      <AdminPanelModal
+        isOpen={adminPanelState.isOpen}
+        initialTab={adminPanelState.tab}
+        onClose={() => setAdminPanelState((prev) => ({ ...prev, isOpen: false }))}
+        people={people}
+        departments={departments}
+        clients={clients}
+        projects={projects}
+        allocations={allocations}
+        leaves={leaves}
+        availableYears={availableYears}
+        selectedYear={selectedYear}
+        currentUser={currentUser}
+        onOpenAddPerson={() => {
+          setPersonToEdit(null);
+          setIsAddPersonOpen(true);
+        }}
+        onEditPerson={(person) => {
+          setPersonToEdit(person);
+          setIsAddPersonOpen(true);
+        }}
+        onDeletePerson={handleDeletePerson}
+        onAddDepartment={handleAddDepartment}
+        onRenameDepartment={handleRenameDepartment}
+        onDeleteDepartment={handleDeleteDepartment}
+        onAddClient={handleAddClient}
+        onEditClient={(client) => {
+          setClientToEdit(client);
+          setProjectToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
+        onDeleteClient={handleDeleteClient}
+        onOpenAddProject={() => {
+          setProjectToEdit(null);
+          setClientToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
+        onEditProject={(project) => {
+          setProjectToEdit(project);
+          setClientToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
+        onDeleteProject={handleDeleteProject}
+        onOpenAddLeave={() => setLeaveModalState({ isOpen: true })}
+        onDeleteLeave={handleDeleteLeave}
+        onAddYear={handleAddYear}
+        onRemoveYear={handleRemoveYear}
+        onSelectYear={(yr) => setAppState((prev) => ({ ...prev, selectedYear: yr }))}
+        onOpenChangeCredentials={() => setIsChangeCredentialsOpen(true)}
+        onOpenExportImport={() => {
+          setExportModalScope('all');
+          setIsExportModalOpen(true);
+        }}
+        onResetWorkspace={() => setAppState(resetAppState())}
       />
 
       <AddPersonModal

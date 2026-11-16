@@ -216,6 +216,24 @@ export const Header: React.FC<HeaderProps> = ({
               )}
 
               <div className="py-1">
+                <button
+                  type="button"
+                  onClick={onToggleDarkMode}
+                  className="w-full px-3.5 py-2 text-left flex items-center justify-between text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    {isDarkMode ? (
+                      <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    ) : (
+                      <Moon className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                    )}
+                    <span>{isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</span>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    {isDarkMode ? 'Dark' : 'Light'}
+                  </span>
+                </button>
+
                 {onOpenStandaloneModal && (
                   <button
                     type="button"
@@ -483,16 +501,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden lg:inline">Windows App</span>
             </button>
           )}
-
-          {/* Dark Mode toggle */}
-          <button
-            type="button"
-            onClick={onToggleDarkMode}
-            className="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
         </div>
       </div>
     </header>

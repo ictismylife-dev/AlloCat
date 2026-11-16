@@ -871,10 +871,6 @@ export function App() {
             setIsAddProjectOpen(true);
           }}
           onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
-          onOpenExportModal={() => {
-            setExportModalScope('all');
-            setIsExportModalOpen(true);
-          }}
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode((d) => !d)}
           currentUser={currentUser}

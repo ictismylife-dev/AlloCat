@@ -5,7 +5,6 @@ import {
   Briefcase,
   Plus,
   AlertTriangle,
-  Download,
   Sun,
   Moon,
   UserCheck,
@@ -35,7 +34,6 @@ interface HeaderProps {
   onOpenAddPersonModal: () => void;
   onOpenAddProjectModal: () => void;
   onOpenAddLeaveModal: () => void;
-  onOpenExportModal: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   currentUser?: string | null;
@@ -58,7 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddPersonModal,
   onOpenAddProjectModal,
   onOpenAddLeaveModal,
-  onOpenExportModal,
   isDarkMode,
   onToggleDarkMode,
   currentUser,
@@ -67,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAdminPanel,
   onOpenStandaloneModal
 }) => {
-  const { isInstallable, isInstalled } = usePWAInstall();
+  const { isInstalled } = usePWAInstall();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
@@ -473,34 +470,6 @@ export const Header: React.FC<HeaderProps> = ({
             <Plus className="w-3.5 h-3.5" />
             <span>Assign Staff</span>
           </button>
-
-          {/* Backup, Import & Export */}
-          <button
-            type="button"
-            onClick={onOpenExportModal}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-800 cursor-pointer"
-            title="Full Information Import, Export & Backup"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden sm:inline">Import / Export</span>
-          </button>
-
-          {/* Standalone Windows / Desktop App Installer */}
-          {onOpenStandaloneModal && !isInstalled && (
-            <button
-              type="button"
-              onClick={onOpenStandaloneModal}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors border cursor-pointer whitespace-nowrap ${
-                isInstallable
-                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'
-              }`}
-              title="Install on Windows or download standalone offline desktop app"
-            >
-              <Monitor className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span className="hidden lg:inline">Windows App</span>
-            </button>
-          )}
         </div>
       </div>
     </header>

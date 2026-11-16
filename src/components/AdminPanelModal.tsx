@@ -398,13 +398,25 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => onOpenExportImport('all')}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-700 shadow-2xs cursor-pointer"
+              title="Full Information Import, Export & Backup"
+            >
+              <Download className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Import / Export</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Main Body: Left Sidebar + Right Content */}
@@ -697,13 +709,26 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               {/* TAB 2: DEPARTMENTS */}
               {activeTab === 'departments' && (
                 <div className="max-w-2xl space-y-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                        Add New Department
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Create organizational units for filtering and capacity reporting.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onOpenExportImport('admin')}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer shrink-0"
+                      title="Import or export Admin & Directories (CSV / JSON)"
+                    >
+                      <Download className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      <span>Import / Export</span>
+                    </button>
+                  </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                      Add New Department
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      Create organizational units for filtering and capacity reporting.
-                    </p>
                     <form onSubmit={handleCreateDept} className="mt-3 flex gap-2">
                       <input
                         type="text"

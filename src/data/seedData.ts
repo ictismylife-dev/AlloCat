@@ -1,4 +1,14 @@
-import { Person, Client, Project, Allocation, LeaveEntry } from '../types';
+import {
+  Person,
+  Client,
+  Project,
+  Allocation,
+  LeaveEntry,
+  LeaveType,
+  LeaveTypeMeta,
+  DEFAULT_LEAVE_TYPE_CONFIG,
+  syncLeaveTypeConfigRegistry
+} from '../types';
 
 export const INITIAL_PEOPLE: Person[] = [
   {
@@ -479,6 +489,7 @@ export interface AppState {
   availableYears: number[];
   selectedYear: number;
   departments: string[];
+  leaveTypes?: Record<LeaveType, LeaveTypeMeta>;
 }
 
 declare global {
@@ -489,8 +500,19 @@ declare global {
 
 export function getDefaultAppState(): AppState {
   if (typeof window !== 'undefined' && window.__ALLOCAT_EMBEDDED_STATE__) {
-    return window.__ALLOCAT_EMBEDDED_STATE__;
+    const embedded = window.__ALLOCAT_EMBEDDED_STATE__;
+    const leaveTypes =
+      embedded.leaveTypes && Object.keys(embedded.leaveTypes).length > 0
+        ? embedded.leaveTypes
+        : { ...DEFAULT_LEAVE_TYPE_CONFIG };
+    syncLeaveTypeConfigRegistry(leaveTypes);
+    return {
+      ...embedded,
+      leaveTypes
+    };
   }
+  const defaultLeaveTypes = { ...DEFAULT_LEAVE_TYPE_CONFIG };
+  syncLeaveTypeConfigRegistry(defaultLeaveTypes);
   return {
     people: INITIAL_PEOPLE,
     clients: INITIAL_CLIENTS,
@@ -499,7 +521,8 @@ export function getDefaultAppState(): AppState {
     leaves: INITIAL_LEAVES,
     availableYears: [2025, 2026, 2027],
     selectedYear: 2026,
-    departments: INITIAL_DEPARTMENTS
+    departments: INITIAL_DEPARTMENTS,
+    leaveTypes: defaultLeaveTypes
   };
 }
 
@@ -560,6 +583,15 @@ export function loadAppState(): AppState {
         };
       });
 
+      const leaveTypes: Record<LeaveType, LeaveTypeMeta> =
+        parsed.leaveTypes &&
+        typeof parsed.leaveTypes === 'object' &&
+        Object.keys(parsed.leaveTypes).length > 0
+          ? parsed.leaveTypes
+          : { ...DEFAULT_LEAVE_TYPE_CONFIG };
+
+      syncLeaveTypeConfigRegistry(leaveTypes);
+
       return {
         people: loadedPeople,
         clients: parsed.clients,
@@ -570,7 +602,8 @@ export function loadAppState(): AppState {
         selectedYear: typeof parsed.selectedYear === 'number' && years.includes(parsed.selectedYear)
           ? parsed.selectedYear
           : years[0] || 2026,
-        departments
+        departments,
+        leaveTypes
       };
     }
   } catch (e) {
@@ -581,6 +614,7 @@ export function loadAppState(): AppState {
 
 export function saveAppState(state: AppState): void {
   try {
+    syncLeaveTypeConfigRegistry(state.leaveTypes);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
     console.error('Failed to persist state to localStorage', e);

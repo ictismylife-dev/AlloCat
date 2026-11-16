@@ -6,6 +6,9 @@ import {
   Client,
   Project,
   LeaveEntry,
+  LeaveType,
+  LeaveTypeMeta,
+  DEFAULT_LEAVE_TYPE_CONFIG,
   Department,
   EmploymentType
 } from './types';
@@ -36,6 +39,8 @@ import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
 import { AdminPanelModal, AdminTab } from './components/AdminPanelModal';
+import { StandaloneAppModal } from './components/StandaloneAppModal';
+import { useOnlineStatus } from './utils/usePWAInstall';
 import {
   LoginOverlay,
   ChangeCredentialsModal,
@@ -46,6 +51,7 @@ import {
 import { ExportScope } from './utils/importExportUtils';
 
 export function App() {
+  const isOnline = useOnlineStatus();
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
   const [viewMode, setViewMode] = useState<ViewMode>('clients');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
@@ -112,6 +118,7 @@ export function App() {
     isOpen: boolean;
     tab: AdminTab;
   }>({ isOpen: false, tab: 'people' });
+  const [isStandaloneModalOpen, setIsStandaloneModalOpen] = useState(false);
 
   // Save state changes to localStorage
   useEffect(() => {
@@ -135,7 +142,8 @@ export function App() {
     leaves,
     availableYears,
     selectedYear,
-    departments
+    departments,
+    leaveTypes = DEFAULT_LEAVE_TYPE_CONFIG
   } = appState;
 
   const kpis = useMemo(
@@ -657,6 +665,28 @@ export function App() {
     }));
   };
 
+  const handleAddLeaveType = (typeKey: LeaveType, meta: LeaveTypeMeta) => {
+    setAppState((prev) => ({
+      ...prev,
+      leaveTypes: {
+        ...(prev.leaveTypes || DEFAULT_LEAVE_TYPE_CONFIG),
+        [typeKey]: meta
+      }
+    }));
+  };
+
+  const handleDeleteLeaveType = (typeKey: LeaveType) => {
+    setAppState((prev) => {
+      const currentTypes = { ...(prev.leaveTypes || DEFAULT_LEAVE_TYPE_CONFIG) };
+      if (Object.keys(currentTypes).length <= 1) return prev;
+      delete currentTypes[typeKey];
+      return {
+        ...prev,
+        leaveTypes: currentTypes
+      };
+    });
+  };
+
   // Notes & Employment updaters
   const handleUpdatePersonNotes = (personId: string, notes: string) => {
     setAppState((prev) => ({
@@ -852,6 +882,7 @@ export function App() {
           onOpenAdminPanel={(tab = 'people') =>
             setAdminPanelState({ isOpen: true, tab })
           }
+          onOpenStandaloneModal={() => setIsStandaloneModalOpen(true)}
           onLogout={() => {
             try {
               sessionStorage.removeItem('allocat_auth_user');
@@ -1094,14 +1125,17 @@ export function App() {
           setIsAddProjectOpen(true);
         }}
         onDeleteProject={handleDeleteProject}
+        leaveTypes={leaveTypes}
         onOpenAddLeave={() => setLeaveModalState({ isOpen: true })}
         onDeleteLeave={handleDeleteLeave}
+        onAddLeaveType={handleAddLeaveType}
+        onDeleteLeaveType={handleDeleteLeaveType}
         onAddYear={handleAddYear}
         onRemoveYear={handleRemoveYear}
         onSelectYear={(yr) => setAppState((prev) => ({ ...prev, selectedYear: yr }))}
         onOpenChangeCredentials={() => setIsChangeCredentialsOpen(true)}
-        onOpenExportImport={() => {
-          setExportModalScope('all');
+        onOpenExportImport={(scope = 'admin') => {
+          setExportModalScope(scope);
           setIsExportModalOpen(true);
         }}
         onResetWorkspace={() => setAppState(resetAppState())}
@@ -1142,6 +1176,7 @@ export function App() {
         selectedYear={selectedYear}
         defaultPersonId={leaveModalState.personId}
         defaultMonthIndex={leaveModalState.monthIndex}
+        leaveTypes={leaveTypes}
         onSaveLeave={handleSaveLeave}
       />
 
@@ -1191,6 +1226,10 @@ export function App() {
         initialScope={exportModalScope}
         onImportState={(newState) => setAppState(newState)}
         onResetToDefault={() => setAppState(resetAppState())}
+        onOpenStandaloneModal={() => {
+          setIsExportModalOpen(false);
+          setIsStandaloneModalOpen(true);
+        }}
       />
 
       <ChangeCredentialsModal
@@ -1208,6 +1247,19 @@ export function App() {
           }
         }}
       />
+
+      <StandaloneAppModal
+        isOpen={isStandaloneModalOpen}
+        onClose={() => setIsStandaloneModalOpen(false)}
+        appState={appState}
+      />
+
+      {!isOnline && (
+        <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+          <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+          <span>Offline Mode — Working from local workspace storage</span>
+        </div>
+      )}
     </div>
   );
 }

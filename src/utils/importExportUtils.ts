@@ -1,15 +1,21 @@
 import {
   Person,
   Client,
+  ClientStatus,
   Project,
   Allocation,
   LeaveEntry,
   LeaveType,
+  LeaveTypeMeta,
   EmploymentType,
   ViewMode,
   MONTH_NAMES,
   MONTH_FULL_NAMES,
-  LEAVE_TYPE_CONFIG
+  LEAVE_TYPE_CONFIG,
+  DEFAULT_LEAVE_TYPE_CONFIG,
+  LEAVE_BADGE_THEMES,
+  getLeaveTypeMeta,
+  syncLeaveTypeConfigRegistry
 } from '../types';
 import { AppState } from '../data/seedData';
 import {
@@ -18,7 +24,7 @@ import {
   getPersonBenchSummary
 } from './allocationMath';
 
-export type ExportScope = ViewMode | 'all';
+export type ExportScope = ViewMode | 'admin' | 'all';
 export type ImportMergeMode = 'merge' | 'replace';
 
 const AVATAR_COLORS = [
@@ -168,6 +174,41 @@ function parseEmploymentType(
     return 'Internal';
   }
   return fallback;
+}
+
+function parseClientStatus(
+  raw: string | undefined,
+  fallback: ClientStatus = 'active'
+): ClientStatus {
+  if (!raw) return fallback;
+  const n = raw.trim().toLowerCase();
+  if (n === 'lead' || n === 'prospect') return 'lead';
+  if (n === 'completed' || n === 'inactive' || n === 'archived') return 'completed';
+  if (n === 'active') return 'active';
+  return fallback;
+}
+
+function detectBadgeThemeName(badgeClass: string): string {
+  for (const [key, theme] of Object.entries(LEAVE_BADGE_THEMES)) {
+    if (theme.badgeClass === badgeClass || badgeClass.includes(key)) {
+      return theme.name;
+    }
+  }
+  return 'Blue';
+}
+
+function resolveBadgeClassFromTheme(rawTheme: string | undefined, fallback?: string): string {
+  if (!rawTheme) return fallback || LEAVE_BADGE_THEMES.blue.badgeClass;
+  const key = rawTheme.trim().toLowerCase();
+  if (LEAVE_BADGE_THEMES[key]) {
+    return LEAVE_BADGE_THEMES[key].badgeClass;
+  }
+  for (const theme of Object.values(LEAVE_BADGE_THEMES)) {
+    if (theme.name.toLowerCase() === key) {
+      return theme.badgeClass;
+    }
+  }
+  return fallback || LEAVE_BADGE_THEMES.blue.badgeClass;
 }
 
 export function triggerFileDownload(content: string, filename: string, mimeType: string) {
@@ -379,10 +420,15 @@ export function generateClientsViewCSV(state: AppState, projectsSubset?: Project
 
 /**
  * 3. AVAILABILITY & LEAVES VIEW CSV
- * Exports Effective Capacity rows + Scheduled Leave Entry rows
+ * Exports Configured Leave Types + Effective Capacity rows + Scheduled Leave Entry rows
  */
 export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Person[]): string {
-  const { allocations, leaves, selectedYear } = state;
+  const {
+    allocations,
+    leaves,
+    selectedYear,
+    leaveTypes = DEFAULT_LEAVE_TYPE_CONFIG
+  } = state;
   const targetPeople = peopleSubset ?? state.people;
 
   const headers = [
@@ -396,6 +442,8 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
     'Max Capacity %',
     'Person Comment',
     'Leave Category',
+    'Leave Type Label',
+    'Badge Theme',
     'Leave Title',
     'Start Month',
     'End Month',
@@ -405,6 +453,30 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
   ];
 
   const rows: (string | number)[][] = [headers];
+
+  // Export configured Time Off & Leave Types first so custom types round-trip
+  for (const [typeKey, meta] of Object.entries(leaveTypes)) {
+    rows.push([
+      selectedYear,
+      'Leave Type',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      typeKey,
+      meta.label,
+      detectBadgeThemeName(meta.badgeClass),
+      meta.label,
+      '',
+      '',
+      `${meta.defaultImpact}%`,
+      '',
+      ...MONTH_NAMES.map(() => '')
+    ]);
+  }
 
   for (const person of targetPeople) {
     const { firstName, lastName } = splitPersonName(person);
@@ -431,6 +503,8 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
       `${person.maxCapacityPercent}%`,
       person.notes || '',
       '',
+      '',
+      '',
       `${personLeaves.length} scheduled leave(s)`,
       '',
       '',
@@ -443,6 +517,7 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
     for (const leave of personLeaves) {
       const startM = Math.min(leave.startMonth, leave.endMonth);
       const endM = Math.max(leave.startMonth, leave.endMonth);
+      const meta = getLeaveTypeMeta(leave.type, leaveTypes);
       const monthCells = MONTH_NAMES.map((_, idx) =>
         idx >= startM && idx <= endM ? `-${leave.impactPercent}%` : '0%'
       );
@@ -458,6 +533,8 @@ export function generateAvailabilityViewCSV(state: AppState, peopleSubset?: Pers
         `${person.maxCapacityPercent}%`,
         person.notes || '',
         leave.type,
+        meta.label,
+        detectBadgeThemeName(meta.badgeClass),
         leave.title,
         MONTH_NAMES[startM],
         MONTH_NAMES[endM],
@@ -522,12 +599,19 @@ export function generateBenchViewCSV(state: AppState, peopleSubset?: Person[]): 
 }
 
 /**
- * 5. ALL VIEWS / MASTER CSV
- * Combines all sections into a unified, self-describing CSV table that can be
- * opened in Excel/Sheets and re-imported to restore People, Clients, Projects, Allocations, and Leaves.
+ * 5. ADMIN & DIRECTORIES CSV
+ * Exports all Admin Panel entities: Departments, Leave Types, Clients, Projects, People, and Leaves
  */
-export function generateAllViewsCSV(state: AppState): string {
-  const { people, clients, projects, allocations, leaves, selectedYear } = state;
+export function generateAdminDirectoriesCSV(state: AppState): string {
+  const {
+    people,
+    clients,
+    projects,
+    leaves,
+    departments,
+    selectedYear,
+    leaveTypes = DEFAULT_LEAVE_TYPE_CONFIG
+  } = state;
 
   const headers = [
     'Year',
@@ -542,12 +626,269 @@ export function generateAllViewsCSV(state: AppState): string {
     'Person Comment',
     'Client',
     'Industry',
+    'Client Status',
     'Project',
     'Project Code',
+    'Project Status',
+    'Billable',
+    'Project Scope Comment',
+    'Leave Category',
+    'Leave Type Label',
+    'Badge Theme',
+    'Leave Title',
+    'Start Month',
+    'End Month',
+    'Impact %',
+    'Leave Note'
+  ];
+
+  const rows: (string | number)[][] = [headers];
+
+  // 1. Departments
+  for (const dept of departments) {
+    rows.push([
+      selectedYear,
+      'Department',
+      '',
+      '',
+      '',
+      dept,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      ''
+    ]);
+  }
+
+  // 2. Time Off & Leave Types
+  for (const [typeKey, meta] of Object.entries(leaveTypes)) {
+    rows.push([
+      selectedYear,
+      'Leave Type',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      typeKey,
+      meta.label,
+      detectBadgeThemeName(meta.badgeClass),
+      meta.label,
+      '',
+      '',
+      `${meta.defaultImpact}%`,
+      ''
+    ]);
+  }
+
+  // 3. Clients
+  for (const client of clients) {
+    rows.push([
+      selectedYear,
+      'Client',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      client.name,
+      client.industry,
+      client.status,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      ''
+    ]);
+  }
+
+  // 4. Projects
+  for (const project of projects) {
+    const client = clients.find((c) => c.id === project.clientId);
+    rows.push([
+      selectedYear,
+      'Project',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      client?.name || 'Internal',
+      client?.industry || 'Technology',
+      client?.status || 'active',
+      project.name,
+      project.code,
+      project.status,
+      project.billable ? 'Yes' : 'No',
+      project.notes || '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      ''
+    ]);
+  }
+
+  // 5. People
+  for (const person of people) {
+    const { firstName, lastName } = splitPersonName(person);
+    rows.push([
+      selectedYear,
+      'Person',
+      firstName,
+      lastName,
+      person.role,
+      person.department,
+      person.employmentType || 'Internal',
+      person.email,
+      `${person.maxCapacityPercent}%`,
+      person.notes || '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      ''
+    ]);
+  }
+
+  // 6. Scheduled Leaves
+  for (const leave of leaves) {
+    const person = people.find((p) => p.id === leave.personId);
+    if (!person) continue;
+    const { firstName, lastName } = splitPersonName(person);
+    const meta = getLeaveTypeMeta(leave.type, leaveTypes);
+    const startM = Math.min(leave.startMonth, leave.endMonth);
+    const endM = Math.max(leave.startMonth, leave.endMonth);
+
+    rows.push([
+      leave.year,
+      'Leave',
+      firstName,
+      lastName,
+      person.role,
+      person.department,
+      person.employmentType || 'Internal',
+      person.email,
+      `${person.maxCapacityPercent}%`,
+      person.notes || '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      leave.type,
+      meta.label,
+      detectBadgeThemeName(meta.badgeClass),
+      leave.title,
+      MONTH_NAMES[startM],
+      MONTH_NAMES[endM],
+      `${leave.impactPercent}%`,
+      leave.notes || ''
+    ]);
+  }
+
+  return rowsToCsv(rows);
+}
+
+/**
+ * 6. ALL VIEWS / MASTER CSV
+ * Combines all sections into a unified, self-describing CSV table that can be
+ * opened in Excel/Sheets and re-imported to restore Departments, Leave Types,
+ * People, Clients, Projects, Allocations, and Leaves.
+ */
+export function generateAllViewsCSV(state: AppState): string {
+  const {
+    people,
+    clients,
+    projects,
+    allocations,
+    leaves,
+    departments,
+    selectedYear,
+    leaveTypes = DEFAULT_LEAVE_TYPE_CONFIG
+  } = state;
+
+  const headers = [
+    'Year',
+    'Record Type',
+    'First Name',
+    'Last Name',
+    'Role',
+    'Department',
+    'Employment',
+    'Email',
+    'Max Capacity %',
+    'Person Comment',
+    'Client',
+    'Industry',
+    'Client Status',
+    'Project',
+    'Project Code',
+    'Project Status',
     'Billable',
     'Project Scope Comment',
     'Assignment Note',
     'Leave Category',
+    'Leave Type Label',
+    'Badge Theme',
     'Leave Title',
     'Start Month',
     'End Month',
@@ -558,7 +899,109 @@ export function generateAllViewsCSV(state: AppState): string {
 
   const rows: (string | number)[][] = [headers];
 
-  // 1. All People
+  // 1. All Departments
+  for (const dept of departments) {
+    rows.push([
+      selectedYear,
+      'Department',
+      '',
+      '',
+      '',
+      dept,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      ...MONTH_NAMES.map(() => '')
+    ]);
+  }
+
+  // 2. All Time Off & Leave Types
+  for (const [typeKey, meta] of Object.entries(leaveTypes)) {
+    rows.push([
+      selectedYear,
+      'Leave Type',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      typeKey,
+      meta.label,
+      detectBadgeThemeName(meta.badgeClass),
+      meta.label,
+      '',
+      '',
+      `${meta.defaultImpact}%`,
+      '',
+      ...MONTH_NAMES.map(() => '')
+    ]);
+  }
+
+  // 3. All Clients
+  for (const client of clients) {
+    rows.push([
+      selectedYear,
+      'Client',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      client.name,
+      client.industry,
+      client.status,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      ...MONTH_NAMES.map(() => '')
+    ]);
+  }
+
+  // 4. All People
   for (const person of people) {
     const { firstName, lastName } = splitPersonName(person);
     const summary = getPersonCapacitySummary(
@@ -592,11 +1035,15 @@ export function generateAllViewsCSV(state: AppState): string {
       '',
       '',
       '',
+      '',
+      '',
+      '',
+      '',
       ...summary.totals.map((v) => `${v}%`)
     ]);
   }
 
-  // 2. All Projects & Clients
+  // 5. All Projects & Clients
   for (const project of projects) {
     const client = clients.find((c) => c.id === project.clientId);
     const summary = getProjectStaffingSummary(project.id, selectedYear, allocations);
@@ -613,10 +1060,14 @@ export function generateAllViewsCSV(state: AppState): string {
       '',
       client?.name || 'Internal',
       client?.industry || 'Technology',
+      client?.status || 'active',
       project.name,
       project.code,
+      project.status,
       project.billable ? 'Yes' : 'No',
       project.notes || '',
+      '',
+      '',
       '',
       '',
       '',
@@ -628,7 +1079,7 @@ export function generateAllViewsCSV(state: AppState): string {
     ]);
   }
 
-  // 3. All Allocations
+  // 6. All Allocations
   for (const alloc of allocations) {
     const person = people.find((p) => p.id === alloc.personId);
     const project = projects.find((p) => p.id === alloc.projectId);
@@ -649,11 +1100,15 @@ export function generateAllViewsCSV(state: AppState): string {
       person.notes || '',
       client?.name || 'Internal',
       client?.industry || 'Technology',
+      client?.status || 'active',
       project.name,
       project.code,
+      project.status,
       project.billable ? 'Yes' : 'No',
       project.notes || '',
       alloc.notes || '',
+      '',
+      '',
       '',
       '',
       '',
@@ -664,11 +1119,12 @@ export function generateAllViewsCSV(state: AppState): string {
     ]);
   }
 
-  // 4. All Leaves
+  // 7. All Leaves
   for (const leave of leaves) {
     const person = people.find((p) => p.id === leave.personId);
     if (!person) continue;
     const { firstName, lastName } = splitPersonName(person);
+    const meta = getLeaveTypeMeta(leave.type, leaveTypes);
     const startM = Math.min(leave.startMonth, leave.endMonth);
     const endM = Math.max(leave.startMonth, leave.endMonth);
     const monthCells = MONTH_NAMES.map((_, idx) =>
@@ -693,7 +1149,11 @@ export function generateAllViewsCSV(state: AppState): string {
       '',
       '',
       '',
+      '',
+      '',
       leave.type,
+      meta.label,
+      detectBadgeThemeName(meta.badgeClass),
       leave.title,
       MONTH_NAMES[startM],
       MONTH_NAMES[endM],
@@ -710,10 +1170,45 @@ export function generateAllViewsCSV(state: AppState): string {
  * Generates Scoped JSON for a specific view or the entire workspace
  */
 export function generateViewJSON(state: AppState, scope: ExportScope): string {
-  const { people, clients, projects, allocations, leaves, selectedYear } = state;
+  const {
+    people,
+    clients,
+    projects,
+    allocations,
+    leaves,
+    availableYears,
+    selectedYear,
+    departments,
+    leaveTypes = DEFAULT_LEAVE_TYPE_CONFIG
+  } = state;
 
   if (scope === 'all') {
-    return JSON.stringify(state, null, 2);
+    return JSON.stringify(
+      {
+        ...state,
+        leaveTypes
+      },
+      null,
+      2
+    );
+  }
+
+  if (scope === 'admin') {
+    return JSON.stringify(
+      {
+        exportScope: 'admin',
+        selectedYear,
+        availableYears,
+        departments,
+        leaveTypes,
+        clients,
+        projects,
+        people,
+        leaves
+      },
+      null,
+      2
+    );
   }
 
   if (scope === 'people') {
@@ -721,7 +1216,7 @@ export function generateViewJSON(state: AppState, scope: ExportScope): string {
       {
         exportScope: 'people',
         selectedYear,
-        departments: state.departments,
+        departments,
         people,
         clients,
         projects,
@@ -752,6 +1247,7 @@ export function generateViewJSON(state: AppState, scope: ExportScope): string {
       {
         exportScope: 'availability',
         selectedYear,
+        leaveTypes,
         people,
         leaves: leaves.filter((l) => l.year === selectedYear)
       },
@@ -987,6 +1483,8 @@ export function generateTemplateCSV(
       'Max Capacity %',
       'Person Comment',
       'Leave Category',
+      'Leave Type Label',
+      'Badge Theme',
       'Leave Title',
       'Start Month',
       'End Month',
@@ -998,6 +1496,26 @@ export function generateTemplateCSV(
       ? [
           [
             selectedYear,
+            'Leave Type',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            'training',
+            'Training & Conference',
+            'Emerald',
+            'Training & Conference',
+            '',
+            '',
+            '50%',
+            'Custom time off category',
+            ...MONTH_NAMES.map(() => '')
+          ],
+          [
+            selectedYear,
             'Leave Entry',
             'Jane',
             'Doe',
@@ -1007,6 +1525,8 @@ export function generateTemplateCSV(
             '100%',
             'Summer PTO planned',
             'vacation',
+            'Annual Vacation / PTO',
+            'Blue',
             'Summer Family Vacation',
             'Jul',
             'Aug',
@@ -1035,12 +1555,14 @@ export function generateTemplateCSV(
             'B2B',
             '100%',
             '',
-            'paternity',
-            'Paternity Leave',
+            'training',
+            'Training & Conference',
+            'Emerald',
+            'Cloud Architecture Summit',
             'Oct',
-            'Nov',
-            '100%',
-            'Full time off Oct-Nov',
+            'Oct',
+            '50%',
+            'Conference speaker & workshop',
             '0%',
             '0%',
             '0%',
@@ -1050,8 +1572,8 @@ export function generateTemplateCSV(
             '0%',
             '0%',
             '0%',
-            '-100%',
-            '-100%',
+            '-50%',
+            '0%',
             '0%'
           ]
         ]
@@ -1110,6 +1632,183 @@ export function generateTemplateCSV(
     return rowsToCsv([headers, ...exampleRows]);
   }
 
+  if (scope === 'admin') {
+    const headers = [
+      'Year',
+      'Record Type',
+      'First Name',
+      'Last Name',
+      'Role',
+      'Department',
+      'Employment',
+      'Email',
+      'Max Capacity %',
+      'Person Comment',
+      'Client',
+      'Industry',
+      'Client Status',
+      'Project',
+      'Project Code',
+      'Project Status',
+      'Billable',
+      'Project Scope Comment',
+      'Leave Category',
+      'Leave Type Label',
+      'Badge Theme',
+      'Leave Title',
+      'Start Month',
+      'End Month',
+      'Impact %',
+      'Leave Note'
+    ];
+    const exampleRows: (string | number)[][] = includeExampleRows
+      ? [
+          [
+            selectedYear,
+            'Department',
+            '',
+            '',
+            '',
+            'Platform Security',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+          ],
+          [
+            selectedYear,
+            'Leave Type',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            'training',
+            'Training & Conference',
+            'Emerald',
+            'Training & Conference',
+            '',
+            '',
+            '50%',
+            ''
+          ],
+          [
+            selectedYear,
+            'Client',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            'Nova Cyber Systems',
+            'Cybersecurity',
+            'active',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+          ],
+          [
+            selectedYear,
+            'Project',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            'Nova Cyber Systems',
+            'Cybersecurity',
+            'active',
+            'Zero-Trust IAM Audit',
+            'NV-IAM',
+            'active',
+            'Yes',
+            'Q3 Enterprise Security Rollout',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+          ],
+          [
+            selectedYear,
+            'Person',
+            'Elena',
+            'Rostova',
+            'Staff Product Designer',
+            'Design',
+            'Internal',
+            'elena.r@company.internal',
+            '100%',
+            'Design Systems Lead',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+          ]
+        ]
+      : [Array(headers.length).fill('')];
+
+    return rowsToCsv([headers, ...exampleRows]);
+  }
+
   // scope === 'all' (Master All-Views Template)
   const headers = [
     'Year',
@@ -1124,12 +1823,16 @@ export function generateTemplateCSV(
     'Person Comment',
     'Client',
     'Industry',
+    'Client Status',
     'Project',
     'Project Code',
+    'Project Status',
     'Billable',
     'Project Scope Comment',
     'Assignment Note',
     'Leave Category',
+    'Leave Type Label',
+    'Badge Theme',
     'Leave Title',
     'Start Month',
     'End Month',
@@ -1139,6 +1842,36 @@ export function generateTemplateCSV(
   ];
   const exampleRows: (string | number)[][] = includeExampleRows
     ? [
+        [
+          selectedYear,
+          'Leave Type',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          'training',
+          'Training & Conference',
+          'Emerald',
+          'Training & Conference',
+          '',
+          '',
+          '50%',
+          '',
+          ...MONTH_NAMES.map(() => '')
+        ],
         [
           selectedYear,
           'Allocation',
@@ -1152,11 +1885,15 @@ export function generateTemplateCSV(
           'React & TypeScript Lead',
           'Acme FinTech',
           'Financial Services',
+          'active',
           'NextGen Payments Portal',
           'NGP-01',
+          'active',
           'Yes',
           'Core Portal Delivery',
           'Tech Lead',
+          '',
+          '',
           '',
           '',
           '',
@@ -1194,7 +1931,11 @@ export function generateTemplateCSV(
           '',
           '',
           '',
+          '',
+          '',
           'vacation',
+          'Annual Vacation / PTO',
+          'Blue',
           'Summer PTO',
           'Jul',
           'Aug',
@@ -1267,10 +2008,45 @@ function importFromJsonContent(
     ? [...parsed.leaves]
     : [...currentState.leaves];
 
+  const currentLeaveTypes = currentState.leaveTypes && Object.keys(currentState.leaveTypes).length > 0
+    ? { ...currentState.leaveTypes }
+    : { ...DEFAULT_LEAVE_TYPE_CONFIG };
+
+  let nextLeaveTypes: Record<LeaveType, LeaveTypeMeta> =
+    mergeMode === 'replace' &&
+    parsed.leaveTypes &&
+    typeof parsed.leaveTypes === 'object' &&
+    Object.keys(parsed.leaveTypes).length > 0
+      ? {}
+      : { ...currentLeaveTypes };
+
   let peopleCount = 0;
+  let clientsCount = 0;
   let projectsCount = 0;
   let allocationsCount = 0;
   let leavesCount = 0;
+  let leaveTypesCount = 0;
+
+  if (parsed.leaveTypes && typeof parsed.leaveTypes === 'object') {
+    for (const [k, rawMeta] of Object.entries(parsed.leaveTypes)) {
+      if (!k || !rawMeta || typeof rawMeta !== 'object') continue;
+      const meta = rawMeta as Partial<LeaveTypeMeta>;
+      nextLeaveTypes[k] = {
+        label: meta.label || k,
+        badgeClass: meta.badgeClass || LEAVE_BADGE_THEMES.blue.badgeClass,
+        iconName: meta.iconName || 'Calendar',
+        defaultImpact:
+          typeof meta.defaultImpact === 'number'
+            ? Math.max(5, Math.min(100, meta.defaultImpact))
+            : 50
+      };
+      leaveTypesCount++;
+    }
+  }
+
+  if (Object.keys(nextLeaveTypes).length === 0) {
+    nextLeaveTypes = { ...currentLeaveTypes };
+  }
 
   if (Array.isArray(parsed.people)) {
     for (const p of parsed.people as Person[]) {
@@ -1357,6 +2133,7 @@ function importFromJsonContent(
   if (Array.isArray(parsed.clients)) {
     for (const c of parsed.clients as Client[]) {
       if (!c || !c.name) continue;
+      clientsCount++;
       const idx = nextClients.findIndex(
         (existing) => existing.id === c.id || existing.name.toLowerCase() === c.name.toLowerCase()
       );
@@ -1430,6 +2207,9 @@ function importFromJsonContent(
     for (const leave of parsed.leaves as LeaveEntry[]) {
       if (!leave || !leave.personId) continue;
       leavesCount++;
+      if (leave.type && !nextLeaveTypes[leave.type]) {
+        nextLeaveTypes[leave.type] = getLeaveTypeMeta(leave.type, nextLeaveTypes);
+      }
       const idx = nextLeaves.findIndex(
         (existing) =>
           existing.id === leave.id ||
@@ -1451,7 +2231,9 @@ function importFromJsonContent(
 
   const allYears = Array.from(
     new Set([
-      ...currentState.availableYears,
+      ...(mergeMode === 'replace' && Array.isArray(parsed.availableYears) && parsed.availableYears.length > 0
+        ? []
+        : currentState.availableYears),
       ...(Array.isArray(parsed.availableYears) ? parsed.availableYears : []),
       ...(typeof parsed.selectedYear === 'number' ? [parsed.selectedYear] : []),
       ...nextAllocations.map((a) => a.year),
@@ -1461,11 +2243,15 @@ function importFromJsonContent(
 
   const allDepts = Array.from(
     new Set([
-      ...currentState.departments,
+      ...(mergeMode === 'replace' && Array.isArray(parsed.departments) && parsed.departments.length > 0
+        ? []
+        : currentState.departments),
       ...(Array.isArray(parsed.departments) ? parsed.departments : []),
       ...nextPeople.map((p) => p.department).filter(Boolean)
     ])
   );
+
+  syncLeaveTypeConfigRegistry(nextLeaveTypes);
 
   const nextState: AppState = {
     people: nextPeople,
@@ -1478,14 +2264,17 @@ function importFromJsonContent(
       typeof parsed.selectedYear === 'number'
         ? parsed.selectedYear
         : currentState.selectedYear,
-    departments: allDepts
+    departments: allDepts,
+    leaveTypes: nextLeaveTypes
   };
 
   const parts: string[] = [];
   if (peopleCount > 0) parts.push(`${peopleCount} people`);
+  if (clientsCount > 0) parts.push(`${clientsCount} clients`);
   if (projectsCount > 0) parts.push(`${projectsCount} projects`);
   if (allocationsCount > 0) parts.push(`${allocationsCount} allocations`);
   if (leavesCount > 0) parts.push(`${leavesCount} leaves`);
+  if (leaveTypesCount > 0) parts.push(`${leaveTypesCount} leave types`);
 
   return {
     nextState,
@@ -1543,6 +2332,7 @@ function importFromCsvContent(
 
   const idxClient = colIndex(['client', 'client name']);
   const idxIndustry = colIndex(['industry']);
+  const idxClientStatus = colIndex(['client status']);
   const idxProject = colIndex(['project', 'project name']);
   const idxProjectCode = colIndex(['project code', 'code']);
   const idxProjectStatus = colIndex(['project status', 'status']);
@@ -1551,6 +2341,8 @@ function importFromCsvContent(
   const idxAllocComment = colIndex(['assignment note', 'role note', 'allocation note']);
 
   const idxLeaveType = colIndex(['leave category', 'leave type']);
+  const idxLeaveTypeLabel = colIndex(['leave type label', 'category label']);
+  const idxBadgeTheme = colIndex(['badge theme', 'theme', 'badge color']);
   const idxLeaveTitle = colIndex(['leave title', 'reason']);
   const idxStartMonth = colIndex(['start month', 'from month']);
   const idxEndMonth = colIndex(['end month', 'to month']);
@@ -1568,19 +2360,127 @@ function importFromCsvContent(
   const nextPeople = [...currentState.people];
   const nextClients = [...currentState.clients];
   const nextProjects = [...currentState.projects];
+  const nextDepartments = [...currentState.departments];
+
+  const currentLeaveTypes =
+    currentState.leaveTypes && Object.keys(currentState.leaveTypes).length > 0
+      ? { ...currentState.leaveTypes }
+      : { ...DEFAULT_LEAVE_TYPE_CONFIG };
+
+  const hasExplicitLeaveTypeRows = rows.slice(1).some((r) => {
+    const rt = idxRowType >= 0 && idxRowType < r.length ? r[idxRowType].trim().toLowerCase() : '';
+    return rt === 'leave type' || rt === 'leavetype';
+  });
+
+  const nextLeaveTypes: Record<LeaveType, LeaveTypeMeta> =
+    mergeMode === 'replace' &&
+    hasExplicitLeaveTypeRows &&
+    (targetScope === 'availability' || targetScope === 'admin' || targetScope === 'all')
+      ? {}
+      : { ...currentLeaveTypes };
+
   let nextAllocations =
     mergeMode === 'replace' && (targetScope === 'people' || targetScope === 'clients' || targetScope === 'all')
       ? currentState.allocations.filter((a) => a.year !== currentState.selectedYear)
       : [...currentState.allocations];
   let nextLeaves =
-    mergeMode === 'replace' && (targetScope === 'availability' || targetScope === 'all')
+    mergeMode === 'replace' && (targetScope === 'availability' || targetScope === 'admin' || targetScope === 'all')
       ? currentState.leaves.filter((l) => l.year !== currentState.selectedYear)
       : [...currentState.leaves];
 
   let updatedPeopleCount = 0;
+  let updatedClientsCount = 0;
   let updatedProjectsCount = 0;
   let updatedAllocationsCount = 0;
   let updatedLeavesCount = 0;
+  let updatedLeaveTypesCount = 0;
+  let updatedDeptsCount = 0;
+
+  const ensureDepartment = (deptName: string) => {
+    const clean = deptName.trim();
+    if (!clean || clean.toLowerCase() === 'all') return;
+    if (!nextDepartments.some((d) => d.toLowerCase() === clean.toLowerCase())) {
+      nextDepartments.push(clean);
+      updatedDeptsCount++;
+    }
+  };
+
+  const resolveOrRegisterLeaveType = (
+    rawCategory: string,
+    rawLabel?: string,
+    rawBadgeTheme?: string,
+    rawImpact?: number
+  ): LeaveType => {
+    const catClean = rawCategory.trim();
+    const labelClean = (rawLabel || '').trim();
+
+    if (catClean) {
+      const exactKey = Object.keys(nextLeaveTypes).find(
+        (k) => k.toLowerCase() === catClean.toLowerCase()
+      );
+      if (exactKey) {
+        if (labelClean || rawBadgeTheme || rawImpact !== undefined) {
+          nextLeaveTypes[exactKey] = {
+            ...nextLeaveTypes[exactKey],
+            label: labelClean || nextLeaveTypes[exactKey].label,
+            badgeClass: rawBadgeTheme
+              ? resolveBadgeClassFromTheme(rawBadgeTheme, nextLeaveTypes[exactKey].badgeClass)
+              : nextLeaveTypes[exactKey].badgeClass,
+            defaultImpact:
+              rawImpact !== undefined && rawImpact > 0
+                ? rawImpact
+                : nextLeaveTypes[exactKey].defaultImpact
+          };
+        }
+        return exactKey;
+      }
+
+      const byLabelKey = Object.keys(nextLeaveTypes).find(
+        (k) => nextLeaveTypes[k].label.toLowerCase() === catClean.toLowerCase()
+      );
+      if (byLabelKey) return byLabelKey;
+    }
+
+    if (labelClean) {
+      const byLabelKey = Object.keys(nextLeaveTypes).find(
+        (k) => nextLeaveTypes[k].label.toLowerCase() === labelClean.toLowerCase()
+      );
+      if (byLabelKey) return byLabelKey;
+    }
+
+    if (!catClean && !labelClean) {
+      return nextLeaveTypes['vacation']
+        ? 'vacation'
+        : Object.keys(nextLeaveTypes)[0] || 'vacation';
+    }
+
+    const newKey = (catClean || labelClean)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '') || `custom_${Date.now()}`;
+
+    const finalLabel =
+      labelClean ||
+      catClean
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
+    const defaultMeta = DEFAULT_LEAVE_TYPE_CONFIG[newKey];
+    nextLeaveTypes[newKey] = {
+      label: finalLabel,
+      badgeClass: resolveBadgeClassFromTheme(
+        rawBadgeTheme,
+        defaultMeta?.badgeClass || LEAVE_BADGE_THEMES.teal.badgeClass
+      ),
+      iconName: defaultMeta?.iconName || 'Calendar',
+      defaultImpact:
+        rawImpact !== undefined && rawImpact > 0
+          ? Math.max(5, Math.min(100, rawImpact))
+          : defaultMeta?.defaultImpact || 50
+    };
+    updatedLeaveTypesCount++;
+    return newKey;
+  };
 
   const ensurePerson = (
     firstNameRaw: string,
@@ -1598,6 +2498,8 @@ function importFromCsvContent(
       lastName: lastNameRaw,
       name: legacyFullNameRaw
     });
+
+    if (dept) ensureDepartment(dept);
 
     const existingIdx = nextPeople.findIndex(
       (p) => p.name.toLowerCase() === fullName.toLowerCase()
@@ -1642,15 +2544,24 @@ function importFromCsvContent(
     return created;
   };
 
-  const ensureClient = (clientName: string, industry?: string): Client => {
+  const ensureClient = (
+    clientName: string,
+    industry?: string,
+    clientStatusRaw?: string
+  ): Client => {
     const cleanName = clientName.trim() || 'Internal';
     const existingIdx = nextClients.findIndex(
       (c) => c.name.toLowerCase() === cleanName.toLowerCase()
     );
     if (existingIdx >= 0) {
-      if (industry) {
-        nextClients[existingIdx] = { ...nextClients[existingIdx], industry };
-      }
+      nextClients[existingIdx] = {
+        ...nextClients[existingIdx],
+        industry: industry || nextClients[existingIdx].industry,
+        status: clientStatusRaw
+          ? parseClientStatus(clientStatusRaw, nextClients[existingIdx].status)
+          : nextClients[existingIdx].status
+      };
+      updatedClientsCount++;
       return nextClients[existingIdx];
     }
 
@@ -1659,9 +2570,10 @@ function importFromCsvContent(
       name: cleanName,
       industry: industry || 'Technology',
       color: AVATAR_COLORS[nextClients.length % AVATAR_COLORS.length],
-      status: 'active'
+      status: parseClientStatus(clientStatusRaw, 'active')
     };
     nextClients.push(created);
+    updatedClientsCount++;
     return created;
   };
 
@@ -1689,6 +2601,10 @@ function importFromCsvContent(
         ...existing,
         clientId: clientId || existing.clientId,
         code: projectCode || existing.code,
+        status:
+          status === 'planned' || status === 'completed' || status === 'active'
+            ? status
+            : existing.status,
         billable: isBillable !== undefined ? isBillable : existing.billable,
         notes: scopeNotes !== undefined && scopeNotes !== '' ? scopeNotes : existing.notes
       };
@@ -1747,6 +2663,7 @@ function importFromCsvContent(
 
     const clientName = getCell(idxClient);
     const industry = getCell(idxIndustry);
+    const clientStatusRaw = getCell(idxClientStatus);
     const projectName = getCell(idxProject);
     const projectCode = getCell(idxProjectCode);
     const projectStatus = getCell(idxProjectStatus);
@@ -1754,7 +2671,9 @@ function importFromCsvContent(
     const projectComment = getCell(idxProjectComment);
     const allocComment = getCell(idxAllocComment);
 
-    const leaveTypeRaw = getCell(idxLeaveType).toLowerCase();
+    const leaveTypeRaw = getCell(idxLeaveType);
+    const leaveTypeLabel = getCell(idxLeaveTypeLabel);
+    const badgeThemeRaw = getCell(idxBadgeTheme);
     const leaveTitle = getCell(idxLeaveTitle);
     const startMonthStr = getCell(idxStartMonth);
     const endMonthStr = getCell(idxEndMonth);
@@ -1765,6 +2684,30 @@ function importFromCsvContent(
       colIdx >= 0 ? parsePercentValue(getCell(colIdx), 0) : 0
     );
     const hasMonthColumns = monthIndices.some((colIdx) => colIdx >= 0);
+
+    // 0a. Handle standalone Department row
+    if (rowType === 'department' && dept) {
+      ensureDepartment(dept);
+      continue;
+    }
+
+    // 0b. Handle standalone Leave Type definition row
+    if (rowType === 'leave type' || rowType === 'leavetype') {
+      const parsedImpact = impactStr ? parsePercentValue(impactStr, 100) : 100;
+      resolveOrRegisterLeaveType(
+        leaveTypeRaw || leaveTypeLabel || leaveTitle,
+        leaveTypeLabel || leaveTitle,
+        badgeThemeRaw,
+        parsedImpact
+      );
+      continue;
+    }
+
+    // 0c. Handle standalone Client row
+    if (rowType === 'client' && clientName) {
+      ensureClient(clientName, industry, clientStatusRaw || projectStatus);
+      continue;
+    }
 
     // 1. Ensure Person if First Name / Last Name / Person Name is present
     let personObj: Person | null = null;
@@ -1785,7 +2728,7 @@ function importFromCsvContent(
     // 2. Ensure Client & Project if projectName is present
     let projectObj: Project | null = null;
     if (projectName) {
-      const clientObj = ensureClient(clientName || 'Internal', industry);
+      const clientObj = ensureClient(clientName || 'Internal', industry, clientStatusRaw);
       projectObj = ensureProject(
         projectName,
         projectCode,
@@ -1798,14 +2741,22 @@ function importFromCsvContent(
 
     // 3. Handle Leave Entry row
     const isLeaveRow =
-      rowType.includes('leave') ||
+      rowType === 'leave' ||
+      rowType === 'leave entry' ||
       (personObj &&
-        (leaveTypeRaw in LEAVE_TYPE_CONFIG ||
+        !projectObj &&
+        (Boolean(leaveTypeRaw) ||
           (leaveTitle && !leaveTitle.includes('scheduled leave(s)'))));
 
     if (isLeaveRow && personObj) {
-      const validType: LeaveType =
-        leaveTypeRaw in LEAVE_TYPE_CONFIG ? (leaveTypeRaw as LeaveType) : 'vacation';
+      const parsedImpact = impactStr ? parsePercentValue(impactStr, 50) : undefined;
+      const validType: LeaveType = resolveOrRegisterLeaveType(
+        leaveTypeRaw,
+        leaveTypeLabel,
+        badgeThemeRaw,
+        parsedImpact
+      );
+      const typeMeta = getLeaveTypeMeta(validType, nextLeaveTypes);
 
       let startM = parseMonthToken(startMonthStr);
       let endM = parseMonthToken(endMonthStr);
@@ -1830,10 +2781,10 @@ function importFromCsvContent(
       }
 
       const impact = impactStr
-        ? parsePercentValue(impactStr, LEAVE_TYPE_CONFIG[validType].defaultImpact)
-        : LEAVE_TYPE_CONFIG[validType].defaultImpact;
+        ? parsePercentValue(impactStr, typeMeta.defaultImpact)
+        : typeMeta.defaultImpact;
 
-      const title = leaveTitle || LEAVE_TYPE_CONFIG[validType].label;
+      const title = leaveTitle || typeMeta.label;
 
       const existingLeaveIdx = nextLeaves.findIndex(
         (l) =>
@@ -1903,6 +2854,11 @@ function importFromCsvContent(
     }
   }
 
+  if (Object.keys(nextLeaveTypes).length === 0) {
+    Object.assign(nextLeaveTypes, currentLeaveTypes);
+  }
+  syncLeaveTypeConfigRegistry(nextLeaveTypes);
+
   const allYears = Array.from(
     new Set([
       ...currentState.availableYears,
@@ -1913,7 +2869,7 @@ function importFromCsvContent(
 
   const allDepts = Array.from(
     new Set([
-      ...currentState.departments,
+      ...nextDepartments,
       ...nextPeople.map((p) => p.department).filter(Boolean)
     ])
   );
@@ -1926,14 +2882,18 @@ function importFromCsvContent(
     leaves: nextLeaves,
     availableYears: allYears,
     selectedYear: currentState.selectedYear,
-    departments: allDepts
+    departments: allDepts,
+    leaveTypes: nextLeaveTypes
   };
 
   const summaryParts: string[] = [];
   if (updatedPeopleCount > 0) summaryParts.push(`${updatedPeopleCount} people rows`);
-  if (updatedProjectsCount > 0) summaryParts.push(`${updatedProjectsCount} project rows`);
+  if (updatedClientsCount > 0) summaryParts.push(`${updatedClientsCount} clients`);
+  if (updatedProjectsCount > 0) summaryParts.push(`${updatedProjectsCount} projects`);
   if (updatedAllocationsCount > 0) summaryParts.push(`${updatedAllocationsCount} allocations`);
   if (updatedLeavesCount > 0) summaryParts.push(`${updatedLeavesCount} leaves`);
+  if (updatedLeaveTypesCount > 0) summaryParts.push(`${updatedLeaveTypesCount} leave types`);
+  if (updatedDeptsCount > 0) summaryParts.push(`${updatedDeptsCount} departments`);
 
   return {
     nextState,

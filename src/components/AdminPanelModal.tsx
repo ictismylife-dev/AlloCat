@@ -25,13 +25,18 @@ import {
   EmploymentType,
   EMPLOYMENT_BADGE_CONFIG,
   LeaveEntry,
+  LeaveType,
+  LeaveTypeMeta,
   LEAVE_TYPE_CONFIG,
+  LEAVE_BADGE_THEMES,
+  getLeaveTypeMeta,
   MONTH_NAMES,
   Person,
   Project,
   Allocation
 } from '../types';
 import { formatPersonTableName } from '../utils/allocationMath';
+import { ExportScope } from '../utils/importExportUtils';
 
 export type AdminTab =
   | 'people'
@@ -71,14 +76,17 @@ interface AdminPanelModalProps {
   onEditProject: (project: Project) => void;
   onDeleteProject: (projectId: string) => void;
   // Leave handlers
+  leaveTypes?: Record<LeaveType, LeaveTypeMeta>;
   onOpenAddLeave: () => void;
   onDeleteLeave: (leaveId: string) => void;
+  onAddLeaveType?: (typeKey: LeaveType, meta: LeaveTypeMeta) => void;
+  onDeleteLeaveType?: (typeKey: LeaveType) => void;
   // Years & Workspace handlers
   onAddYear: (year: number) => void;
   onRemoveYear: (year: number) => void;
   onSelectYear: (year: number) => void;
   onOpenChangeCredentials: () => void;
-  onOpenExportImport: () => void;
+  onOpenExportImport: (scope?: ExportScope) => void;
   onResetWorkspace: () => void;
 }
 
@@ -121,6 +129,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   onDeleteProject,
   onOpenAddLeave,
   onDeleteLeave,
+  leaveTypes = LEAVE_TYPE_CONFIG,
+  onAddLeaveType,
+  onDeleteLeaveType,
   onAddYear,
   onRemoveYear,
   onSelectYear,
@@ -143,6 +154,14 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [editingDept, setEditingDept] = useState<string | null>(null);
   const [editDeptValue, setEditDeptValue] = useState('');
   const [deptError, setDeptError] = useState<string | null>(null);
+
+  // Leave Types management state
+  const [isAddingLeaveType, setIsAddingLeaveType] = useState(false);
+  const [newLeaveTypeLabel, setNewLeaveTypeLabel] = useState('');
+  const [newLeaveTypeImpact, setNewLeaveTypeImpact] = useState<number>(100);
+  const [newLeaveTypeThemeKey, setNewLeaveTypeThemeKey] = useState<string>('blue');
+  const [leaveTypeError, setLeaveTypeError] = useState<string | null>(null);
+  const [leaveTypeToDeleteConfirm, setLeaveTypeToDeleteConfirm] = useState<string | null>(null);
 
   // Client inline creation state
   const [isAddingClient, setIsAddingClient] = useState(false);
@@ -219,14 +238,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       .filter((l) => {
         if (!q) return true;
         const person = people.find((p) => p.id === l.personId);
+        const typeLabel = getLeaveTypeMeta(l.type, leaveTypes).label;
         return (
           l.title.toLowerCase().includes(q) ||
           l.type.toLowerCase().includes(q) ||
+          typeLabel.toLowerCase().includes(q) ||
           (person && person.name.toLowerCase().includes(q))
         );
       })
       .sort((a, b) => b.year - a.year || a.startMonth - b.startMonth);
-  }, [leaves, people, searchQuery]);
+  }, [leaves, people, searchQuery, leaveTypes]);
 
   if (!isOpen) return null;
 
@@ -298,6 +319,45 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setYearError(null);
     onAddYear(parsed);
     setCustomYear(String(Math.max(...availableYears, parsed) + 1));
+  };
+
+  const handleCreateLeaveTypeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newLeaveTypeLabel.trim();
+    if (!trimmed) {
+      setLeaveTypeError('Please enter a name for the leave type.');
+      return;
+    }
+    const slug = trimmed
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '') || `custom_${Date.now()}`;
+
+    const duplicateExists = Object.entries(leaveTypes).some(
+      ([k, v]) =>
+        k.toLowerCase() === slug.toLowerCase() ||
+        v.label.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (duplicateExists) {
+      setLeaveTypeError(`Time off type "${trimmed}" already exists.`);
+      return;
+    }
+
+    const theme = LEAVE_BADGE_THEMES[newLeaveTypeThemeKey] || LEAVE_BADGE_THEMES.blue;
+    onAddLeaveType?.(slug, {
+      label: trimmed,
+      badgeClass: theme.badgeClass,
+      iconName: 'Calendar',
+      defaultImpact: Math.max(5, Math.min(100, Number(newLeaveTypeImpact) || 100))
+    });
+
+    const themeKeys = Object.keys(LEAVE_BADGE_THEMES);
+    const nextIdx = (themeKeys.indexOf(newLeaveTypeThemeKey) + 1) % themeKeys.length;
+    setNewLeaveTypeLabel('');
+    setNewLeaveTypeImpact(100);
+    setNewLeaveTypeThemeKey(themeKeys[nextIdx] || 'blue');
+    setLeaveTypeError(null);
+    setIsAddingLeaveType(false);
   };
 
   const navItems: {
@@ -436,6 +496,26 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onOpenExportImport(
+                        activeTab === 'people'
+                          ? 'people'
+                          : activeTab === 'clients' || activeTab === 'projects'
+                          ? 'clients'
+                          : activeTab === 'leaves'
+                          ? 'availability'
+                          : 'admin'
+                      )
+                    }
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer"
+                    title="Import or export CSV / JSON for this directory"
+                  >
+                    <Download className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                    <span>Import / Export</span>
+                  </button>
+
                   {activeTab === 'people' && (
                     <button
                       type="button"
@@ -467,14 +547,27 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </button>
                   )}
                   {activeTab === 'leaves' && (
-                    <button
-                      type="button"
-                      onClick={onOpenAddLeave}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Schedule Time Off</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsAddingLeaveType((v) => !v);
+                          setLeaveTypeError(null);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>New Leave Type</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={onOpenAddLeave}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Schedule Time Off</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1040,7 +1133,220 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
               {/* TAB 5: LEAVES & TIME OFF */}
               {activeTab === 'leaves' && (
-                <div className="space-y-3">
+                <div className="space-y-5">
+                  {/* Manage Time Off & Leave Types Directory */}
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+                          Time Off & Leave Types ({Object.keys(leaveTypes).length})
+                        </h3>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Configure available leave categories, badge colors, and default capacity reductions
+                        </p>
+                      </div>
+                      {!isAddingLeaveType && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsAddingLeaveType(true);
+                            setLeaveTypeError(null);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-md transition-colors cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Add Leave Type</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Inline Form to Add New Leave Type */}
+                    {isAddingLeaveType && (
+                      <form
+                        onSubmit={handleCreateLeaveTypeSubmit}
+                        className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-900/80 space-y-3 shadow-xs"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                            Create New Time Off / Leave Type
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsAddingLeaveType(false);
+                              setLeaveTypeError(null);
+                            }}
+                            className="text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">
+                              Category Label *
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={newLeaveTypeLabel}
+                              onChange={(e) => setNewLeaveTypeLabel(e.target.value)}
+                              placeholder="e.g. Training / Conference, Sabbatical"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                              autoFocus
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">
+                              Default Capacity Impact
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="range"
+                                min={10}
+                                max={100}
+                                step={5}
+                                value={newLeaveTypeImpact}
+                                onChange={(e) => setNewLeaveTypeImpact(Number(e.target.value))}
+                                className="flex-1 accent-indigo-600 cursor-pointer"
+                              />
+                              <span className="font-mono text-xs font-bold text-rose-600 dark:text-rose-400 w-12 text-right">
+                                -{newLeaveTypeImpact}%
+                              </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">
+                              Badge Color Theme
+                            </label>
+                            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                              {Object.entries(LEAVE_BADGE_THEMES).map(([themeKey, theme]) => (
+                                <button
+                                  key={themeKey}
+                                  type="button"
+                                  onClick={() => setNewLeaveTypeThemeKey(themeKey)}
+                                  className={`px-2 py-0.5 text-[10px] font-semibold rounded border transition-all cursor-pointer ${
+                                    theme.badgeClass
+                                  } ${
+                                    newLeaveTypeThemeKey === themeKey
+                                      ? 'ring-2 ring-indigo-600 dark:ring-indigo-400 scale-105'
+                                      : 'opacity-70 hover:opacity-100'
+                                  }`}
+                                >
+                                  {theme.name}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {leaveTypeError && (
+                          <div className="text-xs text-rose-600 dark:text-rose-400">
+                            {leaveTypeError}
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-1">
+                          <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span>Preview:</span>
+                            <span
+                              className={`px-2 py-0.5 text-[10px] font-semibold rounded border ${
+                                (LEAVE_BADGE_THEMES[newLeaveTypeThemeKey] || LEAVE_BADGE_THEMES.blue)
+                                  .badgeClass
+                              }`}
+                            >
+                              {newLeaveTypeLabel.trim() || 'New Leave Type'} (-{newLeaveTypeImpact}%)
+                            </span>
+                          </div>
+                          <button
+                            type="submit"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Save Leave Type</span>
+                          </button>
+                        </div>
+                      </form>
+                    )}
+
+                    {/* List of Active Leave Types */}
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(leaveTypes).map(([typeKey, meta]) => {
+                        const usageCount = leaves.filter((l) => l.type === typeKey).length;
+                        const isConfirming = leaveTypeToDeleteConfirm === typeKey;
+                        const canDelete = Object.keys(leaveTypes).length > 1;
+
+                        return (
+                          <div
+                            key={typeKey}
+                            className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs"
+                          >
+                            <span
+                              className={`px-2 py-0.5 text-[10px] font-semibold rounded border ${meta.badgeClass}`}
+                            >
+                              {meta.label}
+                            </span>
+                            <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                              -{meta.defaultImpact}%
+                            </span>
+                            {usageCount > 0 && (
+                              <span
+                                className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                                title={`${usageCount} scheduled leave entry(s)`}
+                              >
+                                {usageCount}
+                              </span>
+                            )}
+
+                            {isConfirming ? (
+                              <div className="inline-flex items-center gap-1 ml-1">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    onDeleteLeaveType?.(typeKey);
+                                    setLeaveTypeToDeleteConfirm(null);
+                                  }}
+                                  className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-600 text-white rounded hover:bg-rose-700 cursor-pointer"
+                                >
+                                  Remove
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setLeaveTypeToDeleteConfirm(null)}
+                                  className="px-1 py-0.5 text-[10px] text-slate-400 hover:text-slate-600 cursor-pointer"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                disabled={!canDelete}
+                                onClick={() => setLeaveTypeToDeleteConfirm(typeKey)}
+                                className={`p-0.5 rounded transition-colors ${
+                                  canDelete
+                                    ? 'text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer'
+                                    : 'text-slate-200 dark:text-slate-700 cursor-not-allowed'
+                                }`}
+                                title={
+                                  canDelete
+                                    ? `Remove "${meta.label}" leave type`
+                                    : 'At least one leave type is required'
+                                }
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Scheduled Leaves Table */}
                   {filteredLeaves.length === 0 ? (
                     <div className="text-center py-12 text-xs text-slate-400">
                       No scheduled time off entries found.
@@ -1060,7 +1366,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                           {filteredLeaves.map((leave) => {
                             const person = people.find((p) => p.id === leave.personId);
-                            const cfg = LEAVE_TYPE_CONFIG[leave.type];
+                            const cfg = getLeaveTypeMeta(leave.type, leaveTypes);
                             return (
                               <tr
                                 key={leave.id}
@@ -1219,11 +1525,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       <div className="flex flex-wrap items-center gap-2">
                         <button
                           type="button"
-                          onClick={onOpenExportImport}
+                          onClick={() => onOpenExportImport('admin')}
                           className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors cursor-pointer"
                         >
                           <Download className="w-3.5 h-3.5" />
-                          <span>Open Import / Export</span>
+                          <span>Admin Directories Import / Export</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onOpenExportImport('all')}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Download className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Full Workspace Backup</span>
                         </button>
 
                         {!confirmReset ? (

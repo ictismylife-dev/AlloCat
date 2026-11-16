@@ -15,10 +15,12 @@ import {
   ChevronDown,
   ShieldCheck,
   Building2,
-  FolderKanban
+  FolderKanban,
+  Monitor
 } from 'lucide-react';
 import { ViewMode } from '../types';
 import { AdminTab } from './AdminPanelModal';
+import { usePWAInstall } from '../utils/usePWAInstall';
 
 interface HeaderProps {
   viewMode: ViewMode;
@@ -40,6 +42,7 @@ interface HeaderProps {
   onLogout?: () => void;
   onOpenChangeCredentialsModal?: () => void;
   onOpenAdminPanel?: (tab?: AdminTab) => void;
+  onOpenStandaloneModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -61,8 +64,10 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser,
   onLogout,
   onOpenChangeCredentialsModal,
-  onOpenAdminPanel
+  onOpenAdminPanel,
+  onOpenStandaloneModal
 }) => {
+  const { isInstallable, isInstalled } = usePWAInstall();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
@@ -211,6 +216,27 @@ export const Header: React.FC<HeaderProps> = ({
               )}
 
               <div className="py-1">
+                {onOpenStandaloneModal && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      onOpenStandaloneModal();
+                    }}
+                    className="w-full px-3.5 py-2 text-left flex items-center justify-between text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Monitor className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      <span>Windows & Offline App</span>
+                    </div>
+                    {!isInstalled && (
+                      <span className="text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                        Install
+                      </span>
+                    )}
+                  </button>
+                )}
+
                 {onOpenChangeCredentialsModal && (
                   <button
                     type="button"
@@ -434,12 +460,29 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={onOpenExportModal}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-800"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-800 cursor-pointer"
             title="Full Information Import, Export & Backup"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
             <span className="hidden sm:inline">Import / Export</span>
           </button>
+
+          {/* Standalone Windows / Desktop App Installer */}
+          {onOpenStandaloneModal && !isInstalled && (
+            <button
+              type="button"
+              onClick={onOpenStandaloneModal}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors border cursor-pointer whitespace-nowrap ${
+                isInstallable
+                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'
+              }`}
+              title="Install on Windows or download standalone offline desktop app"
+            >
+              <Monitor className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span className="hidden lg:inline">Windows App</span>
+            </button>
+          )}
 
           {/* Dark Mode toggle */}
           <button

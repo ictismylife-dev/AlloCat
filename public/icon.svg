@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#3730A3" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <!-- Cat Ears & Head Silhouette -->
+  <path d="M148 132 L202 192 C236 180 276 180 310 192 L364 132 C372 124 386 130 384 142 L372 248 C388 274 392 308 380 340 C362 386 312 412 256 412 C200 412 150 386 132 340 C120 308 124 274 140 248 L128 142 C126 130 140 124 148 132 Z" fill="#FFFFFF" />
+  <!-- Eyes -->
+  <circle cx="212" cy="276" r="18" fill="#312E81" />
+  <circle cx="300" cy="276" r="18" fill="#312E81" />
+  <circle cx="217" cy="271" r="6" fill="#FFFFFF" />
+  <circle cx="305" cy="271" r="6" fill="#FFFFFF" />
+  <!-- Nose & Smile -->
+  <polygon points="256,308 244,294 268,294" fill="#4F46E5" />
+  <path d="M236 322 Q256 338 276 322" stroke="#312E81" stroke-width="8" stroke-linecap="round" fill="none" />
+  <!-- Capacity Bars Badge at Bottom -->
+  <rect x="184" y="354" width="42" height="14" rx="7" fill="#10B981" />
+  <rect x="235" y="354" width="42" height="14" rx="7" fill="#4F46E5" />
+  <rect x="286" y="354" width="42" height="14" rx="7" fill="#F59E0B" />
+</svg>

@@ -14,9 +14,11 @@ import {
   Briefcase,
   CalendarOff,
   Armchair,
-  Layers
+  Layers,
+  ShieldCheck,
+  MonitorDown
 } from 'lucide-react';
-import { ViewMode } from '../types';
+import { ViewMode, DEFAULT_LEAVE_TYPE_CONFIG } from '../types';
 import { AppState } from '../data/seedData';
 import {
   ExportScope,
@@ -25,6 +27,7 @@ import {
   generateClientsViewCSV,
   generateAvailabilityViewCSV,
   generateBenchViewCSV,
+  generateAdminDirectoriesCSV,
   generateAllViewsCSV,
   generateViewJSON,
   generateTemplateCSV,
@@ -40,6 +43,7 @@ interface ExportImportModalProps {
   initialScope?: ExportScope;
   onImportState: (newState: AppState) => void;
   onResetToDefault: () => void;
+  onOpenStandaloneModal?: () => void;
 }
 
 const SCOPE_TABS: Array<{
@@ -55,10 +59,20 @@ const SCOPE_TABS: Array<{
     label: 'All Tabs (Full Workspace)',
     shortLabel: 'All Tabs',
     description:
-      'Complete workspace backup and multi-view master spreadsheet covering People, Clients, Projects, Allocations, Leaves, Departments, and Years.',
+      'Complete workspace backup and multi-view master spreadsheet covering Clients, Projects, People, Allocations, Custom Leave Types, Scheduled Leaves, Departments, and Years.',
     csvColumnsHint:
-      'Year, Record Type (Person/Project/Allocation/Leave), First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Client, Project, Leave Category, Jan..Dec',
+      'Year, Record Type (Department / Leave Type / Client / Project / Person / Allocation / Leave), First Name, Last Name, Role, Department, Employment, Client, Client Status, Project, Leave Category, Leave Type Label, Badge Theme, Impact %, Jan..Dec',
     icon: Layers
+  },
+  {
+    id: 'clients',
+    label: 'By Clients & Projects View',
+    shortLabel: 'Clients & Projects',
+    description:
+      'Client portfolios, deliverable projects, scope notes, monthly FTE totals, and assigned staff breakdowns.',
+    csvColumnsHint:
+      'Year, Row Type, Client, Industry, Project, Project Code, Project Status, Billable, Project Scope Comment, First Name, Last Name, Role, Department, Employment, Assignment Note, Jan..Dec',
+    icon: Briefcase
   },
   {
     id: 'people',
@@ -71,23 +85,13 @@ const SCOPE_TABS: Array<{
     icon: Users
   },
   {
-    id: 'clients',
-    label: 'By Clients & Projects View',
-    shortLabel: 'Clients & Projects',
-    description:
-      'Client portfolios, deliverable projects, scope notes, monthly FTE totals, and assigned staff breakdowns.',
-    csvColumnsHint:
-      'Year, Row Type, Client, Industry, Project, Project Code, Billable, Project Scope Comment, First Name, Last Name, Role, Department, Employment, Assignment Note, Jan..Dec',
-    icon: Briefcase
-  },
-  {
     id: 'availability',
     label: 'Availability & Leaves View',
     shortLabel: 'Availability & Leaves',
     description:
-      'Effective monthly working capacities and scheduled time off (vacations, parental leave, sick leave, sabbaticals).',
+      'Custom & default Time Off / Leave Type definitions, effective monthly working capacities, and scheduled leave entries.',
     csvColumnsHint:
-      'Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Max Capacity %, Person Comment, Leave Category, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec',
+      'Year, Row Type (Leave Type / Effective Capacity / Leave Entry), First Name, Last Name, Role, Department, Employment, Max Capacity %, Leave Category, Leave Type Label, Badge Theme, Leave Title, Start Month, End Month, Impact %, Leave Note, Jan..Dec',
     icon: CalendarOff
   },
   {
@@ -99,6 +103,16 @@ const SCOPE_TABS: Array<{
     csvColumnsHint:
       'Year, Row Type, First Name, Last Name, Role, Department, Employment (Internal/External/B2B), Email, Max Capacity %, Skills & Bench Comment, Avg Bench %, Free Months, Jan..Dec',
     icon: Armchair
+  },
+  {
+    id: 'admin',
+    label: 'Admin Panel & Directories',
+    shortLabel: 'Admin & Directories',
+    description:
+      'Centralized Admin Control Panel directories: Departments, Custom Time Off & Leave Types, Client Companies, Deliverable Projects, Team Members, and Scheduled Leaves.',
+    csvColumnsHint:
+      'Year, Record Type (Department / Leave Type / Client / Project / Person / Leave), First Name, Last Name, Role, Department, Employment, Email, Max Capacity %, Client, Industry, Client Status, Project, Project Code, Leave Category, Leave Type Label, Badge Theme, Impact %',
+    icon: ShieldCheck
   }
 ];
 
@@ -106,10 +120,11 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
   isOpen,
   onClose,
   appState,
-  activeViewMode = 'people',
+  activeViewMode = 'clients',
   initialScope,
   onImportState,
-  onResetToDefault
+  onResetToDefault,
+  onOpenStandaloneModal
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedScope, setSelectedScope] = useState<ExportScope>(
@@ -134,6 +149,9 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
   const currentTabConfig =
     SCOPE_TABS.find((t) => t.id === selectedScope) || SCOPE_TABS[0];
   const dateStr = new Date().toISOString().slice(0, 10);
+  const leaveTypesCount = Object.keys(
+    appState.leaveTypes || DEFAULT_LEAVE_TYPE_CONFIG
+  ).length;
 
   // Download self-contained single-file HTML browser app with current state embedded
   const handleDownloadStandaloneHTML = async () => {
@@ -237,7 +255,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
       );
       setStatus({
         type: 'success',
-        message: `Exported "By Clients & Projects" view (${appState.projects.length} projects) to CSV.`
+        message: `Exported "By Clients & Projects" view (${appState.clients.length} clients, ${appState.projects.length} projects) to CSV.`
       });
     } else if (scope === 'availability') {
       const csv = generateAvailabilityViewCSV(appState);
@@ -248,7 +266,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
       );
       setStatus({
         type: 'success',
-        message: `Exported "Availability & Leaves" view (${appState.leaves.filter((l) => l.year === yr).length} leaves) to CSV.`
+        message: `Exported "Availability & Leaves" view (${leaveTypesCount} leave types, ${appState.leaves.filter((l) => l.year === yr).length} scheduled leaves) to CSV.`
       });
     } else if (scope === 'bench') {
       const csv = generateBenchViewCSV(appState);
@@ -261,6 +279,17 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
         type: 'success',
         message: `Exported "Bench" availability view (${appState.people.length} team members) to CSV.`
       });
+    } else if (scope === 'admin') {
+      const csv = generateAdminDirectoriesCSV(appState);
+      triggerFileDownload(
+        csv,
+        `allocat-admin-directories-${yr}-${dateStr}.csv`,
+        'text/csv;charset=utf-8;'
+      );
+      setStatus({
+        type: 'success',
+        message: `Exported "Admin & Directories" CSV (${appState.departments.length} departments, ${leaveTypesCount} leave types, ${appState.clients.length} clients, ${appState.projects.length} projects, ${appState.people.length} people).`
+      });
     } else {
       const csv = generateAllViewsCSV(appState);
       triggerFileDownload(
@@ -270,7 +299,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
       );
       setStatus({
         type: 'success',
-        message: 'Exported All Views Master CSV (People, Projects, Allocations, and Leaves).'
+        message: `Exported All Views Master CSV (${appState.departments.length} departments, ${leaveTypesCount} leave types, ${appState.clients.length} clients, ${appState.projects.length} projects, ${appState.people.length} people, ${appState.allocations.length} allocations, ${appState.leaves.length} leaves).`
       });
     }
   };
@@ -281,6 +310,8 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
     const filename =
       scope === 'all'
         ? `allocat-full-backup-${dateStr}.json`
+        : scope === 'admin'
+        ? `allocat-admin-directories-${yr}-${dateStr}.json`
         : `allocat-${scope}-${yr}-${dateStr}.json`;
 
     triggerFileDownload(json, filename, 'application/json');
@@ -288,7 +319,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
       type: 'success',
       message:
         scope === 'all'
-          ? 'Exported Full Workspace Backup (.JSON).'
+          ? 'Exported Full Workspace Backup (.JSON) including all views, departments, and custom leave types.'
           : `Exported "${currentTabConfig.shortLabel}" data (.JSON).`
     });
   };
@@ -308,6 +339,8 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
         ? 'clients-projects'
         : scope === 'availability'
         ? 'availability-leaves'
+        : scope === 'admin'
+        ? 'admin-directories'
         : scope;
 
     triggerFileDownload(
@@ -359,7 +392,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-3xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
         <div className="px-5 py-4 bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
@@ -368,25 +401,44 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                Import & Export Center — All Tabs & Views ({appState.selectedYear})
+                Import & Export Center — All Views & Admin Directories ({appState.selectedYear})
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Export or import CSV spreadsheets and JSON data for any view, or download the standalone browser app
+                Export or import CSV spreadsheets and JSON backups for any matrix view, Admin Panel directory, or standalone app
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Scope Selector Tabs */}
-        <div className="px-5 pt-3 pb-2 bg-slate-50/60 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-            Select Tab / View to Export or Import:
+        <div className="px-5 pt-3 pb-2.5 bg-slate-50/60 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Select Module / View to Export or Import:
+            </span>
+            <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+              <span className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">
+                {appState.clients.length} Clients
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">
+                {appState.projects.length} Projects
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">
+                {appState.people.length} People
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">
+                {appState.departments.length} Depts
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-purple-100/80 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
+                {leaveTypesCount} Leave Types
+              </span>
+            </div>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {SCOPE_TABS.map((tab) => {
@@ -487,19 +539,20 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
               </button>
             </div>
 
-            {/* Quick 1-click CSV buttons for all 4 individual views when on "All Tabs" */}
+            {/* Quick 1-click CSV buttons for all individual modules when on "All Tabs" */}
             {selectedScope === 'all' && (
               <div className="pt-2 border-t border-slate-200/80 dark:border-slate-700/70">
                 <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-2">
-                  Or quick-export individual tab spreadsheets (.CSV):
+                  Or quick-export individual module spreadsheets (.CSV):
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {(
                     [
-                      { id: 'people', label: 'By People CSV' },
-                      { id: 'clients', label: 'Clients & Projects CSV' },
-                      { id: 'availability', label: 'Availability & Leaves CSV' },
-                      { id: 'bench', label: 'Bench CSV' }
+                      { id: 'clients', label: 'Clients & Projects' },
+                      { id: 'people', label: 'By People' },
+                      { id: 'availability', label: 'Leaves & Types' },
+                      { id: 'bench', label: 'Bench View' },
+                      { id: 'admin', label: 'Admin Directories' }
                     ] as const
                   ).map((item) => (
                     <button
@@ -526,7 +579,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
                 </h3>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   Upload any exported <code className="font-mono">.csv</code> spreadsheet or{' '}
-                  <code className="font-mono">.json</code> file to update people, projects, allocations, or leaves.
+                  <code className="font-mono">.json</code> file to update people, departments, clients, projects, allocations, custom leave types, or leaves.
                 </p>
               </div>
 
@@ -575,7 +628,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
                     <span>Pre-built CSV Import Templates ({currentTabConfig.shortLabel})</span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Download a ready-to-fill CSV template with the exact column headers for this view.
+                    Download a ready-to-fill CSV template with the exact column headers for this module.
                   </p>
                 </div>
 
@@ -584,7 +637,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
                     type="button"
                     onClick={() => handleDownloadTemplateCSV(selectedScope, true)}
                     className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 flex items-center gap-1.5 transition-colors cursor-pointer"
-                    title="Download CSV template pre-populated with 1-2 example rows showing the format"
+                    title="Download CSV template pre-populated with example rows showing the format"
                   >
                     <Download className="w-3 h-3" />
                     <span>Example Template (.CSV)</span>
@@ -605,7 +658,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
               {/* Quick links for all tab templates */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
                 <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mr-1">
-                  All view templates:
+                  All module templates:
                 </span>
                 {SCOPE_TABS.map((t) => (
                   <button
@@ -645,7 +698,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
             </button>
           </div>
 
-          {/* Standalone Single-File Browser App */}
+          {/* Standalone Single-File Browser App & Windows Desktop App Center */}
           <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 text-white border border-indigo-500/30 shadow-md">
             <div className="flex items-start gap-2.5">
               <div className="w-9 h-9 rounded-lg bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center shrink-0">
@@ -654,32 +707,45 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-semibold text-white">
-                    Run Directly in Browser (Single HTML File)
+                    Portable Offline Browser File & Windows Desktop App
                   </h3>
                   <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 flex items-center gap-1">
-                    <Sparkles className="w-2.5 h-2.5" /> Portable
+                    <Sparkles className="w-2.5 h-2.5" /> Standalone
                   </span>
                 </div>
                 <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
-                  Download AlloCat and your current data across all tabs into a single self-contained{' '}
-                  <code className="text-indigo-200 font-mono">.html</code> file that opens directly in any browser without a server.
+                  Bundle AlloCat and your current workspace state (including custom leave types and departments) into a single self-contained{' '}
+                  <code className="text-indigo-200 font-mono">.html</code> file, or open the Windows Desktop App installer center.
                 </p>
               </div>
             </div>
 
-            <button
-              type="button"
-              disabled={isBundlingHtml}
-              onClick={handleDownloadStandaloneHTML}
-              className="mt-3.5 w-full py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-            >
-              <Download className="w-4 h-4" />
-              <span>
-                {isBundlingHtml
-                  ? 'Bundling Standalone Browser App...'
-                  : 'Download Standalone Browser App (.html)'}
-              </span>
-            </button>
+            <div className="mt-3.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                disabled={isBundlingHtml}
+                onClick={handleDownloadStandaloneHTML}
+                className="py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>
+                  {isBundlingHtml
+                    ? 'Bundling Standalone HTML...'
+                    : 'Download Single-File App (.html)'}
+                </span>
+              </button>
+
+              {onOpenStandaloneModal && (
+                <button
+                  type="button"
+                  onClick={onOpenStandaloneModal}
+                  className="py-2.5 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-200 border border-indigo-400/30 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
+                  <MonitorDown className="w-4 h-4 text-indigo-400" />
+                  <span>Windows Desktop App Center</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Footer */}

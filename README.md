@@ -6,6 +6,29 @@
 
 ---
 
+## Standalone Windows & Offline Desktop Installation
+
+AlloCat can be installed and run as a **standalone desktop application on Windows 10 / 11** (as well as macOS and Linux) with full offline functionality. Click the **Windows App** button in the top header (or open the **AlloCat Logo Menu → Windows & Offline App**) to choose from three installation options:
+
+1. **Option 1: Native Windows Desktop App (PWA — Recommended)**
+   - Click **Install on Windows Now** inside the app modal (or in **Microsoft Edge**: click the *App Available* icon in the address bar / `⋯ → Apps → Install AlloCat as an app`; in **Google Chrome**: `⋮ → Cast, save, and share → Install AlloCat...`).
+   - Installs AlloCat natively into your **Windows Start Menu**, **Taskbar**, and **Desktop**.
+   - Launches in its own dedicated standalone desktop window (without browser tabs or URL bars) and runs **100% offline** via built-in Service Worker caching.
+
+2. **Option 2: Portable Offline Windows Bundle (`AlloCat-Standalone.html` + `.bat`)**
+   - **Portable Offline File (`AlloCat-Standalone.html`)**: Bundles the entire compiled application (`JS` + `CSS`) and your current workspace database into a single self-contained `.html` file that runs offline from any local folder or USB drive.
+   - **Windows App-Mode Launcher (`AlloCat-Windows-Launcher.bat`)**: Double-click on Windows to launch `AlloCat-Standalone.html` (or the live app) inside a native frameless Windows desktop window (`--app` mode).
+
+3. **Option 3: Build a Standalone Windows `.exe` Installer (Electron)**
+   - The repository includes an Electron desktop wrapper (`electron/main.cjs`). To package a standalone `.exe` installer on Windows:
+     ```bash
+     npm install --save-dev electron electron-builder
+     npm run build
+     npx electron-builder --win --x64
+     ```
+
+---
+
 ## Authentication, Logo Menu & Admin Control Panel
 
 Before signing in, the entire workspace view is blurred and locked behind a sign-in modal.
@@ -20,6 +43,7 @@ Before signing in, the entire workspace view is blurred and locked behind a sign
     4. **Projects**: Search deliverable projects, view project codes, parent clients, billing status (`Billable` vs `Internal`), and assigned headcount for the active year, or add, edit, and delete projects.
     5. **Time Off & Leaves**: View all scheduled leaves across team members and years, schedule new time off, or delete existing leave entries.
     6. **Years & System**: Add/switch/remove planning years, change administrator login credentials, open Import/Export backup tools, or reset the workspace to default demo data.
+  - **Windows & Offline App**: Open the Windows desktop installer and portable bundle generator.
   - **Change Login & Password**: Verify your current password and set a custom login and password (persisted in `localStorage`), or reset back to the default `admin:admin`.
   - **Log Out / Lock Workspace**: Immediately lock and blur the workspace view until signed in again.
 
@@ -53,7 +77,7 @@ AlloCat lets you inspect and edit your organization's staffing plan from four sy
 
 - **Streamlined Header Controls**:
   - **Planning Year Dropdown**: Switch between active planning years (`2025`, `2026`, `2027`, etc.) or open **+ Manage Years...** directly from the top year selector dropdown.
-  - **Consolidated `+ Add` Menu**: Quickly add **+ Time Off**, **+ Person**, or **+ Project** from a single unified dropdown button alongside **Assign** and **Import / Export**.
+  - **Consolidated `+ Add` Menu**: Quickly add **+ Time Off**, **+ Person**, or **+ Project** from a single unified dropdown button alongside **Assign Staff**, **Import / Export**, and **Windows App**.
 - **Default A → Z Alphabetical Sorting**:
   - Defaults to **`A → Z`** sorting across all views (`Last Name: A → Z` for people and `Clients: A → Z` for clients & projects).
   - One-click **`A–Z` / `Z–A`** sort toggles in the sticky table headers and toolbar, plus dropdown options for `First Name` or `Original Order`.

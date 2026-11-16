@@ -15,10 +15,12 @@ import {
   ShieldCheck,
   Building2,
   FolderKanban,
-  Monitor
+  Monitor,
+  BarChart3
 } from 'lucide-react';
 import { ViewMode } from '../types';
 import { AdminTab } from './AdminPanelModal';
+import { ReportTab } from './ReportingModal';
 import { usePWAInstall } from '../utils/usePWAInstall';
 
 interface HeaderProps {
@@ -40,6 +42,7 @@ interface HeaderProps {
   onLogout?: () => void;
   onOpenChangeCredentialsModal?: () => void;
   onOpenAdminPanel?: (tab?: AdminTab) => void;
+  onOpenReportingModal?: (tab?: ReportTab) => void;
   onOpenStandaloneModal?: () => void;
 }
 
@@ -62,6 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   onOpenChangeCredentialsModal,
   onOpenAdminPanel,
+  onOpenReportingModal,
   onOpenStandaloneModal
 }) => {
   const { isInstalled } = usePWAInstall();
@@ -158,6 +162,25 @@ export const Header: React.FC<HeaderProps> = ({
                       Manage All
                     </span>
                   </button>
+
+                  {onOpenReportingModal && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenReportingModal('departments');
+                      }}
+                      className="w-full px-3 py-2 rounded-lg text-left flex items-center justify-between bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-900 dark:text-slate-100 font-semibold transition-colors cursor-pointer mb-1 border border-slate-200/80 dark:border-slate-700"
+                    >
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span>Reporting & Analytics</span>
+                      </div>
+                      <span className="text-[10px] font-mono bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-200/60 dark:border-indigo-800">
+                        CSV / JSON
+                      </span>
+                    </button>
+                  )}
 
                   <div className="px-2 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Quick Jump
@@ -460,6 +483,18 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
+
+          {onOpenReportingModal && (
+            <button
+              type="button"
+              onClick={() => onOpenReportingModal('departments')}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-700 shadow-2xs cursor-pointer whitespace-nowrap"
+              title="Open Reporting & Capacity Analytics Module"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Reports</span>
+            </button>
+          )}
 
           {/* Primary Action Button */}
           <button

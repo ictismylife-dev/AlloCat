@@ -39,6 +39,7 @@ import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
 import { AdminPanelModal, AdminTab } from './components/AdminPanelModal';
+import { ReportingModal, ReportTab } from './components/ReportingModal';
 import { StandaloneAppModal } from './components/StandaloneAppModal';
 import { useOnlineStatus } from './utils/usePWAInstall';
 import {
@@ -118,6 +119,10 @@ export function App() {
     isOpen: boolean;
     tab: AdminTab;
   }>({ isOpen: false, tab: 'people' });
+  const [reportingModalState, setReportingModalState] = useState<{
+    isOpen: boolean;
+    tab: ReportTab;
+  }>({ isOpen: false, tab: 'departments' });
   const [isStandaloneModalOpen, setIsStandaloneModalOpen] = useState(false);
 
   // Save state changes to localStorage
@@ -878,6 +883,9 @@ export function App() {
           onOpenAdminPanel={(tab = 'people') =>
             setAdminPanelState({ isOpen: true, tab })
           }
+          onOpenReportingModal={(tab = 'departments') =>
+            setReportingModalState({ isOpen: true, tab })
+          }
           onOpenStandaloneModal={() => setIsStandaloneModalOpen(true)}
           onLogout={() => {
             try {
@@ -1135,6 +1143,22 @@ export function App() {
           setIsExportModalOpen(true);
         }}
         onResetWorkspace={() => setAppState(resetAppState())}
+      />
+
+      <ReportingModal
+        isOpen={reportingModalState.isOpen}
+        initialTab={reportingModalState.tab}
+        onClose={() => setReportingModalState((prev) => ({ ...prev, isOpen: false }))}
+        people={people}
+        departments={departments}
+        clients={clients}
+        projects={projects}
+        allocations={allocations}
+        leaves={leaves}
+        leaveTypes={leaveTypes}
+        availableYears={availableYears}
+        selectedYear={selectedYear}
+        onSelectYear={(yr) => setAppState((prev) => ({ ...prev, selectedYear: yr }))}
       />
 
       <AddPersonModal

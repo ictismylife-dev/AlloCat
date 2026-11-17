@@ -4,7 +4,10 @@ import {
   ChevronsUpDown,
   Settings,
   ArrowDownAZ,
-  ArrowUpZA
+  ArrowUpZA,
+  Briefcase,
+  Activity,
+  ChevronDown
 } from 'lucide-react';
 import {
   FilterState,
@@ -129,7 +132,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         )}
       </div>
 
-      {/* Bottom row: Search bar + Alphabetical Sort + Department / Client tabs + Utilization filter */}
+      {/* Bottom row: Search bar + Alphabetical Sort + Department / Client filter + Utilization filter */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {/* Search input */}
@@ -246,33 +249,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         {/* Filter controls */}
         <div className="flex flex-wrap items-center gap-2">
           {viewMode === 'clients' && clients.length > 0 ? (
-            /* Client filter pills when on By Clients & Projects tab */
-            <div className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
-              <button
-                type="button"
-                onClick={() => onFilterChange({ clientFilter: 'all' })}
-                className={`px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${
-                  filters.clientFilter === 'all'
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                All Clients
-              </button>
-              {clients.map((client) => (
-                <button
-                  key={client.id}
-                  type="button"
-                  onClick={() => onFilterChange({ clientFilter: client.id })}
-                  className={`px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${
-                    filters.clientFilter === client.id
-                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
+            /* Client filter dropdown when on By Clients & Projects tab */
+            <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
+              <div className="relative flex items-center">
+                <Briefcase className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 absolute left-2.5 pointer-events-none" />
+                <select
+                  value={filters.clientFilter}
+                  onChange={(e) => onFilterChange({ clientFilter: e.target.value })}
+                  className="pl-8 pr-7 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs border-0 focus:outline-hidden focus:ring-1 focus:ring-blue-500 cursor-pointer appearance-none"
+                  title="Filter by Client"
                 >
-                  {client.name}
-                </button>
-              ))}
+                  <option value="all" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                    All Clients ({clients.length})
+                  </option>
+                  {clients.map((client) => (
+                    <option
+                      key={client.id}
+                      value={client.id}
+                      className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                    >
+                      {client.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3 h-3 text-slate-500 dark:text-slate-400 absolute right-2 pointer-events-none" />
+              </div>
             </div>
           ) : (
             /* Department pills on People, Availability, and Bench tabs */
@@ -344,31 +345,43 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             </div>
           )}
 
-          {/* Utilization state filter */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
-            {(
-              [
-                { id: 'all', label: 'All Status' },
-                { id: 'overbooked', label: 'Overbooked' },
-                { id: 'balanced', label: 'Balanced (75–100%)' },
-                { id: 'underbooked', label: 'Available (<75%)' }
-              ] as const
-            ).map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onFilterChange({ utilization: item.id as UtilizationFilter })}
-                className={`px-2.5 py-1 text-xs rounded-md transition-all whitespace-nowrap ${
-                  filters.utilization === item.id
-                    ? item.id === 'overbooked'
-                      ? 'bg-rose-600 text-white shadow-xs font-semibold'
-                      : 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          {/* Utilization state filter dropdown */}
+          <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
+            <div className="relative flex items-center">
+              <Activity
+                className={`w-3.5 h-3.5 absolute left-2.5 pointer-events-none ${
+                  filters.utilization === 'overbooked'
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : filters.utilization === 'balanced'
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : filters.utilization === 'underbooked'
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-slate-500 dark:text-slate-400'
                 }`}
+              />
+              <select
+                value={filters.utilization}
+                onChange={(e) =>
+                  onFilterChange({ utilization: e.target.value as UtilizationFilter })
+                }
+                className="pl-8 pr-7 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs border-0 focus:outline-hidden focus:ring-1 focus:ring-blue-500 cursor-pointer appearance-none"
+                title="Filter by utilization status"
               >
-                {item.label}
-              </button>
-            ))}
+                <option value="all" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  All Status
+                </option>
+                <option value="overbooked" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  Overbooked
+                </option>
+                <option value="balanced" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  Balanced (75–100%)
+                </option>
+                <option value="underbooked" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  Available (&lt;75%)
+                </option>
+              </select>
+              <ChevronDown className="w-3 h-3 text-slate-500 dark:text-slate-400 absolute right-2 pointer-events-none" />
+            </div>
           </div>
         </div>
       </div>

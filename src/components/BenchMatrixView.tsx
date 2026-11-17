@@ -7,7 +7,8 @@ import {
   Filter,
   MessageSquare,
   ArrowDownAZ,
-  ArrowUpZA
+  ArrowUpZA,
+  EyeOff
 } from 'lucide-react';
 import {
   MONTH_NAMES,
@@ -38,6 +39,8 @@ interface BenchMatrixViewProps {
   onUpdatePersonEmployment?: (personId: string, employmentType: EmploymentType) => void;
   peopleSort?: PeopleSortOrder;
   onTogglePeopleSort?: () => void;
+  visibleMonths?: boolean[];
+  onToggleMonthVisibility?: (monthIdx: number) => void;
 }
 
 export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
@@ -51,16 +54,19 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
   peopleSort = 'lastName-asc',
-  onTogglePeopleSort
+  onTogglePeopleSort,
+  visibleMonths = Array(12).fill(true),
+  onToggleMonthVisibility
 }) => {
   const [onlyWithBench, setOnlyWithBench] = useState(false);
   const [minBenchPct, setMinBenchPct] = useState(20);
+  const visibleMonthCount = visibleMonths.filter(Boolean).length;
 
   const summaries = people
     .map((p) => getPersonBenchSummary(p, selectedYear, allocations, leaves))
     .filter((s) => {
       if (!onlyWithBench) return true;
-      return s.monthlyBenchPct.some((pct) => pct >= minBenchPct);
+      return s.monthlyBenchPct.some((pct, idx) => visibleMonths[idx] && pct >= minBenchPct);
     });
 
   return (
@@ -102,7 +108,10 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
       </div>
 
       <div className="w-full flex-1 min-h-0 overflow-auto">
-        <table className="w-full text-left border-collapse min-w-[1360px]">
+        <table
+          className="w-full text-left border-collapse"
+          style={{ minWidth: `${540 + visibleMonthCount * 72}px` }}
+        >
           <thead>
             <tr className="bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20">
               <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800">
@@ -140,17 +149,30 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                 </div>
               </th>
 
-              {MONTH_NAMES.map((month, idx) => (
-                <th
-                  key={month}
-                  className="py-2.5 px-2 text-center font-mono w-[72px] min-w-[72px] border-r border-slate-200/60 dark:border-slate-800/60 last:border-r-0"
-                >
-                  <div className="flex flex-col items-center">
-                    <span>{month}</span>
-                    <span className="text-[10px] text-slate-400 font-normal">M{idx + 1}</span>
-                  </div>
-                </th>
-              ))}
+              {MONTH_NAMES.map((month, idx) => {
+                if (!visibleMonths[idx]) return null;
+                return (
+                  <th
+                    key={month}
+                    className="group/mth relative py-2.5 px-2 text-center font-mono w-[72px] min-w-[72px] border-r border-slate-200/60 dark:border-slate-800/60 last:border-r-0"
+                  >
+                    <div className="flex flex-col items-center">
+                      <span>{month}</span>
+                      <span className="text-[10px] text-slate-400 font-normal">M{idx + 1}</span>
+                    </div>
+                    {onToggleMonthVisibility && (
+                      <button
+                        type="button"
+                        onClick={() => onToggleMonthVisibility(idx)}
+                        className="opacity-0 group-hover/mth:opacity-100 absolute top-1 right-1 p-0.5 rounded bg-slate-300/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-opacity cursor-pointer"
+                        title={`Hide ${month} (M${idx + 1})`}
+                      >
+                        <EyeOff className="w-2.5 h-2.5" />
+                      </button>
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
 
@@ -254,6 +276,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
                   </td>
 
                   {summary.monthlyBenchPct.map((benchPct, monthIdx) => {
+                    if (!visibleMonths[monthIdx]) return null;
                     const booked = summary.monthlyBookedPct[monthIdx];
                     return (
                       <td

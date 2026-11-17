@@ -119,6 +119,7 @@ export interface FilterState {
   clientFilter: string | 'all';
   peopleSort?: PeopleSortOrder;
   clientSort?: ClientSortOrder;
+  visibleMonths?: boolean[];
 }
 
 export const MONTH_NAMES = [

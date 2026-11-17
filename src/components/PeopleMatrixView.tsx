@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, MessageSquare, ArrowDownAZ, ArrowUpZA } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Plus, Trash2, Pencil, MessageSquare, ArrowDownAZ, ArrowUpZA, EyeOff } from 'lucide-react';
 import {
   MONTH_NAMES,
   Person,
@@ -36,6 +36,8 @@ interface PeopleMatrixViewProps {
   onUpdateAllocationNotes?: (allocationId: string, notes: string) => void;
   peopleSort?: PeopleSortOrder;
   onTogglePeopleSort?: () => void;
+  visibleMonths?: boolean[];
+  onToggleMonthVisibility?: (monthIdx: number) => void;
 }
 
 export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
@@ -58,10 +60,13 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
   onUpdatePersonEmployment,
   onUpdateAllocationNotes,
   peopleSort = 'lastName-asc',
-  onTogglePeopleSort
+  onTogglePeopleSort,
+  visibleMonths = Array(12).fill(true),
+  onToggleMonthVisibility
 }) => {
   const getProject = (id: string) => projects.find((p) => p.id === id);
   const getClient = (id: string) => clients.find((c) => c.id === id);
+  const visibleMonthCount = visibleMonths.filter(Boolean).length;
 
   if (people.length === 0) {
     return (
@@ -74,7 +79,10 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
 
   return (
     <div className="w-full flex-1 min-h-0 overflow-auto bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs">
-      <table className="w-full text-left border-collapse min-w-[1360px]">
+      <table
+        className="w-full text-left border-collapse"
+        style={{ minWidth: `${540 + visibleMonthCount * 72}px` }}
+      >
         <thead>
           <tr className="bg-slate-200/90 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-300 dark:border-slate-800 sticky top-0 z-20">
             <th className="py-2.5 px-4 w-[320px] min-w-[320px] sticky left-0 z-30 bg-slate-200 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-800">
@@ -112,17 +120,30 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
               </div>
             </th>
 
-            {MONTH_NAMES.map((month, idx) => (
-              <th
-                key={month}
-                className="py-2.5 px-2 text-center font-mono w-[72px] min-w-[72px] border-r border-slate-200/60 dark:border-slate-800/60 last:border-r-0"
-              >
-                <div className="flex flex-col items-center">
-                  <span>{month}</span>
-                  <span className="text-[10px] text-slate-400 font-normal">M{idx + 1}</span>
-                </div>
-              </th>
-            ))}
+            {MONTH_NAMES.map((month, idx) => {
+              if (!visibleMonths[idx]) return null;
+              return (
+                <th
+                  key={month}
+                  className="group/mth relative py-2.5 px-2 text-center font-mono w-[72px] min-w-[72px] border-r border-slate-200/60 dark:border-slate-800/60 last:border-r-0"
+                >
+                  <div className="flex flex-col items-center">
+                    <span>{month}</span>
+                    <span className="text-[10px] text-slate-400 font-normal">M{idx + 1}</span>
+                  </div>
+                  {onToggleMonthVisibility && (
+                    <button
+                      type="button"
+                      onClick={() => onToggleMonthVisibility(idx)}
+                      className="opacity-0 group-hover/mth:opacity-100 absolute top-1 right-1 p-0.5 rounded bg-slate-300/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-opacity cursor-pointer"
+                      title={`Hide ${month} (M${idx + 1})`}
+                    >
+                      <EyeOff className="w-2.5 h-2.5" />
+                    </button>
+                  )}
+                </th>
+              );
+            })}
           </tr>
         </thead>
 
@@ -273,6 +294,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                   </td>
 
                   {capacitySummary.totals.map((totalPct, monthIdx) => {
+                    if (!visibleMonths[monthIdx]) return null;
                     const effCap = capacitySummary.effectiveCapacities[monthIdx];
                     const isOver = totalPct > effCap;
                     const excess = totalPct - effCap;
@@ -381,6 +403,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
                           </td>
 
                           {alloc.monthlyPercentage.map((pct, monthIdx) => {
+                            if (!visibleMonths[monthIdx]) return null;
                             const styling = getUtilizationColorClass(pct, true);
 
                             return (
@@ -412,7 +435,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
 
                     <tr className="bg-slate-50/30 dark:bg-slate-800/20 border-b border-slate-200/60 dark:border-slate-800/60">
                       <td
-                        colSpan={14}
+                        colSpan={2 + visibleMonthCount}
                         className="py-1.5 px-4 pl-12 text-xs sticky left-0 z-10"
                       >
                         <button

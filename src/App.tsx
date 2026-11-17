@@ -75,8 +75,20 @@ export function App() {
     utilization: 'all',
     clientFilter: 'all',
     peopleSort: 'lastName-asc',
-    clientSort: 'client-asc'
+    clientSort: 'client-asc',
+    visibleMonths: Array(12).fill(true)
   });
+
+  const handleToggleMonthVisibility = (monthIdx: number) => {
+    setFilters((prev) => {
+      const current =
+        prev.visibleMonths && prev.visibleMonths.length === 12
+          ? [...prev.visibleMonths]
+          : Array(12).fill(true);
+      current[monthIdx] = !current[monthIdx];
+      return { ...prev, visibleMonths: current };
+    });
+  };
 
   const [expandedPersonIds, setExpandedPersonIds] = useState<Set<string>>(
     () => new Set<string>()
@@ -946,6 +958,8 @@ export function App() {
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
             clientSort={filters.clientSort || 'client-asc'}
             onToggleClientSort={handleToggleClientSort}
+            visibleMonths={filters.visibleMonths}
+            onToggleMonthVisibility={handleToggleMonthVisibility}
           />
         )}
 
@@ -985,6 +999,8 @@ export function App() {
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
             peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
+            visibleMonths={filters.visibleMonths}
+            onToggleMonthVisibility={handleToggleMonthVisibility}
           />
         )}
 
@@ -1013,6 +1029,8 @@ export function App() {
             onUpdateLeaveNotes={handleUpdateLeaveNotes}
             peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
+            visibleMonths={filters.visibleMonths}
+            onToggleMonthVisibility={handleToggleMonthVisibility}
           />
         )}
 
@@ -1039,6 +1057,8 @@ export function App() {
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
+            visibleMonths={filters.visibleMonths}
+            onToggleMonthVisibility={handleToggleMonthVisibility}
           />
         )}
       </main>

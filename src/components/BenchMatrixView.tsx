@@ -50,7 +50,7 @@ export const BenchMatrixView: React.FC<BenchMatrixViewProps> = ({
   onDeletePerson,
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
-  peopleSort = 'default',
+  peopleSort = 'lastName-asc',
   onTogglePeopleSort
 }) => {
   const [onlyWithBench, setOnlyWithBench] = useState(false);

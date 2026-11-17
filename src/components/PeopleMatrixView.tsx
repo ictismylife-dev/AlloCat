@@ -57,7 +57,7 @@ export const PeopleMatrixView: React.FC<PeopleMatrixViewProps> = ({
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
   onUpdateAllocationNotes,
-  peopleSort = 'default',
+  peopleSort = 'lastName-asc',
   onTogglePeopleSort
 }) => {
   const getProject = (id: string) => projects.find((p) => p.id === id);

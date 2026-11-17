@@ -72,14 +72,14 @@ export interface Allocation {
   notes?: string; // Comments / role detail on this specific assignment
 }
 
-export type LeaveType =
-  | 'sick'
-  | 'maternity'
-  | 'paternity'
-  | 'vacation'
-  | 'sabbatical'
-  | 'unpaid'
-  | 'other';
+export type LeaveType = string;
+
+export interface LeaveTypeMeta {
+  label: string;
+  badgeClass: string;
+  iconName: string;
+  defaultImpact: number;
+}
 
 export interface LeaveEntry {
   id: string;
@@ -131,50 +131,120 @@ export const MONTH_FULL_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ] as const;
 
-export const LEAVE_TYPE_CONFIG: Record<
-  LeaveType,
-  { label: string; badgeClass: string; iconName: string; defaultImpact: number }
-> = {
+export const LEAVE_BADGE_THEMES: Record<string, { name: string; badgeClass: string; dotColor: string }> = {
+  blue: {
+    name: 'Blue',
+    badgeClass: 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-800',
+    dotColor: '#2563EB'
+  },
+  purple: {
+    name: 'Purple',
+    badgeClass: 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border-purple-300 dark:border-purple-800',
+    dotColor: '#7C3AED'
+  },
+  indigo: {
+    name: 'Indigo',
+    badgeClass: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800',
+    dotColor: '#4F46E5'
+  },
+  teal: {
+    name: 'Teal',
+    badgeClass: 'bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300 border-teal-300 dark:border-teal-800',
+    dotColor: '#0D9488'
+  },
+  emerald: {
+    name: 'Emerald',
+    badgeClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
+    dotColor: '#059669'
+  },
+  amber: {
+    name: 'Amber',
+    badgeClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800',
+    dotColor: '#D97706'
+  },
+  rose: {
+    name: 'Rose',
+    badgeClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800',
+    dotColor: '#E11D48'
+  },
+  slate: {
+    name: 'Slate',
+    badgeClass: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+    dotColor: '#64748B'
+  }
+};
+
+export const DEFAULT_LEAVE_TYPE_CONFIG: Record<LeaveType, LeaveTypeMeta> = {
   sick: {
     label: 'Sick Leave',
-    badgeClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800',
+    badgeClass: LEAVE_BADGE_THEMES.amber.badgeClass,
     iconName: 'Activity',
     defaultImpact: 50
   },
   maternity: {
     label: 'Maternity Leave',
-    badgeClass: 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border-purple-300 dark:border-purple-800',
+    badgeClass: LEAVE_BADGE_THEMES.purple.badgeClass,
     iconName: 'Baby',
     defaultImpact: 100
   },
   paternity: {
     label: 'Paternity Leave',
-    badgeClass: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800',
+    badgeClass: LEAVE_BADGE_THEMES.indigo.badgeClass,
     iconName: 'HeartHandshake',
     defaultImpact: 100
   },
   vacation: {
     label: 'Annual Vacation / PTO',
-    badgeClass: 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-800',
+    badgeClass: LEAVE_BADGE_THEMES.blue.badgeClass,
     iconName: 'Palmtree',
     defaultImpact: 50
   },
   sabbatical: {
     label: 'Sabbatical',
-    badgeClass: 'bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300 border-teal-300 dark:border-teal-800',
+    badgeClass: LEAVE_BADGE_THEMES.teal.badgeClass,
     iconName: 'BookOpen',
     defaultImpact: 100
   },
   unpaid: {
     label: 'Unpaid Leave',
-    badgeClass: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+    badgeClass: LEAVE_BADGE_THEMES.slate.badgeClass,
     iconName: 'Clock',
     defaultImpact: 100
   },
   other: {
     label: 'Special Leave / Other',
-    badgeClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800',
+    badgeClass: LEAVE_BADGE_THEMES.rose.badgeClass,
     iconName: 'CalendarOff',
     defaultImpact: 50
   }
 };
+
+export const LEAVE_TYPE_CONFIG: Record<LeaveType, LeaveTypeMeta> = {
+  ...DEFAULT_LEAVE_TYPE_CONFIG
+};
+
+export function syncLeaveTypeConfigRegistry(customConfig?: Record<LeaveType, LeaveTypeMeta>): void {
+  if (!customConfig || Object.keys(customConfig).length === 0) return;
+  for (const key of Object.keys(LEAVE_TYPE_CONFIG)) {
+    delete LEAVE_TYPE_CONFIG[key];
+  }
+  for (const [key, val] of Object.entries(customConfig)) {
+    LEAVE_TYPE_CONFIG[key] = val;
+  }
+}
+
+export function getLeaveTypeMeta(
+  type: LeaveType,
+  customConfig?: Record<LeaveType, LeaveTypeMeta>
+): LeaveTypeMeta {
+  const source = customConfig || LEAVE_TYPE_CONFIG;
+  if (source[type]) return source[type];
+  if (DEFAULT_LEAVE_TYPE_CONFIG[type]) return DEFAULT_LEAVE_TYPE_CONFIG[type];
+  return {
+    label: type.charAt(0).toUpperCase() + type.slice(1).replace(/[-_]/g, ' '),
+    badgeClass: LEAVE_BADGE_THEMES.slate.badgeClass,
+    iconName: 'CalendarOff',
+    defaultImpact: 50
+  };
+}
+

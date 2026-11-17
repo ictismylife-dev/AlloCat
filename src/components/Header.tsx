@@ -5,16 +5,23 @@ import {
   Briefcase,
   Plus,
   AlertTriangle,
-  Download,
   Sun,
   Moon,
   UserCheck,
   Cat,
   LogOut,
   KeyRound,
-  ChevronDown
+  ChevronDown,
+  ShieldCheck,
+  Building2,
+  FolderKanban,
+  Monitor,
+  BarChart3
 } from 'lucide-react';
 import { ViewMode } from '../types';
+import { AdminTab } from './AdminPanelModal';
+import { ReportTab } from './ReportingModal';
+import { usePWAInstall } from '../utils/usePWAInstall';
 
 interface HeaderProps {
   viewMode: ViewMode;
@@ -29,12 +36,14 @@ interface HeaderProps {
   onOpenAddPersonModal: () => void;
   onOpenAddProjectModal: () => void;
   onOpenAddLeaveModal: () => void;
-  onOpenExportModal: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   currentUser?: string | null;
   onLogout?: () => void;
   onOpenChangeCredentialsModal?: () => void;
+  onOpenAdminPanel?: (tab?: AdminTab) => void;
+  onOpenReportingModal?: (tab?: ReportTab) => void;
+  onOpenStandaloneModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -50,27 +59,35 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddPersonModal,
   onOpenAddProjectModal,
   onOpenAddLeaveModal,
-  onOpenExportModal,
   isDarkMode,
   onToggleDarkMode,
   currentUser,
   onLogout,
-  onOpenChangeCredentialsModal
+  onOpenChangeCredentialsModal,
+  onOpenAdminPanel,
+  onOpenReportingModal,
+  onOpenStandaloneModal
 }) => {
+  const { isInstalled } = usePWAInstall();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const quickAddRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsUserMenuOpen(false);
       }
+      if (quickAddRef.current && !quickAddRef.current.contains(e.target as Node)) {
+        setIsQuickAddOpen(false);
+      }
     };
-    if (isUserMenuOpen) {
+    if (isUserMenuOpen || isQuickAddOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isUserMenuOpen]);
+  }, [isUserMenuOpen, isQuickAddOpen]);
 
   return (
     <header className="shrink-0 z-40 bg-slate-100 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 transition-colors">
@@ -83,8 +100,8 @@ export const Header: React.FC<HeaderProps> = ({
             className="group flex items-center gap-2 p-1 pr-2 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors cursor-pointer focus:outline-hidden"
             title={
               currentUser
-                ? `Signed in as ${currentUser} — Click for account & password settings`
-                : 'Account menu'
+                ? `Signed in as ${currentUser} — Click for Admin Panel & account settings`
+                : 'Open Admin Panel & account menu'
             }
           >
             <div className="relative w-8 h-8 rounded-lg bg-indigo-600 group-hover:bg-indigo-700 text-white flex items-center justify-center shadow-xs transition-colors">
@@ -112,17 +129,152 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Dropdown Menu from Logo Picture */}
           {isUserMenuOpen && (
-            <div className="absolute left-0 top-13 w-60 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 z-50 text-xs">
-              <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800">
-                <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-                  Signed in as
+            <div className="absolute left-0 top-13 w-68 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 z-50 text-xs">
+              <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
+                    Signed in as
+                  </div>
+                  <div className="font-mono font-bold text-slate-900 dark:text-slate-100 truncate mt-0.5">
+                    {currentUser || 'admin'}
+                  </div>
                 </div>
-                <div className="font-mono font-bold text-slate-900 dark:text-slate-100 truncate mt-0.5">
-                  {currentUser || 'admin'}
-                </div>
+                <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 rounded border border-indigo-200/70 dark:border-indigo-800">
+                  Admin
+                </span>
               </div>
 
+              {onOpenAdminPanel && (
+                <div className="p-1.5 border-b border-slate-100 dark:border-slate-800 space-y-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      onOpenAdminPanel('people');
+                    }}
+                    className="w-full px-3 py-2 rounded-lg text-left flex items-center justify-between bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-2xs transition-colors cursor-pointer mb-1"
+                  >
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Open Admin Panel</span>
+                    </div>
+                    <span className="text-[10px] font-mono bg-indigo-700 px-1.5 py-0.5 rounded text-indigo-100">
+                      Manage All
+                    </span>
+                  </button>
+
+                  {onOpenReportingModal && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenReportingModal('departments');
+                      }}
+                      className="w-full px-3 py-2 rounded-lg text-left flex items-center justify-between bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-slate-900 dark:text-slate-100 font-semibold transition-colors cursor-pointer mb-1 border border-slate-200/80 dark:border-slate-700"
+                    >
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span>Reporting & Analytics</span>
+                      </div>
+                      <span className="text-[10px] font-mono bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-200/60 dark:border-indigo-800">
+                        CSV / JSON
+                      </span>
+                    </button>
+                  )}
+
+                  <div className="px-2 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Quick Jump
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1 px-1 pb-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('people');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <Users className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>People</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('departments');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Departments</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('clients');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <Briefcase className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Clients</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminPanel('projects');
+                      }}
+                      className="px-2.5 py-1.5 rounded-md text-left flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      <FolderKanban className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Projects</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="py-1">
+                <button
+                  type="button"
+                  onClick={onToggleDarkMode}
+                  className="w-full px-3.5 py-2 text-left flex items-center justify-between text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    {isDarkMode ? (
+                      <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    ) : (
+                      <Moon className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                    )}
+                    <span>{isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</span>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    {isDarkMode ? 'Dark' : 'Light'}
+                  </span>
+                </button>
+
+                {onOpenStandaloneModal && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      onOpenStandaloneModal();
+                    }}
+                    className="w-full px-3.5 py-2 text-left flex items-center justify-between text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Monitor className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      <span>Windows & Offline App</span>
+                    </div>
+                    {!isInstalled && (
+                      <span className="text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                        Install
+                      </span>
+                    )}
+                  </button>
+                )}
+
                 {onOpenChangeCredentialsModal && (
                   <button
                     type="button"
@@ -157,46 +309,46 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 2: View Switcher & Year Navigation */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* Year selector */}
-          <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60 gap-0.5">
-            {availableYears.map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => onYearChange(y)}
-                className={`px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all whitespace-nowrap ${
-                  selectedYear === y
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
+          {/* Year dropdown selector */}
+          <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
+            <div className="relative flex items-center">
+              <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 absolute left-2 pointer-events-none" />
+              <select
+                value={selectedYear}
+                onChange={(e) => {
+                  if (e.target.value === '__manage__') {
+                    onOpenManageYearsModal();
+                  } else {
+                    onYearChange(Number(e.target.value));
+                  }
+                }}
+                className="pl-7 pr-6 py-1 text-xs font-mono font-semibold rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs border-0 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none"
+                title="Select planning year"
               >
-                {y}
-              </button>
-            ))}
+                {availableYears.map((y) => (
+                  <option key={y} value={y} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono">
+                    {y}
+                  </option>
+                ))}
+                <option value="__manage__" className="bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-sans font-medium">
+                  + Manage Years...
+                </option>
+              </select>
+              <ChevronDown className="w-3 h-3 text-slate-500 dark:text-slate-400 absolute right-1.5 pointer-events-none" />
+            </div>
+
             <button
               type="button"
               onClick={onOpenManageYearsModal}
-              className="p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors"
+              className="p-1 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 rounded transition-colors cursor-pointer"
               title="Add or remove planning years"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Perspective switcher: People vs Clients vs Availability vs Bench */}
+          {/* Perspective switcher: Clients vs People vs Availability vs Bench */}
           <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
-            <button
-              type="button"
-              onClick={() => onViewModeChange('people')}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
-                viewMode === 'people'
-                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>By People</span>
-            </button>
             <button
               type="button"
               onClick={() => onViewModeChange('clients')}
@@ -208,6 +360,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Briefcase className="w-3.5 h-3.5" />
               <span>By Clients & Projects</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('people')}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
+                viewMode === 'people'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>By People</span>
             </button>
             <button
               type="button"
@@ -251,30 +415,86 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Quick Add Buttons */}
-          <div className="hidden lg:flex items-center gap-1.5">
+          {/* Quick Add Dropdown list */}
+          <div className="relative flex items-center" ref={quickAddRef}>
             <button
               type="button"
-              onClick={onOpenAddLeaveModal}
-              className="px-2.5 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/50 rounded-lg transition-colors whitespace-nowrap border border-purple-200 dark:border-purple-800"
+              onClick={() => setIsQuickAddOpen((prev) => !prev)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-700 shadow-2xs cursor-pointer whitespace-nowrap"
+              title="Create new Time Off, Person, or Project"
             >
-              + Time Off
+              <Plus className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Add</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
-            <button
-              type="button"
-              onClick={onOpenAddPersonModal}
-              className="px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-800"
-            >
-              + Person
-            </button>
-            <button
-              type="button"
-              onClick={onOpenAddProjectModal}
-              className="px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-800"
-            >
-              + Project
-            </button>
+
+            {isQuickAddOpen && (
+              <div className="absolute right-0 top-10 w-52 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddOpen(false);
+                    onOpenAddLeaveModal();
+                  }}
+                  className="w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-700 dark:hover:text-purple-300 transition-colors cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <Calendar className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">+ Time Off</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">Vacations, PTO & leaves</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddOpen(false);
+                    onOpenAddPersonModal();
+                  }}
+                  className="w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <Users className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">+ Person</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">New team member</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddOpen(false);
+                    onOpenAddProjectModal();
+                  }}
+                  className="w-full px-3 py-2 text-left flex items-center gap-2.5 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <Briefcase className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">+ Project</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">Client project & scope</div>
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
+
+          {onOpenReportingModal && (
+            <button
+              type="button"
+              onClick={() => onOpenReportingModal('departments')}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 rounded-lg transition-colors border border-slate-300/80 dark:border-slate-700 shadow-2xs cursor-pointer whitespace-nowrap"
+              title="Open Reporting & Capacity Analytics Module"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>Reports</span>
+            </button>
+          )}
 
           {/* Primary Action Button */}
           <button
@@ -284,27 +504,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Assign Staff</span>
-          </button>
-
-          {/* Backup, Import & Export */}
-          <button
-            type="button"
-            onClick={onOpenExportModal}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-800"
-            title="Full Information Import, Export & Backup"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden sm:inline">Import / Export</span>
-          </button>
-
-          {/* Dark Mode toggle */}
-          <button
-            type="button"
-            onClick={onToggleDarkMode}
-            className="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
         </div>
       </div>

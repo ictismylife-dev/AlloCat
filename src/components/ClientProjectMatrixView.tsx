@@ -52,7 +52,7 @@ export const ClientProjectMatrixView: React.FC<ClientProjectMatrixViewProps> = (
   onEditPerson,
   onUpdateProjectNotes,
   onUpdateAllocationNotes,
-  clientSort = 'default',
+  clientSort = 'client-asc',
   onToggleClientSort
 }) => {
   const getPerson = (id: string) => people.find((p) => p.id === id);

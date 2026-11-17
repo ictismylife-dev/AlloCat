@@ -6,6 +6,9 @@ import {
   Client,
   Project,
   LeaveEntry,
+  LeaveType,
+  LeaveTypeMeta,
+  DEFAULT_LEAVE_TYPE_CONFIG,
   Department,
   EmploymentType
 } from './types';
@@ -35,6 +38,10 @@ import { ManageYearsModal } from './components/ManageYearsModal';
 import { ManageDepartmentsModal } from './components/ManageDepartmentsModal';
 import { ConfirmDeletePersonModal } from './components/ConfirmDeletePersonModal';
 import { ExportImportModal } from './components/ExportImportModal';
+import { AdminPanelModal, AdminTab } from './components/AdminPanelModal';
+import { ReportingModal, ReportTab } from './components/ReportingModal';
+import { StandaloneAppModal } from './components/StandaloneAppModal';
+import { useOnlineStatus } from './utils/usePWAInstall';
 import {
   LoginOverlay,
   ChangeCredentialsModal,
@@ -42,18 +49,12 @@ import {
   loadAuthCredentials,
   saveAuthCredentials
 } from './components/LoginOverlay';
-import {
-  ExportScope,
-  generatePeopleViewCSV,
-  generateClientsViewCSV,
-  generateAvailabilityViewCSV,
-  generateBenchViewCSV,
-  triggerFileDownload
-} from './utils/importExportUtils';
+import { ExportScope } from './utils/importExportUtils';
 
 export function App() {
+  const isOnline = useOnlineStatus();
   const [appState, setAppState] = useState<AppState>(() => loadAppState());
-  const [viewMode, setViewMode] = useState<ViewMode>('people');
+  const [viewMode, setViewMode] = useState<ViewMode>('clients');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [authCredentials, setAuthCredentials] = useState<AuthCredentials>(() =>
     loadAuthCredentials()
@@ -73,12 +74,12 @@ export function App() {
     employmentFilter: 'all',
     utilization: 'all',
     clientFilter: 'all',
-    peopleSort: 'default',
-    clientSort: 'default'
+    peopleSort: 'lastName-asc',
+    clientSort: 'client-asc'
   });
 
   const [expandedPersonIds, setExpandedPersonIds] = useState<Set<string>>(
-    () => new Set(appState.people.map((p) => p.id))
+    () => new Set<string>()
   );
   const [expandedProjectIds, setExpandedProjectIds] = useState<Set<string>>(
     () => new Set(appState.projects.map((p) => p.id))
@@ -114,6 +115,15 @@ export function App() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportModalScope, setExportModalScope] = useState<ExportScope>('all');
   const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
+  const [adminPanelState, setAdminPanelState] = useState<{
+    isOpen: boolean;
+    tab: AdminTab;
+  }>({ isOpen: false, tab: 'people' });
+  const [reportingModalState, setReportingModalState] = useState<{
+    isOpen: boolean;
+    tab: ReportTab;
+  }>({ isOpen: false, tab: 'departments' });
+  const [isStandaloneModalOpen, setIsStandaloneModalOpen] = useState(false);
 
   // Save state changes to localStorage
   useEffect(() => {
@@ -137,7 +147,8 @@ export function App() {
     leaves,
     availableYears,
     selectedYear,
-    departments
+    departments,
+    leaveTypes = DEFAULT_LEAVE_TYPE_CONFIG
   } = appState;
 
   const kpis = useMemo(
@@ -210,7 +221,7 @@ export function App() {
       return true;
     });
 
-    const sortMode = filters.peopleSort || 'default';
+    const sortMode = filters.peopleSort || 'lastName-asc';
     if (sortMode === 'default') return matched;
 
     return [...matched].sort((a, b) => {
@@ -241,7 +252,7 @@ export function App() {
 
   // Sorted clients
   const sortedClients = useMemo(() => {
-    const sortMode = filters.clientSort || 'default';
+    const sortMode = filters.clientSort || 'client-asc';
     if (sortMode === 'client-asc' || sortMode === 'project-asc') {
       return [...clients].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
@@ -274,7 +285,7 @@ export function App() {
       return true;
     });
 
-    const sortMode = filters.clientSort || 'default';
+    const sortMode = filters.clientSort || 'client-asc';
     if (sortMode === 'project-asc' || sortMode === 'client-asc') {
       return [...matched].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
@@ -292,10 +303,8 @@ export function App() {
     setFilters((prev) => ({
       ...prev,
       peopleSort:
-        prev.peopleSort === 'lastName-asc'
+        (prev.peopleSort || 'lastName-asc') === 'lastName-asc'
           ? 'lastName-desc'
-          : prev.peopleSort === 'lastName-desc'
-          ? 'default'
           : 'lastName-asc'
     }));
   };
@@ -304,10 +313,8 @@ export function App() {
     setFilters((prev) => ({
       ...prev,
       clientSort:
-        prev.clientSort === 'client-asc'
+        (prev.clientSort || 'client-asc') === 'client-asc'
           ? 'client-desc'
-          : prev.clientSort === 'client-desc'
-          ? 'default'
           : 'client-asc'
     }));
   };
@@ -332,8 +339,8 @@ export function App() {
 
   const isAllExpanded =
     viewMode === 'clients'
-      ? expandedProjectIds.size >= projects.length
-      : expandedPersonIds.size >= people.length;
+      ? projects.length > 0 && expandedProjectIds.size >= projects.length
+      : people.length > 0 && expandedPersonIds.size >= people.length;
 
   const handleToggleExpandAll = () => {
     if (viewMode === 'clients') {
@@ -599,6 +606,17 @@ export function App() {
     });
   };
 
+  const handleAddClient = (clientData: Omit<Client, 'id'>) => {
+    const newClient: Client = {
+      ...clientData,
+      id: `c-${Date.now()}`
+    };
+    setAppState((prev) => ({
+      ...prev,
+      clients: [...prev.clients, newClient]
+    }));
+  };
+
   const handleUpdateClient = (updatedClient: Client) => {
     setAppState((prev) => ({
       ...prev,
@@ -606,6 +624,23 @@ export function App() {
         c.id === updatedClient.id ? updatedClient : c
       )
     }));
+  };
+
+  const handleDeleteClient = (clientId: string) => {
+    setAppState((prev) => {
+      const removedProjectIds = new Set(
+        prev.projects.filter((p) => p.clientId === clientId).map((p) => p.id)
+      );
+      return {
+        ...prev,
+        clients: prev.clients.filter((c) => c.id !== clientId),
+        projects: prev.projects.filter((p) => p.clientId !== clientId),
+        allocations: prev.allocations.filter((a) => !removedProjectIds.has(a.projectId))
+      };
+    });
+    if (filters.clientFilter === clientId) {
+      setFilters((prev) => ({ ...prev, clientFilter: 'all' }));
+    }
   };
 
   const handleDeleteProject = (projectId: string) => {
@@ -633,6 +668,28 @@ export function App() {
       ...prev,
       leaves: prev.leaves.filter((l) => l.id !== leaveId)
     }));
+  };
+
+  const handleAddLeaveType = (typeKey: LeaveType, meta: LeaveTypeMeta) => {
+    setAppState((prev) => ({
+      ...prev,
+      leaveTypes: {
+        ...(prev.leaveTypes || DEFAULT_LEAVE_TYPE_CONFIG),
+        [typeKey]: meta
+      }
+    }));
+  };
+
+  const handleDeleteLeaveType = (typeKey: LeaveType) => {
+    setAppState((prev) => {
+      const currentTypes = { ...(prev.leaveTypes || DEFAULT_LEAVE_TYPE_CONFIG) };
+      if (Object.keys(currentTypes).length <= 1) return prev;
+      delete currentTypes[typeKey];
+      return {
+        ...prev,
+        leaveTypes: currentTypes
+      };
+    });
   };
 
   // Notes & Employment updaters
@@ -819,14 +876,17 @@ export function App() {
             setIsAddProjectOpen(true);
           }}
           onOpenAddLeaveModal={() => setLeaveModalState({ isOpen: true })}
-          onOpenExportModal={() => {
-            setExportModalScope('all');
-            setIsExportModalOpen(true);
-          }}
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode((d) => !d)}
           currentUser={currentUser}
           onOpenChangeCredentialsModal={() => setIsChangeCredentialsOpen(true)}
+          onOpenAdminPanel={(tab = 'people') =>
+            setAdminPanelState({ isOpen: true, tab })
+          }
+          onOpenReportingModal={(tab = 'departments') =>
+            setReportingModalState({ isOpen: true, tab })
+          }
+          onOpenStandaloneModal={() => setIsStandaloneModalOpen(true)}
           onLogout={() => {
             try {
               sessionStorage.removeItem('allocat_auth_user');
@@ -848,45 +908,47 @@ export function App() {
         isAllExpanded={isAllExpanded}
         onToggleExpandAll={handleToggleExpandAll}
         selectedYear={selectedYear}
-        onQuickExportCurrentViewCSV={() => {
-          const dateStr = new Date().toISOString().slice(0, 10);
-          if (viewMode === 'people') {
-            const csv = generatePeopleViewCSV(appState, filteredPeople);
-            triggerFileDownload(
-              csv,
-              `allocat-by-people-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          } else if (viewMode === 'clients') {
-            const csv = generateClientsViewCSV(appState, filteredProjects);
-            triggerFileDownload(
-              csv,
-              `allocat-by-clients-projects-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          } else if (viewMode === 'availability') {
-            const csv = generateAvailabilityViewCSV(appState, filteredPeople);
-            triggerFileDownload(
-              csv,
-              `allocat-availability-leaves-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          } else if (viewMode === 'bench') {
-            const csv = generateBenchViewCSV(appState, filteredPeople);
-            triggerFileDownload(
-              csv,
-              `allocat-bench-${selectedYear}-${dateStr}.csv`,
-              'text/csv;charset=utf-8;'
-            );
-          }
-        }}
-        onOpenImportExportForCurrentView={() => {
-          setExportModalScope(viewMode);
-          setIsExportModalOpen(true);
-        }}
       />
 
       <main className="flex-1 min-h-0 max-w-[1720px] w-full mx-auto flex flex-col overflow-hidden">
+        {viewMode === 'clients' && (
+          <ClientProjectMatrixView
+            clients={sortedClients}
+            projects={filteredProjects}
+            people={people}
+            allocations={allocations}
+            leaves={leaves}
+            selectedYear={selectedYear}
+            expandedProjectIds={expandedProjectIds}
+            onToggleProjectExpand={handleToggleProjectExpand}
+            onOpenCellEditor={(personId, projectId, monthIndex) =>
+              setActiveCellEditor({ personId, projectId, monthIndex })
+            }
+            onOpenAssignModalForProject={(projectId) =>
+              setAssignModalState({ isOpen: true, projectId })
+            }
+            onDeleteAllocation={handleDeleteAllocation}
+            onEditClient={(client) => {
+              setClientToEdit(client);
+              setProjectToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditProject={(project) => {
+              setProjectToEdit(project);
+              setClientToEdit(null);
+              setIsAddProjectOpen(true);
+            }}
+            onEditPerson={(person) => {
+              setPersonToEdit(person);
+              setIsAddPersonOpen(true);
+            }}
+            onUpdateProjectNotes={handleUpdateProjectNotes}
+            onUpdateAllocationNotes={handleUpdateAllocationNotes}
+            clientSort={filters.clientSort || 'client-asc'}
+            onToggleClientSort={handleToggleClientSort}
+          />
+        )}
+
         {viewMode === 'people' && (
           <PeopleMatrixView
             people={filteredPeople}
@@ -921,46 +983,8 @@ export function App() {
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateAllocationNotes={handleUpdateAllocationNotes}
-            peopleSort={filters.peopleSort || 'default'}
+            peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
-          />
-        )}
-
-        {viewMode === 'clients' && (
-          <ClientProjectMatrixView
-            clients={sortedClients}
-            projects={filteredProjects}
-            people={people}
-            allocations={allocations}
-            leaves={leaves}
-            selectedYear={selectedYear}
-            expandedProjectIds={expandedProjectIds}
-            onToggleProjectExpand={handleToggleProjectExpand}
-            onOpenCellEditor={(personId, projectId, monthIndex) =>
-              setActiveCellEditor({ personId, projectId, monthIndex })
-            }
-            onOpenAssignModalForProject={(projectId) =>
-              setAssignModalState({ isOpen: true, projectId })
-            }
-            onDeleteAllocation={handleDeleteAllocation}
-            onEditClient={(client) => {
-              setClientToEdit(client);
-              setProjectToEdit(null);
-              setIsAddProjectOpen(true);
-            }}
-            onEditProject={(project) => {
-              setProjectToEdit(project);
-              setClientToEdit(null);
-              setIsAddProjectOpen(true);
-            }}
-            onEditPerson={(person) => {
-              setPersonToEdit(person);
-              setIsAddPersonOpen(true);
-            }}
-            onUpdateProjectNotes={handleUpdateProjectNotes}
-            onUpdateAllocationNotes={handleUpdateAllocationNotes}
-            clientSort={filters.clientSort || 'default'}
-            onToggleClientSort={handleToggleClientSort}
           />
         )}
 
@@ -987,7 +1011,7 @@ export function App() {
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
             onUpdateLeaveNotes={handleUpdateLeaveNotes}
-            peopleSort={filters.peopleSort || 'default'}
+            peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
@@ -1013,7 +1037,7 @@ export function App() {
             }}
             onUpdatePersonNotes={handleUpdatePersonNotes}
             onUpdatePersonEmployment={handleUpdatePersonEmployment}
-            peopleSort={filters.peopleSort || 'default'}
+            peopleSort={filters.peopleSort || 'lastName-asc'}
             onTogglePeopleSort={handleTogglePeopleSort}
           />
         )}
@@ -1062,6 +1086,81 @@ export function App() {
         onAssign={handleBatchAssign}
       />
 
+      <AdminPanelModal
+        isOpen={adminPanelState.isOpen}
+        initialTab={adminPanelState.tab}
+        onClose={() => setAdminPanelState((prev) => ({ ...prev, isOpen: false }))}
+        people={people}
+        departments={departments}
+        clients={clients}
+        projects={projects}
+        allocations={allocations}
+        leaves={leaves}
+        availableYears={availableYears}
+        selectedYear={selectedYear}
+        currentUser={currentUser}
+        onOpenAddPerson={() => {
+          setPersonToEdit(null);
+          setIsAddPersonOpen(true);
+        }}
+        onEditPerson={(person) => {
+          setPersonToEdit(person);
+          setIsAddPersonOpen(true);
+        }}
+        onDeletePerson={handleDeletePerson}
+        onAddDepartment={handleAddDepartment}
+        onRenameDepartment={handleRenameDepartment}
+        onDeleteDepartment={handleDeleteDepartment}
+        onAddClient={handleAddClient}
+        onEditClient={(client) => {
+          setClientToEdit(client);
+          setProjectToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
+        onDeleteClient={handleDeleteClient}
+        onOpenAddProject={() => {
+          setProjectToEdit(null);
+          setClientToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
+        onEditProject={(project) => {
+          setProjectToEdit(project);
+          setClientToEdit(null);
+          setIsAddProjectOpen(true);
+        }}
+        onDeleteProject={handleDeleteProject}
+        leaveTypes={leaveTypes}
+        onOpenAddLeave={() => setLeaveModalState({ isOpen: true })}
+        onDeleteLeave={handleDeleteLeave}
+        onAddLeaveType={handleAddLeaveType}
+        onDeleteLeaveType={handleDeleteLeaveType}
+        onAddYear={handleAddYear}
+        onRemoveYear={handleRemoveYear}
+        onSelectYear={(yr) => setAppState((prev) => ({ ...prev, selectedYear: yr }))}
+        onOpenChangeCredentials={() => setIsChangeCredentialsOpen(true)}
+        onOpenExportImport={(scope = 'admin') => {
+          setExportModalScope(scope);
+          setIsExportModalOpen(true);
+        }}
+        onResetWorkspace={() => setAppState(resetAppState())}
+      />
+
+      <ReportingModal
+        isOpen={reportingModalState.isOpen}
+        initialTab={reportingModalState.tab}
+        onClose={() => setReportingModalState((prev) => ({ ...prev, isOpen: false }))}
+        people={people}
+        departments={departments}
+        clients={clients}
+        projects={projects}
+        allocations={allocations}
+        leaves={leaves}
+        leaveTypes={leaveTypes}
+        availableYears={availableYears}
+        selectedYear={selectedYear}
+        onSelectYear={(yr) => setAppState((prev) => ({ ...prev, selectedYear: yr }))}
+      />
+
       <AddPersonModal
         isOpen={isAddPersonOpen}
         onClose={() => {
@@ -1097,6 +1196,7 @@ export function App() {
         selectedYear={selectedYear}
         defaultPersonId={leaveModalState.personId}
         defaultMonthIndex={leaveModalState.monthIndex}
+        leaveTypes={leaveTypes}
         onSaveLeave={handleSaveLeave}
       />
 
@@ -1146,6 +1246,10 @@ export function App() {
         initialScope={exportModalScope}
         onImportState={(newState) => setAppState(newState)}
         onResetToDefault={() => setAppState(resetAppState())}
+        onOpenStandaloneModal={() => {
+          setIsExportModalOpen(false);
+          setIsStandaloneModalOpen(true);
+        }}
       />
 
       <ChangeCredentialsModal
@@ -1163,6 +1267,19 @@ export function App() {
           }
         }}
       />
+
+      <StandaloneAppModal
+        isOpen={isStandaloneModalOpen}
+        onClose={() => setIsStandaloneModalOpen(false)}
+        appState={appState}
+      />
+
+      {!isOnline && (
+        <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+          <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+          <span>Offline Mode — Working from local workspace storage</span>
+        </div>
+      )}
     </div>
   );
 }

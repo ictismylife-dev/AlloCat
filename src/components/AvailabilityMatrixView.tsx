@@ -16,7 +16,7 @@ import {
   Person,
   Allocation,
   LeaveEntry,
-  LEAVE_TYPE_CONFIG,
+  getLeaveTypeMeta,
   EmploymentType,
   EMPLOYMENT_TYPES,
   EMPLOYMENT_BADGE_CONFIG,
@@ -57,7 +57,7 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
   onUpdatePersonNotes,
   onUpdatePersonEmployment,
   onUpdateLeaveNotes,
-  peopleSort = 'default',
+  peopleSort = 'lastName-asc',
   onTogglePeopleSort
 }) => {
   if (people.length === 0) {
@@ -297,7 +297,7 @@ export const AvailabilityMatrixView: React.FC<AvailabilityMatrixViewProps> = ({
                 {isExpanded && (
                   <>
                     {personLeaves.map((leave) => {
-                      const cfg = LEAVE_TYPE_CONFIG[leave.type];
+                      const cfg = getLeaveTypeMeta(leave.type);
                       const fromM = Math.min(leave.startMonth, leave.endMonth);
                       const toM = Math.max(leave.startMonth, leave.endMonth);
 

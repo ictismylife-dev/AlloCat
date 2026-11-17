@@ -3,8 +3,6 @@ import {
   Search,
   ChevronsUpDown,
   Settings,
-  FileSpreadsheet,
-  Upload,
   ArrowDownAZ,
   ArrowUpZA
 } from 'lucide-react';
@@ -38,16 +36,7 @@ interface ToolbarProps {
   isAllExpanded: boolean;
   onToggleExpandAll: () => void;
   selectedYear: number;
-  onQuickExportCurrentViewCSV: () => void;
-  onOpenImportExportForCurrentView: () => void;
 }
-
-const VIEW_LABELS: Record<ViewMode, string> = {
-  people: 'By People',
-  clients: 'Clients & Projects',
-  availability: 'Availability & Leaves',
-  bench: 'Bench'
-};
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   viewMode,
@@ -58,11 +47,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onOpenManageDepartmentsModal,
   kpis,
   isAllExpanded,
-  onToggleExpandAll,
-  onQuickExportCurrentViewCSV,
-  onOpenImportExportForCurrentView
+  onToggleExpandAll
 }) => {
-  const currentViewLabel = VIEW_LABELS[viewMode];
 
   return (
     <div className="shrink-0 z-30 bg-slate-100/95 dark:bg-slate-900 border-b border-slate-300/80 dark:border-slate-800 px-4 sm:px-6 py-3 space-y-3">
@@ -128,29 +114,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </div>
         </div>
 
-        {/* Right actions: Contextual Tab Export CSV, Tab Import, and Expand/Collapse All */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={onQuickExportCurrentViewCSV}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-md border border-emerald-200 dark:border-emerald-800/80 transition-colors cursor-pointer"
-            title={`Download ${currentViewLabel} view as a .CSV spreadsheet`}
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Export {currentViewLabel} (.CSV)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenImportExportForCurrentView}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-md border border-blue-200 dark:border-blue-800/80 transition-colors cursor-pointer"
-            title={`Import or export ${currentViewLabel} data (.CSV / .JSON)`}
-          >
-            <Upload className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            <span>Import / Export {currentViewLabel}</span>
-          </button>
-
-          {viewMode !== 'bench' && (
+        {/* Right actions: Expand/Collapse All */}
+        {viewMode !== 'bench' && (
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={onToggleExpandAll}
@@ -159,8 +125,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               <ChevronsUpDown className="w-3.5 h-3.5 text-slate-500" />
               <span>{isAllExpanded ? 'Collapse All Rows' : 'Expand All Rows'}</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom row: Search bar + Alphabetical Sort + Department / Client tabs + Utilization filter */}
@@ -195,39 +161,39 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 onClick={() =>
                   onFilterChange({
                     clientSort:
-                      filters.clientSort === 'client-asc' ? 'client-desc' : 'client-asc'
+                      (filters.clientSort || 'client-asc') === 'client-asc' ? 'client-desc' : 'client-asc'
                   })
                 }
                 className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
-                  filters.clientSort && filters.clientSort !== 'default'
+                  (filters.clientSort || 'client-asc') !== 'default'
                     ? 'bg-blue-600 text-white font-semibold shadow-2xs'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'
                 }`}
                 title="Toggle alphabetical sort for Clients (A-Z / Z-A)"
               >
-                {filters.clientSort?.endsWith('-desc') ? (
+                {(filters.clientSort || 'client-asc').endsWith('-desc') ? (
                   <ArrowUpZA className="w-3.5 h-3.5" />
                 ) : (
                   <ArrowDownAZ className="w-3.5 h-3.5" />
                 )}
                 <span>
-                  {filters.clientSort === 'client-desc' ? 'Clients Z–A' : 'Clients A–Z'}
+                  {(filters.clientSort || 'client-asc') === 'client-desc' ? 'Clients Z–A' : 'Clients A–Z'}
                 </span>
               </button>
 
               <select
-                value={filters.clientSort || 'default'}
+                value={filters.clientSort || 'client-asc'}
                 onChange={(e) =>
                   onFilterChange({ clientSort: e.target.value as ClientSortOrder })
                 }
                 className="px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer"
                 title="Sort Clients & Projects alphabetically"
               >
-                <option value="default">Sort: Default Order</option>
-                <option value="client-asc">Clients: A → Z</option>
+                <option value="client-asc">Clients: A → Z (Default)</option>
                 <option value="client-desc">Clients: Z → A</option>
                 <option value="project-asc">Projects: A → Z</option>
                 <option value="project-desc">Projects: Z → A</option>
+                <option value="default">Original Order</option>
               </select>
             </div>
           ) : (
@@ -237,41 +203,41 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 onClick={() =>
                   onFilterChange({
                     peopleSort:
-                      filters.peopleSort === 'lastName-asc'
+                      (filters.peopleSort || 'lastName-asc') === 'lastName-asc'
                         ? 'lastName-desc'
                         : 'lastName-asc'
                   })
                 }
                 className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
-                  filters.peopleSort && filters.peopleSort !== 'default'
+                  (filters.peopleSort || 'lastName-asc') !== 'default'
                     ? 'bg-blue-600 text-white font-semibold shadow-2xs'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'
                 }`}
                 title="Toggle alphabetical sort for People (A-Z / Z-A)"
               >
-                {filters.peopleSort?.endsWith('-desc') ? (
+                {(filters.peopleSort || 'lastName-asc').endsWith('-desc') ? (
                   <ArrowUpZA className="w-3.5 h-3.5" />
                 ) : (
                   <ArrowDownAZ className="w-3.5 h-3.5" />
                 )}
                 <span>
-                  {filters.peopleSort?.endsWith('-desc') ? 'Z–A' : 'A–Z'}
+                  {(filters.peopleSort || 'lastName-asc').endsWith('-desc') ? 'Z–A' : 'A–Z'}
                 </span>
               </button>
 
               <select
-                value={filters.peopleSort || 'default'}
+                value={filters.peopleSort || 'lastName-asc'}
                 onChange={(e) =>
                   onFilterChange({ peopleSort: e.target.value as PeopleSortOrder })
                 }
                 className="px-2 py-1 text-xs rounded-md bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-hidden cursor-pointer"
                 title="Sort People alphabetically by Last Name or First Name"
               >
-                <option value="default">Sort: Default Order</option>
-                <option value="lastName-asc">Last Name: A → Z</option>
+                <option value="lastName-asc">Last Name: A → Z (Default)</option>
                 <option value="lastName-desc">Last Name: Z → A</option>
                 <option value="firstName-asc">First Name: A → Z</option>
                 <option value="firstName-desc">First Name: Z → A</option>
+                <option value="default">Original Order</option>
               </select>
             </div>
           )}

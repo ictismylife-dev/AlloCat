@@ -4,8 +4,10 @@ import {
   Person,
   LeaveEntry,
   LeaveType,
+  LeaveTypeMeta,
   MONTH_FULL_NAMES,
-  LEAVE_TYPE_CONFIG
+  LEAVE_TYPE_CONFIG,
+  getLeaveTypeMeta
 } from '../types';
 
 interface AddLeaveModalProps {
@@ -15,6 +17,7 @@ interface AddLeaveModalProps {
   selectedYear: number;
   defaultPersonId?: string;
   defaultMonthIndex?: number;
+  leaveTypes?: Record<LeaveType, LeaveTypeMeta>;
   onSaveLeave: (leave: Omit<LeaveEntry, 'id'>) => void;
 }
 
@@ -25,33 +28,47 @@ export const AddLeaveModal: React.FC<AddLeaveModalProps> = ({
   selectedYear,
   defaultPersonId,
   defaultMonthIndex,
+  leaveTypes,
   onSaveLeave
 }) => {
+  const activeLeaveTypes =
+    leaveTypes && Object.keys(leaveTypes).length > 0 ? leaveTypes : LEAVE_TYPE_CONFIG;
+  const typeKeys = Object.keys(activeLeaveTypes);
+  const initialType = activeLeaveTypes['vacation'] ? 'vacation' : typeKeys[0] || 'vacation';
+
   const [personId, setPersonId] = useState(defaultPersonId || people[0]?.id || '');
-  const [type, setType] = useState<LeaveType>('vacation');
-  const [title, setTitle] = useState('Annual Vacation');
+  const [type, setType] = useState<LeaveType>(initialType);
+  const [title, setTitle] = useState(
+    getLeaveTypeMeta(initialType, activeLeaveTypes).label
+  );
   const [startMonth, setStartMonth] = useState<number>(defaultMonthIndex ?? 6);
   const [endMonth, setEndMonth] = useState<number>(defaultMonthIndex ?? 6);
-  const [impactPercent, setImpactPercent] = useState<number>(50);
+  const [impactPercent, setImpactPercent] = useState<number>(
+    getLeaveTypeMeta(initialType, activeLeaveTypes).defaultImpact
+  );
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
     if (isOpen) {
+      const defaultKey = activeLeaveTypes['vacation']
+        ? 'vacation'
+        : Object.keys(activeLeaveTypes)[0] || 'vacation';
+      const meta = getLeaveTypeMeta(defaultKey, activeLeaveTypes);
       setPersonId(defaultPersonId || people[0]?.id || '');
       setStartMonth(defaultMonthIndex ?? 6);
       setEndMonth(defaultMonthIndex ?? 6);
-      setType('vacation');
-      setTitle('Annual Vacation');
-      setImpactPercent(50);
+      setType(defaultKey);
+      setTitle(meta.label);
+      setImpactPercent(meta.defaultImpact);
       setNotes('');
     }
-  }, [isOpen, defaultPersonId, defaultMonthIndex, people]);
+  }, [isOpen, defaultPersonId, defaultMonthIndex, people, activeLeaveTypes]);
 
   if (!isOpen) return null;
 
   const handleTypeSelect = (newType: LeaveType) => {
     setType(newType);
-    const cfg = LEAVE_TYPE_CONFIG[newType];
+    const cfg = getLeaveTypeMeta(newType, activeLeaveTypes);
     setTitle(cfg.label);
     setImpactPercent(cfg.defaultImpact);
   };
@@ -119,19 +136,22 @@ export const AddLeaveModal: React.FC<AddLeaveModalProps> = ({
             <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Leave Category
             </label>
-            <div className="grid grid-cols-2 gap-1.5">
-              {(Object.keys(LEAVE_TYPE_CONFIG) as LeaveType[]).map((lt) => (
+            <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto pr-0.5">
+              {typeKeys.map((lt) => (
                 <button
                   key={lt}
                   type="button"
                   onClick={() => handleTypeSelect(lt)}
-                  className={`px-2.5 py-1.5 rounded-lg border text-left font-medium transition-all ${
+                  className={`px-2.5 py-1.5 rounded-lg border text-left font-medium transition-all flex items-center justify-between gap-1 ${
                     type === lt
                       ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/60 text-purple-900 dark:text-purple-200 font-semibold'
                       : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
-                  {LEAVE_TYPE_CONFIG[lt].label}
+                  <span className="truncate">{activeLeaveTypes[lt].label}</span>
+                  <span className="text-[10px] font-mono opacity-75 shrink-0">
+                    -{activeLeaveTypes[lt].defaultImpact}%
+                  </span>
                 </button>
               ))}
             </div>

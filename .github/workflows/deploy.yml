@@ -16,22 +16,26 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build-and-prepare:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Normalize package.json for public npm & build production bundle
+      - name: Checkout repository (Pure Git — Zero Node 20 Actions)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git init .
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 origin "${GITHUB_SHA}"
+          git checkout -f FETCH_HEAD
+
+      - name: Verify Node.js & Build Production Bundle
+        run: |
+          node -v
+          npm -v
           node -e '
             const fs = require("fs");
             const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
@@ -48,7 +52,8 @@ jobs:
               "@vitejs/plugin-react": "^4.3.4",
               "tailwindcss": "^4.0.9",
               "typescript": "^5.7.3",
-              "vite": "^6.2.0"
+              "vite": "^6.2.0",
+              "vite-plugin-pwa": "^1.2.0"
             };
             fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
           '
@@ -59,6 +64,8 @@ jobs:
           touch docs/.nojekyll .nojekyll
 
       - name: Commit compiled assets to docs/ for Branch Deployment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
         run: |
           git checkout package.json package-lock.json 2>/dev/null || true
@@ -67,5 +74,5 @@ jobs:
           git add docs/ .nojekyll
           if ! git diff --staged --quiet; then
             git commit -m "chore: update compiled bundle in docs/ [skip ci]"
-            git push
+            git push origin "HEAD:${GITHUB_REF_NAME}"
           fi

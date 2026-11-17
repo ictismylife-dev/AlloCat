@@ -347,73 +347,53 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* Perspective switcher: Clients vs People vs Availability vs Bench */}
+          {/* Perspective switcher dropdown: Clients vs People vs Availability vs Bench */}
           <div className="flex items-center bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-300/70 dark:border-slate-700/60">
-            <button
-              type="button"
-              onClick={() => onViewModeChange('clients')}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
-                viewMode === 'clients'
-                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <Briefcase className="w-3.5 h-3.5" />
-              <span>By Clients & Projects</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onViewModeChange('people')}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
-                viewMode === 'people'
-                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>By People</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onViewModeChange('availability')}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
-                viewMode === 'availability'
-                  ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Availability & Leaves</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onViewModeChange('bench')}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
-                viewMode === 'bench'
-                  ? 'bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 shadow-xs font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>Bench</span>
-            </button>
+            <div className="relative flex items-center">
+              {viewMode === 'clients' && (
+                <Briefcase className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 absolute left-2.5 pointer-events-none" />
+              )}
+              {viewMode === 'people' && (
+                <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 absolute left-2.5 pointer-events-none" />
+              )}
+              {viewMode === 'availability' && (
+                <Calendar className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 absolute left-2.5 pointer-events-none" />
+              )}
+              {viewMode === 'bench' && (
+                <UserCheck className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 absolute left-2.5 pointer-events-none" />
+              )}
+              <select
+                value={viewMode}
+                onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
+                className="pl-8 pr-7 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs border-0 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none"
+                title="Select workspace perspective view"
+              >
+                <option value="clients" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  By Clients & Projects
+                </option>
+                <option value="people" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  By People
+                </option>
+                <option value="availability" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  Availability & Leaves
+                </option>
+                <option value="bench" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                  Bench
+                </option>
+              </select>
+              <ChevronDown className="w-3 h-3 text-slate-500 dark:text-slate-400 absolute right-2 pointer-events-none" />
+            </div>
           </div>
-        </div>
 
-        {/* Zone 3: Primary Actions & Alerts */}
-        <div className="flex items-center gap-2 shrink-0">
-          {overtimeCount > 0 && (
-            <button
-              type="button"
-              onClick={onOpenOvertimeDrawer}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-900 rounded-lg transition-colors whitespace-nowrap"
-              title="View over-allocated person months"
-            >
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-              <span className="font-mono tabular-nums font-semibold">{overtimeCount}</span>
-              <span className="hidden md:inline">Overtime Alerts</span>
-            </button>
-          )}
+          {/* Primary Action Button: Assign Staff */}
+          <button
+            type="button"
+            onClick={onOpenAssignModal}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Assign Staff</span>
+          </button>
 
           {/* Quick Add Dropdown list */}
           <div className="relative flex items-center" ref={quickAddRef}>
@@ -429,7 +409,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {isQuickAddOpen && (
-              <div className="absolute right-0 top-10 w-52 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute left-0 top-10 w-52 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
                 <button
                   type="button"
                   onClick={() => {
@@ -483,6 +463,22 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Zone 3: Alerts & Analytics */}
+        <div className="flex items-center gap-2 shrink-0">
+          {overtimeCount > 0 && (
+            <button
+              type="button"
+              onClick={onOpenOvertimeDrawer}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-900 rounded-lg transition-colors whitespace-nowrap"
+              title="View over-allocated person months"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+              <span className="font-mono tabular-nums font-semibold">{overtimeCount}</span>
+              <span className="hidden md:inline">Overtime Alerts</span>
+            </button>
+          )}
 
           {onOpenReportingModal && (
             <button
@@ -495,16 +491,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Reports</span>
             </button>
           )}
-
-          {/* Primary Action Button */}
-          <button
-            type="button"
-            onClick={onOpenAssignModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors whitespace-nowrap"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Assign Staff</span>
-          </button>
         </div>
       </div>
     </header>

@@ -27,10 +27,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          rm -rf .git
           git init .
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 origin "${GITHUB_SHA}"
-          git checkout -f FETCH_HEAD
+          git fetch --depth=1 origin "${GITHUB_REF_NAME}"
+          git checkout -B "${GITHUB_REF_NAME}" FETCH_HEAD
 
       - name: Verify Node.js & Build Production Bundle
         run: |
@@ -68,11 +69,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
         run: |
-          git checkout package.json package-lock.json 2>/dev/null || true
+          git checkout -- package.json package-lock.json 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/ .nojekyll
           if ! git diff --staged --quiet; then
             git commit -m "chore: update compiled bundle in docs/ [skip ci]"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            git push origin "${GITHUB_REF_NAME}"
           fi

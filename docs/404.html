@@ -25,26 +25,50 @@
       }
     </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 antialiased font-sans">
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans">
     <div id="root"></div>
-    <script>
+    <script type="module">
       (async function bootAlloCat() {
         try {
-          const check = await fetch('./assets/app.js', { method: 'HEAD' });
-          const contentType = check.headers.get('content-type') || '';
-          if (check.ok && !contentType.includes('text/html')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = './assets/app.css';
-            document.head.appendChild(link);
-
-            const script = document.createElement('script');
-            script.type = 'module';
-            script.src = './assets/app.js';
-            document.body.appendChild(script);
-            return;
+          if ('serviceWorker' in navigator && window.location.hostname.includes('github.io')) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (const reg of regs) {
+              await reg.unregister();
+            }
           }
         } catch (_) {}
+
+        const cacheBust = Date.now();
+
+        // 1. Try pre-compiled production bundle in ./assets/app.js if it matches the latest build
+        try {
+          const check = await fetch('./assets/app.js?v=' + cacheBust, { cache: 'no-store' });
+          const contentType = check.headers.get('content-type') || '';
+          if (check.ok && !contentType.includes('text/html')) {
+            const jsCode = await check.text();
+            if (jsCode.includes('Reporting & Capacity Analytics')) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = './assets/app.css?v=' + cacheBust;
+              document.head.appendChild(link);
+
+              const blob = new Blob([jsCode], { type: 'text/javascript' });
+              const script = document.createElement('script');
+              script.type = 'module';
+              script.src = URL.createObjectURL(blob);
+              document.body.appendChild(script);
+              return;
+            }
+          }
+        } catch (_) {
+          // Proceed to live source runtime
+        }
+
+        // 2. Live source runtime (compiles latest TypeScript/React directly from repository src/)
+        const twStyle = document.createElement('style');
+        twStyle.setAttribute('type', 'text/tailwindcss');
+        twStyle.textContent = '@import "tailwindcss";\n@custom-variant dark (&:where(.dark, .dark *));';
+        document.head.appendChild(twStyle);
 
         const loadScript = (src) =>
           new Promise((resolve, reject) => {
@@ -55,17 +79,35 @@
             document.head.appendChild(s);
           });
 
-        await Promise.all([
+        const [ReactMod, ReactJSXMod, ReactDOMClientMod, LucideMod] = await Promise.all([
+          import('react'),
+          import('react/jsx-runtime'),
+          import('react-dom/client'),
+          import('lucide-react'),
           loadScript('https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'),
           loadScript('https://unpkg.com/@babel/standalone@7.26.9/babel.min.js')
         ]);
+
+        const externalModules = {
+          'react': ReactMod.default || ReactMod,
+          'react/jsx-runtime': ReactJSXMod,
+          'react-dom': ReactDOMClientMod,
+          'react-dom/client': ReactDOMClientMod,
+          'lucide-react': LucideMod
+        };
 
         const moduleOrder = [
           'types/index.ts',
           'utils/allocationMath.ts',
           'data/seedData.ts',
+          'utils/importExportUtils.ts',
+          'utils/usePWAInstall.ts',
+          'components/LoginOverlay.tsx',
           'components/CommentCell.tsx',
           'components/CellAllocationPopover.tsx',
+          'components/AdminPanelModal.tsx',
+          'components/ReportingModal.tsx',
+          'components/StandaloneAppModal.tsx',
           'components/Header.tsx',
           'components/Toolbar.tsx',
           'components/PeopleMatrixView.tsx',
@@ -95,7 +137,7 @@
         async function fetchSource(relPath) {
           for (const base of baseCandidates) {
             try {
-              const res = await fetch(base + relPath);
+              const res = await fetch(base + relPath + '?v=' + cacheBust, { cache: 'no-store' });
               if (res.ok) {
                 const txt = await res.text();
                 if (!txt.trim().startsWith('<!doctype') && !txt.trim().startsWith('<!DOCTYPE')) {
@@ -114,9 +156,10 @@
           })
         );
 
-        const blobUrls = {};
+        const compiledRegistry = {};
+        const evaluatedExports = {};
+
         function resolveKey(fromModule, importSpec) {
-          if (!importSpec.startsWith('.')) return null;
           const fromParts = fromModule.split('/');
           fromParts.pop();
           const specParts = importSpec.split('/');
@@ -133,36 +176,45 @@
             joined + '/index.ts',
             joined + '/index.tsx'
           ];
-          return candidates.find((c) => Boolean(blobUrls[c])) || null;
+          return candidates.find((c) => Boolean(compiledRegistry[c])) || null;
         }
 
         for (const modPath of moduleOrder) {
-          let code = rawSources[modPath];
-          code = code.replace(/import\s+['"][^'"]+\.css['"];?/g, '');
-          code = code.replace(
-            /(from\s+['"])(\.[^'"]+)(['"])/g,
-            (match, prefix, spec, suffix) => {
-              const key = resolveKey(modPath, spec);
-              return key ? prefix + blobUrls[key] + suffix : match;
-            }
-          );
-
-          const compiled = window.Babel.transform(code, {
+          const code = rawSources[modPath];
+          compiledRegistry[modPath] = window.Babel.transform(code, {
             filename: modPath,
             presets: [
               ['typescript', { isTSX: true, allExtensions: true }],
               ['react', { runtime: 'automatic' }]
-            ]
+            ],
+            plugins: ['transform-modules-commonjs']
           }).code;
-
-          const blob = new Blob([compiled], { type: 'text/javascript' });
-          blobUrls[modPath] = URL.createObjectURL(blob);
         }
 
-        const entryScript = document.createElement('script');
-        entryScript.type = 'module';
-        entryScript.src = blobUrls['main.tsx'];
-        document.body.appendChild(entryScript);
+        function evaluateModule(modPath) {
+          if (evaluatedExports[modPath]) return evaluatedExports[modPath];
+          const exportsObj = {};
+          const moduleObj = { exports: exportsObj };
+          evaluatedExports[modPath] = exportsObj;
+
+          const customRequire = (spec) => {
+            if (spec.endsWith('.css')) return {};
+            if (externalModules[spec]) return externalModules[spec];
+            if (spec.startsWith('.')) {
+              const targetKey = resolveKey(modPath, spec);
+              if (!targetKey) throw new Error('Cannot resolve ' + spec + ' from ' + modPath);
+              return evaluateModule(targetKey);
+            }
+            throw new Error('Unknown external import: ' + spec);
+          };
+
+          const fn = new Function('exports', 'require', 'module', compiledRegistry[modPath]);
+          fn(exportsObj, customRequire, moduleObj);
+          evaluatedExports[modPath] = moduleObj.exports;
+          return moduleObj.exports;
+        }
+
+        evaluateModule('main.tsx');
       })();
     </script>
   </body>

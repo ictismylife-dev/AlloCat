@@ -32,7 +32,7 @@
       }
     </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 antialiased font-sans">
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans">
     <div id="root"></div>
     <script type="module" src="./src/main.tsx"></script>
     <script id="gh-pages-root-fallback">
@@ -42,23 +42,33 @@
 
         var pathname = window.location.pathname || '/';
         var basePrefix = pathname.indexOf('/AlloCat') === 0 ? '/AlloCat/' : './';
+        var cacheBust = Date.now();
 
         try {
-          var check = await fetch(basePrefix + 'docs/assets/app.js', { method: 'HEAD' });
+          var check = await fetch(basePrefix + 'docs/assets/app.js?v=' + cacheBust, { cache: 'no-store' });
           var contentType = check.headers.get('content-type') || '';
           if (check.ok && !contentType.includes('text/html')) {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = basePrefix + 'docs/assets/app.css';
-            document.head.appendChild(link);
+            var jsCode = await check.text();
+            if (jsCode.includes('Reporting & Capacity Analytics')) {
+              var link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = basePrefix + 'docs/assets/app.css?v=' + cacheBust;
+              document.head.appendChild(link);
 
-            var script = document.createElement('script');
-            script.type = 'module';
-            script.src = basePrefix + 'docs/assets/app.js';
-            document.body.appendChild(script);
-            return;
+              var blob = new Blob([jsCode], { type: 'text/javascript' });
+              var script = document.createElement('script');
+              script.type = 'module';
+              script.src = URL.createObjectURL(blob);
+              document.body.appendChild(script);
+              return;
+            }
           }
         } catch (_) {}
+
+        var twStyle = document.createElement('style');
+        twStyle.setAttribute('type', 'text/tailwindcss');
+        twStyle.textContent = '@import "tailwindcss";\n@custom-variant dark (&:where(.dark, .dark *));';
+        document.head.appendChild(twStyle);
 
         var loadScript = function (src) {
           return new Promise(function (resolve, reject) {
@@ -70,10 +80,24 @@
           });
         };
 
-        await Promise.all([
+        var importEsModule = new Function('spec', 'return import(spec)');
+
+        var results = await Promise.all([
+          importEsModule('react'),
+          importEsModule('react/jsx-runtime'),
+          importEsModule('react-dom/client'),
+          importEsModule('lucide-react'),
           loadScript('https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'),
           loadScript('https://unpkg.com/@babel/standalone@7.26.9/babel.min.js')
         ]);
+
+        var externalModules = {
+          'react': results[0].default || results[0],
+          'react/jsx-runtime': results[1],
+          'react-dom': results[2],
+          'react-dom/client': results[2],
+          'lucide-react': results[3]
+        };
 
         var moduleOrder = [
           'types/index.ts',
@@ -116,7 +140,7 @@
         async function fetchSource(relPath) {
           for (var i = 0; i < baseCandidates.length; i++) {
             try {
-              var res = await fetch(baseCandidates[i] + relPath);
+              var res = await fetch(baseCandidates[i] + relPath + '?v=' + cacheBust, { cache: 'no-store' });
               if (res.ok) {
                 var txt = await res.text();
                 if (!txt.trim().startsWith('<!doctype') && !txt.trim().startsWith('<!DOCTYPE')) {
@@ -135,9 +159,10 @@
           })
         );
 
-        var blobUrls = {};
+        var compiledRegistry = {};
+        var evaluatedExports = {};
+
         function resolveKey(fromModule, importSpec) {
-          if (!importSpec.startsWith('.')) return null;
           var fromParts = fromModule.split('/');
           fromParts.pop();
           var specParts = importSpec.split('/');
@@ -155,37 +180,45 @@
             joined + '/index.ts',
             joined + '/index.tsx'
           ];
-          return candidates.find(function (c) { return Boolean(blobUrls[c]); }) || null;
+          return candidates.find(function (c) { return Boolean(compiledRegistry[c]); }) || null;
         }
 
         for (var j = 0; j < moduleOrder.length; j++) {
           var modPath = moduleOrder[j];
-          var code = rawSources[modPath];
-          code = code.replace(/import\s+['"][^'"]+\.css['"];?/g, '');
-          code = code.replace(
-            /(from\s+['"])(\.[^'"]+)(['"])/g,
-            function (match, prefix, spec, suffix) {
-              var key = resolveKey(modPath, spec);
-              return key ? prefix + blobUrls[key] + suffix : match;
-            }
-          );
-
-          var compiled = window.Babel.transform(code, {
+          compiledRegistry[modPath] = window.Babel.transform(rawSources[modPath], {
             filename: modPath,
             presets: [
               ['typescript', { isTSX: true, allExtensions: true }],
               ['react', { runtime: 'automatic' }]
-            ]
+            ],
+            plugins: ['transform-modules-commonjs']
           }).code;
-
-          var blob = new Blob([compiled], { type: 'text/javascript' });
-          blobUrls[modPath] = URL.createObjectURL(blob);
         }
 
-        var entryScript = document.createElement('script');
-        entryScript.type = 'module';
-        entryScript.src = blobUrls['main.tsx'];
-        document.body.appendChild(entryScript);
+        function evaluateModule(modPath) {
+          if (evaluatedExports[modPath]) return evaluatedExports[modPath];
+          var exportsObj = {};
+          var moduleObj = { exports: exportsObj };
+          evaluatedExports[modPath] = exportsObj;
+
+          var customRequire = function (spec) {
+            if (spec.endsWith('.css')) return {};
+            if (externalModules[spec]) return externalModules[spec];
+            if (spec.startsWith('.')) {
+              var targetKey = resolveKey(modPath, spec);
+              if (!targetKey) throw new Error('Cannot resolve ' + spec + ' from ' + modPath);
+              return evaluateModule(targetKey);
+            }
+            throw new Error('Unknown external import: ' + spec);
+          };
+
+          var fn = new Function('exports', 'require', 'module', compiledRegistry[modPath]);
+          fn(exportsObj, customRequire, moduleObj);
+          evaluatedExports[modPath] = moduleObj.exports;
+          return moduleObj.exports;
+        }
+
+        evaluateModule('main.tsx');
       });
     </script>
   </body>

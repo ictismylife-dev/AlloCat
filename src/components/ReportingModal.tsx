@@ -1005,7 +1005,16 @@ export const ReportingModal: React.FC<ReportingModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-[1440px] h-[88vh] flex flex-col overflow-hidden">
         {/* Top Modal Header & Global Report Filter / Export Bar */}
-        <div className="px-6 py-3.5 bg-slate-100/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 shrink-0">
+        <div className="relative px-6 py-3.5 pr-14 bg-slate-100/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-3.5 right-4 p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer"
+            title="Close Reporting Module"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
               <BarChart3 className="w-5 h-5" />
@@ -1025,7 +1034,7 @@ export const ReportingModal: React.FC<ReportingModalProps> = ({
             </div>
           </div>
 
-          {/* Right: Scoping Filters + CSV/JSON Exports + Close */}
+          {/* Right: Scoping Filters + CSV/JSON Exports */}
           <div className="flex flex-wrap items-center gap-2.5">
             {exportSuccessMessage && (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-medium">
@@ -1123,15 +1132,6 @@ export const ReportingModal: React.FC<ReportingModalProps> = ({
             >
               <FileJson className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
               <span>Export JSON</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer"
-              title="Close Reporting Module"
-            >
-              <X className="w-5 h-5" />
             </button>
           </div>
         </div>

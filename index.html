@@ -91,12 +91,23 @@
           loadScript('https://unpkg.com/@babel/standalone@7.26.9/babel.min.js')
         ]);
 
+        var wrapEsModule = function (mod) {
+          var base = Object.assign({}, mod && mod.default ? mod.default : {}, mod);
+          Object.defineProperty(base, '__esModule', { value: true });
+          if (!base.default) base.default = base;
+          return base;
+        };
+
         var externalModules = {
-          'react': results[0].default || results[0],
-          'react/jsx-runtime': results[1],
-          'react-dom': results[2],
-          'react-dom/client': results[2],
-          'lucide-react': results[3]
+          'react': wrapEsModule(results[0]),
+          'react/jsx-runtime': wrapEsModule(results[1]),
+          'react-dom': wrapEsModule(results[2]),
+          'react-dom/client': wrapEsModule(results[2]),
+          'lucide-react': wrapEsModule(results[3]),
+          'virtual:pwa-register': {
+            __esModule: true,
+            registerSW: function () { return function () {}; }
+          }
         };
 
         var moduleOrder = [

@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - master
+    paths-ignore:
+      - 'docs/assets/**'
+      - '.nojekyll'
+      - 'docs/.nojekyll'
   workflow_dispatch:
 
 permissions:
@@ -74,6 +78,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/ .nojekyll
           if ! git diff --staged --quiet; then
-            git commit -m "chore: update compiled bundle in docs/ [skip ci]"
+            git commit -m "chore: update compiled bundle in docs/"
             git push origin "${GITHUB_REF_NAME}"
           fi
